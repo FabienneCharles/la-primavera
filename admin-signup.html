@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accès Admin | La Primavera</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        body { background-color: #2C1810; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .admin-card { background: white; padding: 40px; border-radius: 25px; width: 100%; max-width: 450px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; position: relative; }
+        .admin-card h2 { font-family: 'Cinzel', serif; color: #B8860B; margin-bottom: 25px; }
+        
+        .lang-container-admin { position: absolute; top: 15px; right: 20px; }
+        .lang-select-admin { border: 1px solid #eee; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; outline: none; }
+
+        .password-container { position: relative; margin-bottom: 15px; }
+        .form-control { border-radius: 10px; padding: 12px; border: 1px solid #ddd; width: 100%; font-size: 0.9rem; }
+        
+        .toggle-password {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #666; font-size: 1.2rem; z-index: 10;
+        }
+
+        .btn-admin { background: #2C1810; color: white; border: none; border-radius: 50px; padding: 12px; width: 100%; font-weight: bold; transition: 0.3s; cursor: pointer; margin-top: 10px; }
+        .btn-admin:hover { background: #B8860B; }
+        .btn-admin:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        .admin-footer { margin-top: 20px; font-size: 0.85rem; border-top: 1px solid #eee; padding-top: 15px; }
+        .admin-link { color: #B8860B; text-decoration: none; display: block; margin-bottom: 10px; font-weight: 600; cursor: pointer; }
+        
+        #msg { padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 0.85rem; display: none; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .info-box { font-size: 0.75rem; color: #666; background: #f9f9f9; padding: 10px; border-radius: 10px; margin-bottom: 15px; text-align: left; border-left: 3px solid #B8860B; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <div class="lang-container-admin">
+        <select class="lang-select-admin" onchange="changeLanguage(this.value)">
+            <option value="fr">FR 🇫🇷</option>
+            <option value="en">EN 🇺🇸</option>
+            <option value="es">ES 🇪🇸</option>
+        </select>
+    </div>
+
+    <h2 id="main-title" data-i18n="admin_title">ACCÈS ADMIN</h2>
+    
+    <form id="adminLoginForm">
+        <input type="email" id="adm-email" class="form-control mb-3" placeholder="Email Administrateur" data-i18n-placeholder="ph_email" required>
+        
+        <div id="extra-fields" style="display: none;">
+            <div class="info-box" data-i18n="info_sync">Si vous êtes déjà client, vos informations seront synchronisées automatiquement.</div>
+            <input type="text" id="adm-name" class="form-control mb-3" placeholder="Nom Complet" data-i18n-placeholder="ph_name">
+            <input type="text" id="adm-phone" class="form-control mb-3" placeholder="Téléphone" data-i18n-placeholder="ph_phone">
+        </div>
+
+        <div class="password-container">
+            <input type="password" id="adm-pass" class="form-control" placeholder="Mot de passe" data-i18n-placeholder="ph_pass" required>
+            <i class="bi bi-eye toggle-password" onclick="toggleVisibility('adm-pass', this)"></i>
+        </div>
+
+        <div id="confirm-pass-container" style="display: none;" class="password-container">
+            <input type="password" id="adm-pass-confirm" class="form-control" placeholder="Confirmer le mot de passe" data-i18n-placeholder="ph_confirm">
+            <i class="bi bi-eye toggle-password" onclick="toggleVisibility('adm-pass-confirm', this)"></i>
+        </div>
+
+        <button type="submit" class="btn-admin" id="btn-text" data-i18n="btn_enter">ENTRER</button>
+    </form>
+    
+    <div class="admin-footer">
+        <a id="link-forgot" class="admin-link" onclick="showRecover()" data-i18n="link_forgot">Mot de passe oublié ?</a>
+        <a id="link-toggle" class="admin-link" onclick="toggleAuthMode()" data-i18n="link_signup">Créer um novo admin</a>
+        <a id="link-back" class="admin-link" onclick="showLogin()" style="display: none;" data-i18n="link_back">Retour à la connexion</a>
+    </div>
+
+    <div id="msg"></div>
+</div>
+
+<script>
+    const translations = {
+        fr: {
+            admin_title: "ACCÈS ADMIN", signup_title: "NOUVEL ADMIN", recover_title: "RÉCUPÉRATION",
+            ph_email: "Email Administrateur", ph_pass: "Mot de passe", ph_confirm: "Confirmer le mot de passe",
+            ph_name: "Nom Complet", ph_phone: "Téléphone",
+            btn_enter: "ENTRER", btn_signup: "CRÉER COMPTE", btn_recover: "ENVOYER LIEN",
+            link_forgot: "Mot de passe oublié ?", link_signup: "Créer um novo admin", link_back: "Retour à la connexion",
+            verifying: "Vérification...", info_sync: "Si vous êtes déjà client, vos informations serão sincronizadas automaticamente.",
+            err_pass_match: "Les mots de passe ne correspondent pas.", err_auth: "Email ou mot de passe incorrect.",
+            msg_recovery: "Email de récupération envoyé !", msg_success: "Compte créé ! En attente d'activation admin."
+        },
+        en: {
+            admin_title: "ADMIN ACCESS", signup_title: "NEW ADMIN", recover_title: "RECOVERY",
+            ph_email: "Admin Email", ph_pass: "Password", ph_confirm: "Confirm Password",
+            ph_name: "Full Name", ph_phone: "Phone",
+            btn_enter: "LOGIN", btn_signup: "CREATE ACCOUNT", btn_recover: "SEND LINK",
+            link_forgot: "Forgot password?", link_signup: "Create new Admin", link_back: "Back to login",
+            verifying: "Verifying...", info_sync: "If you are already a customer, your info will sync automatically.",
+            err_pass_match: "Passwords do not match.", err_auth: "Incorrect email or password.",
+            msg_recovery: "Recovery email sent!", msg_success: "Account created! Waiting for admin activation."
+        },
+        es: {
+            admin_title: "ACCESO ADMIN", signup_title: "NUEVO ADMIN", recover_title: "RECUPERACIÓN",
+            ph_email: "Email Administrador", ph_pass: "Contraseña", ph_confirm: "Confirmar contraseña",
+            ph_name: "Nombre Complet", ph_phone: "Teléfono",
+            btn_enter: "ENTRAR", btn_signup: "CREAR CUENTA", btn_recover: "ENVIAR ENLACE",
+            link_forgot: "¿Olvidaste tu contraseña?", link_signup: "Crear nuevo admin", link_back: "Volver al login",
+            verifying: "Verificando...", info_sync: "Si ya es cliente, su información se sincronizará automáticamente.",
+            err_pass_match: "Las contraseñas no coinciden.", err_auth: "Email o contraseña incorrectos.",
+            msg_recovery: "¡Email de recuperación enviado!", msg_success: "¡Cuenta creada! Esperando activación admin."
+        }
+    };
+
+    let authMode = 'login';
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+
+    function changeLanguage(lang) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) el.innerText = translations[lang][key];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang][key]) el.placeholder = translations[lang][key];
+        });
+        localStorage.setItem('laprimavera_lang', lang);
+        updateInterface();
+    }
+
+    function toggleVisibility(inputId, icon) {
+        const input = document.getElementById(inputId);
+        if (input.type === "password") {
+            input.type = "text"; icon.classList.replace("bi-eye", "bi-eye-slash");
+        } else {
+            input.type = "password"; icon.classList.replace("bi-eye-slash", "bi-eye");
+        }
+    }
+
+    function updateInterface() {
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        const t = translations[lang];
+        if (authMode === 'login') {
+            document.getElementById('main-title').innerText = t.admin_title;
+            document.getElementById('btn-text').innerText = t.btn_enter;
+        } else if (authMode === 'signup') {
+            document.getElementById('main-title').innerText = t.signup_title;
+            document.getElementById('btn-text').innerText = t.btn_signup;
+        } else {
+            document.getElementById('main-title').innerText = t.recover_title;
+            document.getElementById('btn-text').innerText = t.btn_recover;
+        }
+    }
+
+    function toggleAuthMode() {
+        authMode = (authMode === 'login') ? 'signup' : 'login';
+        document.getElementById('extra-fields').style.display = (authMode === 'signup') ? 'block' : 'none';
+        document.getElementById('confirm-pass-container').style.display = (authMode === 'signup') ? 'block' : 'none';
+        document.getElementById('link-forgot').style.display = (authMode === 'login') ? 'block' : 'none';
+        document.getElementById('link-toggle').style.display = (authMode === 'login') ? 'block' : 'none';
+        document.getElementById('link-back').style.display = (authMode === 'signup') ? 'block' : 'none';
+        document.querySelectorAll('.password-container').forEach(c => c.style.display = 'block');
+        if(authMode === 'login') document.getElementById('confirm-pass-container').style.display = 'none';
+        updateInterface();
+    }
+
+    function showRecover() {
+        authMode = 'recover';
+        // CORREÇÃO: Esconde todos os campos de senha usando a classe
+        document.querySelectorAll('.password-container').forEach(c => c.style.display = 'none');
+        document.getElementById('extra-fields').style.display = 'none';
+        document.getElementById('link-forgot').style.display = 'none';
+        document.getElementById('link-toggle').style.display = 'none';
+        document.getElementById('link-back').style.display = 'block';
+        updateInterface();
+    }
+
+    function showLogin() {
+        authMode = 'login';
+        // CORREÇÃO: Mostra apenas o primeiro campo de senha
+        const containers = document.querySelectorAll('.password-container');
+        containers[0].style.display = 'block';
+        containers[1].style.display = 'none';
+        document.getElementById('extra-fields').style.display = 'none';
+        document.getElementById('link-forgot').style.display = 'block';
+        document.getElementById('link-toggle').style.display = 'block';
+        document.getElementById('link-back').style.display = 'none';
+        updateInterface();
+    }
+
+    document.getElementById('adm-email').addEventListener('blur', async (e) => {
+        if (authMode !== 'signup') return;
+        const email = e.target.value;
+        if (!email.includes('@')) return;
+        const { data: profile } = await _supabase.from('profiles').select('*').eq('email', email).maybeSingle();
+        if (profile) {
+            document.getElementById('adm-name').value = profile.full_name || "";
+            document.getElementById('adm-phone').value = profile.phone || "";
+        }
+    });
+
+    document.getElementById('adminLoginForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        const email = document.getElementById('adm-email').value;
+        const password = document.getElementById('adm-pass').value;
+        const btn = document.getElementById('btn-text');
+        const msg = document.getElementById('msg');
+
+        btn.disabled = true;
+        msg.style.display = 'none';
+
+        if (authMode === 'login') {
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+                if (error) throw new Error(translations[lang].err_auth);
+                const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', data.user.id).single();
+                if (profile?.is_admin) window.location.href = "admin.html";
+                else { await _supabase.auth.signOut(); throw new Error("Access Denied"); }
+            } catch (err) {
+                msg.innerText = err.message; msg.className = "error"; msg.style.display = 'block'; btn.disabled = false;
+            }
+        } else if (authMode === 'signup') {
+            const confirm = document.getElementById('adm-pass-confirm').value;
+            if (password !== confirm) { alert(translations[lang].err_pass_match); btn.disabled = false; return; }
+            const { data, error } = await _supabase.auth.signUp({
+                email, password, options: { data: { full_name: document.getElementById('adm-name').value, phone: document.getElementById('adm-phone').value } }
+            });
+            if (!error) { msg.innerText = translations[lang].msg_success; msg.className = "success"; msg.style.display = 'block'; }
+            else { msg.innerText = error.message; msg.className = "error"; msg.style.display = 'block'; }
+            btn.disabled = false;
+        } else {
+            const { error } = await _supabase.auth.resetPasswordForEmail(email);
+            if (!error) { msg.innerText = translations[lang].msg_recovery; msg.className = "success"; }
+            else { msg.innerText = error.message; msg.className = "error"; }
+            msg.style.display = 'block'; btn.disabled = false;
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
+        document.querySelector('.lang-select-admin').value = savedLang;
+        changeLanguage(savedLang);
+    });
+</script>
+</body>
+</html>

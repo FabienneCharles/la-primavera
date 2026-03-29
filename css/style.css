@@ -1,0 +1,295 @@
+<style>
+    /* --- VARIÁVEIS DE CORES LUXO --- */
+    :root {
+        --gold-title: #B8860B;      /* Dourado Nobre */
+        --deep-coffee: #2C1810;      /* Marrom Café Profundo */
+        --luxury-bg: #E8D5C4;        /* Bege Sofisticado */
+        --glass-white: rgba(255, 255, 255, 0.82); /* Branco Transparente */
+        --hover-gold: #946b08;       /* Dourado mais escuro para hover */
+    }
+
+    body { 
+        font-family: 'Poppins', sans-serif; 
+        background-color: var(--luxury-bg); 
+        margin: 0; 
+        color: var(--deep-coffee);
+        line-height: 1.6;
+        /* Espaçamento para evitar que o conteúdo suba sob a navbar fixa */
+        padding-top: 0; 
+    }
+
+    /* --- NAVBAR --- */
+    .navbar { 
+        background: white !important; 
+        padding: 15px 50px; 
+        border-bottom: 2px solid var(--gold-title); 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        /* Fixa o menu no topo e garante que nada passe por cima */
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        z-index: 9999 !important; 
+    }
+    
+    .navbar-brand { 
+        font-family: 'Cinzel', serif; 
+        font-weight: 700; 
+        font-size: 1.5rem;
+        color: var(--deep-coffee) !important; 
+        text-decoration: none;
+        letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 30px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        align-items: center;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: var(--deep-coffee) !important;
+        font-family: 'Cinzel', serif; /* Padronizado com o Index */
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        transition: 0.3s;
+        position: relative;
+        padding-bottom: 5px;
+    }
+
+    .nav-links a:hover {
+        color: var(--gold-title) !important;
+    }
+
+    /* Linha de destaque para o menu ativo ou hover */
+    .nav-links a.active {
+        color: var(--gold-title) !important;
+        border-bottom: 2px solid var(--gold-title);
+    }
+
+    /* --- HERO SECTION --- */
+    .hero-section {
+        height: 65vh; /* Ajustado para melhor impacto visual */
+        margin-top: 80px; /* Garante que o Hero comece após a navbar fixa */
+        background: linear-gradient(rgba(44, 24, 16, 0.2), rgba(44, 24, 16, 0.2)), 
+                    url('images/L\'Écrin d\'Amour Éternel.JPEG') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 3px solid var(--gold-title);
+    }
+
+    .hero-overlay {
+        background: var(--glass-white); 
+        backdrop-filter: blur(8px); 
+        -webkit-backdrop-filter: blur(8px);
+        padding: 40px 60px;
+        text-align: center;
+        border: 1px solid var(--gold-title);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        max-width: 650px;
+        animation: fadeIn 1.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-overlay h1 {
+        font-family: 'Cinzel', serif;
+        font-size: 2.5rem;
+        color: var(--deep-coffee);
+        letter-spacing: 4px;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        margin-top: 0;
+    }
+
+    .hero-overlay p {
+        font-family: 'Playfair Display', serif;
+        font-style: italic;
+        font-size: 1.3rem;
+        color: var(--deep-coffee); 
+        font-weight: 600; 
+        margin-bottom: 0;
+    }
+
+    /* --- PRODUTOS --- */
+    .featured-section { 
+        padding: 100px 5%; 
+        background-color: var(--luxury-bg); 
+    }
+    
+    .section-title { 
+        font-family: 'Cinzel', serif; 
+        font-size: 2.2rem; 
+        text-align: center; 
+        margin-bottom: 70px; 
+        letter-spacing: 6px;
+        color: var(--gold-title);
+        position: relative;
+    }
+
+    .section-title::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: var(--gold-title);
+        margin: 20px auto 0;
+    }
+
+    /* GRID SISTEMA */
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .luxury-card { 
+        border: none; 
+        background: transparent; 
+        transition: 0.4s;
+    }
+    
+    .img-container { 
+        position: relative;
+        height: 450px; 
+        overflow: hidden; 
+        box-shadow: 0 20px 40px rgba(44, 24, 16, 0.12); 
+        background: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 2px;
+    }
+    
+    .img-container img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: cover; 
+        transition: 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+    }
+
+    .luxury-card:hover .img-container img { 
+        transform: scale(1.1); 
+    }
+
+    .card-label { 
+        padding: 25px 10px; 
+        text-align: center; 
+    }
+
+    .card-label h3 { 
+        font-family: 'Cinzel', serif; 
+        font-size: 1.2rem; 
+        color: var(--deep-coffee); 
+        margin-bottom: 12px;
+        letter-spacing: 1px;
+    }
+
+    .price {
+        display: block;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 600;
+        color: var(--gold-title);
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    /* --- BOTÕES --- */
+    .btn-luxury {
+        display: inline-block;
+        padding: 14px 40px;
+        border: 1px solid var(--deep-coffee);
+        background: white;
+        color: var(--deep-coffee);
+        font-family: 'Cinzel', serif;
+        font-size: 0.8rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border-radius: 0;
+    }
+    
+    .btn-luxury:hover { 
+        background: var(--deep-coffee); 
+        color: white; 
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(44, 24, 16, 0.2);
+    }
+
+    /* --- FOOTER CENTRALIZADO --- */
+    footer { 
+        padding: 80px 5% 40px; 
+        background: var(--deep-coffee); /* Fundo escuro para contraste luxuoso */
+        color: #fdfaf8;
+        border-top: 4px solid var(--gold-title); 
+        text-align: center; 
+    }
+
+    .footer-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .footer-logo {
+        font-family: 'Cinzel', serif;
+        font-weight: 700;
+        color: var(--gold-title);
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+        display: block;
+        text-decoration: none;
+        letter-spacing: 3px;
+    }
+
+    .footer-info {
+        font-size: 0.9rem;
+        color: #d1c7c2;
+        max-width: 400px;
+        line-height: 1.8;
+    }
+
+    .copyright {
+        margin-top: 40px;
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+        border-top: 1px solid #4A2419;
+        padding-top: 30px;
+        width: 100%;
+        color: #888;
+        text-transform: uppercase;
+    }
+
+    /* --- RESPONSIVIDADE --- */
+    @media (max-width: 768px) {
+        .navbar { padding: 12px 20px; flex-direction: column; gap: 10px; }
+        .hero-section { margin-top: 120px; height: auto; padding: 60px 0; }
+        .hero-overlay { padding: 25px; margin: 0 15px; }
+        .hero-overlay h1 { font-size: 1.8rem; }
+        .nav-links { gap: 15px; } 
+        .nav-links a { font-size: 0.75rem; }
+        .section-title { font-size: 1.6rem; letter-spacing: 3px; }
+        body { padding-top: 0; }
+    }
+</style>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>La Primavera | Dashboard Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --sidebar-color: #1a1a1a; --accent: #C98986; }
+        body { background-color: #f4f4f4; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        
+        /* Layout */
+        .wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 260px; background: var(--sidebar-color); color: white; padding: 20px; position: fixed; height: 100%; }
+        .content { margin-left: 260px; padding: 40px; width: 100%; }
+
+        /* Menu */
+        .nav-link-custom { 
+            display: block; width: 100%; padding: 12px; color: #aaa; text-decoration: none; 
+            border: none; background: none; text-align: left; border-radius: 8px; margin-bottom: 10px;
+        }
+        .nav-link-custom.active { background: var(--accent); color: white; }
+        .nav-link-custom:hover:not(.active) { background: #333; color: white; }
+
+        /* Cards */
+        .admin-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .img-mini { width: 40px; height: 40px; object-fit: cover; border-radius: 6px; }
+        .table { font-size: 0.85rem; vertical-align: middle; }
+
+        /* Promo Styles */
+        .promo-badge-admin { background: #e63946; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .old-price-admin { text-decoration: line-through; color: #999; font-size: 0.75rem; }
+        
+        /* Ajuste de inputs na tabela */
+        .table input { font-size: 0.8rem; padding: 2px 5px; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <nav class="sidebar">
+        <h4 class="text-center mb-5 fw-bold" style="color: var(--accent);">LA PRIMAVERA</h4>
+        <button class="nav-link-custom active" onclick="trocarPainel('flor', this)">🌸 Floristería</button>
+        <button class="nav-link-custom" onclick="trocarPainel('patis', this)">🍰 Pâtisserie</button>
+        <hr>
+        <button onclick="logout()" class="nav-link-custom text-danger">Déconnexion</button>
+    </nav>
+
+    <main class="content">
+        
+        <div id="painel-flor">
+            <h2 class="mb-4">Gestion des Fleurs</h2>
+            <div class="admin-card">
+                <form id="formFlower" class="row g-2">
+                    <div class="col-md-3"><label class="small fw-bold">Nom</label><input type="text" id="f_name" class="form-control" placeholder="Nom de la fleur" required></div>
+                    <div class="col-md-3"><label class="small fw-bold">URL Image</label><input type="text" id="f_img" class="form-control" placeholder="images/flor.jpg" required></div>
+                    <div class="col-md-2"><label class="small fw-bold">Prix ($)</label><input type="number" id="f_price" class="form-control" placeholder="Prix" step="0.01" required></div>
+                    <div class="col-md-2"><label class="small fw-bold">Moments Idéaux</label><input type="text" id="f_moments" class="form-control" placeholder="Moments"></div>
+                    <div class="col-md-2"><label class="small fw-bold">Stock</label><input type="number" id="f_stock" class="form-control" placeholder="10" required></div>
+                    
+                    <div class="col-md-2 mt-2"><label class="small fw-bold text-danger">Remise %</label><input type="number" id="f_disc" class="form-control" placeholder="0"></div>
+                    <div class="col-md-3 mt-2"><label class="small fw-bold text-danger">Date d'expiration</label><input type="date" id="f_expiry" class="form-control"></div>
+                    
+                    <div class="col-md-7 mt-4 text-end"><button type="submit" class="btn btn-dark">Enregistrer Fleur</button></div>
+                </form>
+            </div>
+            <div class="admin-card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Visuel</th>
+                            <th>Produit</th>
+                            <th>Moment</th>
+                            <th style="width: 80px;">Remise %</th>
+                            <th style="width: 130px;">Expiration</th>
+                            <th style="width: 80px;">Stock</th>
+                            <th>Prix / Promo</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-flor"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="painel-patis" style="display: none;">
+            <h2 class="mb-4">Gestion de la Pâtisserie</h2>
+            <div class="admin-card">
+                <form id="formPatis" class="row g-2">
+                    <div class="col-md-5"><label class="small fw-bold">Nom</label><input type="text" id="p_name" class="form-control" placeholder="Nom du gâteau" required></div>
+                    <div class="col-md-4"><label class="small fw-bold">URL Image</label><input type="text" id="p_img" class="form-control" placeholder="images/caixa.png" required></div>
+                    <div class="col-md-3"><label class="small fw-bold">Prix ($)</label><input type="number" id="p_price" class="form-control" placeholder="Prix" step="0.01" required></div>
+                    
+                    <div class="col-md-2 mt-2"><label class="small fw-bold text-danger">Remise %</label><input type="number" id="p_disc" class="form-control" placeholder="0"></div>
+                    <div class="col-md-3 mt-2"><label class="small fw-bold text-danger">Date d'expiration</label><input type="date" id="p_expiry" class="form-control"></div>
+                    
+                    <div class="col-md-7 mt-4 text-end"><button type="submit" class="btn btn-success">Enregistrer Pâtisserie</button></div>
+                </form>
+            </div>
+            <div class="admin-card">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Visuel</th>
+                            <th>Nom</th>
+                            <th style="width: 80px;">Remise %</th>
+                            <th style="width: 130px;">Expiration</th>
+                            <th>Prix / Promo</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-patis"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://eqgpkdbdsfbtyisfkfsx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg';
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function trocarPainel(tipo, botao) {
+        document.querySelectorAll('.nav-link-custom').forEach(b => b.classList.remove('active'));
+        botao.classList.add('active');
+        if(tipo === 'flor') {
+            document.getElementById('painel-flor').style.display = 'block';
+            document.getElementById('painel-patis').style.display = 'none';
+        } else {
+            document.getElementById('painel-flor').style.display = 'none';
+            document.getElementById('painel-patis').style.display = 'block';
+        }
+    }
+
+    document.getElementById('formFlower').onsubmit = async (e) => {
+        e.preventDefault();
+        await _supabase.from('products').insert([{
+            name: document.getElementById('f_name').value,
+            image_url: document.getElementById('f_img').value,
+            price: parseFloat(document.getElementById('f_price').value),
+            moments: document.getElementById('f_moments').value,
+            stock: parseInt(document.getElementById('f_stock').value) || 0,
+            promo_discount_percent: parseInt(document.getElementById('f_disc').value) || 0,
+            promo_expiry_date: document.getElementById('f_expiry').value || null,
+            category: 'fleur'
+        }]);
+        location.reload();
+    };
+
+    document.getElementById('formPatis').onsubmit = async (e) => {
+        e.preventDefault();
+        await _supabase.from('patisserie').insert([{
+            name: document.getElementById('p_name').value,
+            image_url: document.getElementById('p_img').value,
+            price: parseFloat(document.getElementById('p_price').value),
+            promo_discount_percent: parseInt(document.getElementById('p_disc').value) || 0,
+            promo_expiry_date: document.getElementById('p_expiry').value || null
+        }]);
+        location.reload();
+    };
+
+    async function loadData() {
+        const now = new Date();
+        document.getElementById('lista-flor').innerHTML = "";
+        document.getElementById('lista-patis').innerHTML = "";
+
+        // LOAD FLOWERS
+        const { data: flores } = await _supabase.from('products').select('*').eq('category', 'fleur').order('id', {ascending: false});
+        flores?.forEach(p => {
+            const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+            const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
+            
+            let priceHTML = `<strong>$${p.price.toFixed(2)}</strong>`;
+            if (isPromoValid) {
+                const finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
+                priceHTML = `<span class="old-price-admin">$${p.price.toFixed(2)}</span> <br> <strong class="text-danger">$${finalPrice}</strong> <span class="promo-badge-admin">-${p.promo_discount_percent}%</span>`;
+            }
+
+            document.getElementById('lista-flor').innerHTML += `<tr>
+                <td><img src="${p.image_url}" class="img-mini"></td>
+                <td>${p.name}</td>
+                <td>${p.moments || '-'}</td>
+                <td><input type="number" class="form-control form-control-sm" value="${p.promo_discount_percent || 0}" onchange="updatePromo('products', ${p.id}, 'promo_discount_percent', this.value)"></td>
+                <td><input type="date" class="form-control form-control-sm" value="${p.promo_expiry_date || ''}" onchange="updatePromo('products', ${p.id}, 'promo_expiry_date', this.value)"></td>
+                <td><input type="number" class="form-control form-control-sm" style="width:60px" value="${p.stock || 0}" onchange="updatePromo('products', ${p.id}, 'stock', this.value)"></td>
+                <td>${priceHTML}</td>
+                <td><button onclick="del('products', ${p.id})" class="btn btn-sm btn-link text-danger p-0">Supprimer</button></td>
+            </tr>`;
+        });
+
+        // LOAD PATISSERIE
+        const { data: doces } = await _supabase.from('patisserie').select('*').order('id', {ascending: false});
+        doces?.forEach(p => {
+            const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+            const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
+
+            let priceHTML = `<strong>$${p.price.toFixed(2)}</strong>`;
+            if (isPromoValid) {
+                const finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
+                priceHTML = `<span class="old-price-admin">$${p.price.toFixed(2)}</span> <br> <strong class="text-danger">$${finalPrice}</strong> <span class="promo-badge-admin">-${p.promo_discount_percent}%</span>`;
+            }
+
+            document.getElementById('lista-patis').innerHTML += `<tr>
+                <td><img src="${p.image_url}" class="img-mini"></td>
+                <td>${p.name}</td>
+                <td><input type="number" class="form-control form-control-sm" value="${p.promo_discount_percent || 0}" onchange="updatePromo('patisserie', ${p.id}, 'promo_discount_percent', this.value)"></td>
+                <td><input type="date" class="form-control form-control-sm" value="${p.promo_expiry_date || ''}" onchange="updatePromo('patisserie', ${p.id}, 'promo_expiry_date', this.value)"></td>
+                <td>${priceHTML}</td>
+                <td><button onclick="del('patisserie', ${p.id})" class="btn btn-sm btn-link text-danger p-0">Supprimer</button></td>
+            </tr>`;
+        });
+    }
+
+    async function updatePromo(table, id, field, value) {
+        const updateData = {};
+        updateData[field] = value === "" ? null : (field === 'promo_expiry_date' ? value : parseFloat(value));
+        const { error } = await _supabase.from(table).update(updateData).eq('id', id);
+        if(!error) console.log("Updated!");
+    }
+
+    async function del(table, id) { if(confirm("Supprimer?")) { await _supabase.from(table).delete().eq('id', id); location.reload(); } }
+    async function logout() { await _supabase.auth.signOut(); window.location.href = "login.html"; }
+
+    loadData();
+</script>
+</body>
+</html>

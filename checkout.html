@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finaliser ma commande | La Primavera</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- BIBLIOTECA EMAILJS -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <style>
+        :root { --dark: #4A2419; --rose: #C98986; --bg: #f8f9fa; --gold: #B8860B; }
+        
+        /* CORREÇÃO DE PADDING PARA NÃO FICAR SOB O MENU FIXO */
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--dark); 
+            padding-top: 150px; 
+        }
+
+        /* NAVBAR FIXA (IGUAL ÀS OUTRAS PÁGINAS) */
+        .navbar { background: white !important; padding: 12px 50px; border-bottom: 2px solid var(--gold); position: fixed; top: 0; left: 0; width: 100%; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
+        .main-container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .checkout-box { background: #ffffff; border-radius: 15px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e1e1; }
+        .section-header { font-weight: 700; font-size: 1.25rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 25px; }
+        .form-label { font-weight: 600; font-size: 0.9rem; color: #555; margin-bottom: 5px; }
+        .form-control, .form-select { padding: 12px; border-radius: 8px; border: 1px solid #ced4da; margin-bottom: 20px; font-size: 1rem; transition: border-color 0.2s; }
+        .zip-status { font-size: 0.8rem; font-weight: 600; color: var(--rose); margin-top: -15px; margin-bottom: 15px; display: none; }
+        .summary-card { background: #fff; border-radius: 15px; padding: 25px; border: 1px solid #e1e1e1; position: sticky; top: 160px; }
+        .item-row { border-bottom: 1 solid #f1f1f1; padding: 15px 0; }
+        .total-row { font-size: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; margin-top: 15px; color: #28a745; }
+        .btn-submit { background: var(--dark); color: white; border-radius: 10px; padding: 18px; width: 100%; border: none; font-weight: 700; font-size: 1.2rem; transition: 0.3s; cursor: pointer; }
+        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .qty-controls { display: flex; align-items: center; gap: 8px; }
+        .btn-qty { border: none; background: #eee; width: 24px; height: 24px; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; }
+        .btn-qty:hover { background: #ddd; }
+        .btn-del { color: #dc3545; border: none; background: none; cursor: pointer; padding: 0 5px; }
+
+        #auth-overlay { display: none; text-align: center; padding: 50px; background: white; border-radius: 15px; border: 2px dashed var(--rose); }
+        .btn-auth { background: var(--rose); color: white; border-radius: 8px; padding: 10px 25px; text-decoration: none; font-weight: 600; margin: 5px; display: inline-block; }
+        
+        .btn-change-address { font-size: 0.85rem; color: var(--rose); text-decoration: underline; background: none; border: none; padding: 0; margin-bottom: 15px; display: none; cursor: pointer;}
+        
+        #card-info-fields { background: #fdfdfd; padding: 15px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 20px; display: none; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="index.html" style="color: var(--dark); letter-spacing: 2px;">LA PRIMAVERA</a>
+        <a href="index.html" class="btn btn-outline-dark btn-sm rounded-pill px-3">← Retour</a>
+    </div>
+</nav>
+
+<div class="main-container">
+    <div id="auth-overlay">
+        <i class="bi bi-lock-fill" style="font-size: 3rem; color: var(--rose);"></i>
+        <h2 class="mt-3">Veuillez vous connecter</h2>
+        <div class="mt-4">
+            <a href="login.html" class="btn-auth">Connexion</a>
+            <a href="signup.html" class="btn-auth" style="background: var(--dark);">Créer um conta</a>
+        </div>
+    </div>
+
+    <div class="row g-4" id="checkout-content" style="display: none;">
+        <div class="col-lg-7">
+            <div class="checkout-box">
+                <form id="checkout-form">
+                    <h2 class="section-header">1. Informations de Livraison (USA)</h2>
+                    
+                    <button type="button" id="change-address-btn" class="btn-change-address" onclick="enableNewAddress()">Utiliser une adresse différente</button>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label">Nom Complet du Destinataire *</label>
+                            <input type="text" id="full_name" class="form-control" required placeholder="Qui recebe la commande?">
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Code ZIP *</label>
+                            <input type="text" id="zip" class="form-control" required maxlength="5">
+                            <div id="zip-loader" class="zip-status">Recherche...</div>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-label">Ville *</label>
+                            <input type="text" id="city" class="form-control" required readonly placeholder="Auto">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">État *</label>
+                            <input type="text" id="state" class="form-control" required readonly placeholder="Auto">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Date de Livraison Souhaitée *</label>
+                            <input type="date" id="order_date" class="form-control" required>
+                        </div>
+                    </div>
+                    
+                    <label class="form-label">Adresse Complette (Rue et Numéro) *</label>
+                    <input type="text" id="street" class="form-control" required placeholder="ex: 123 Main St, Apt 4">
+
+                    <label class="form-label">Note ou Message para la carte (Optionnel)</label>
+                    <textarea id="order_message" class="form-control" rows="3" placeholder="Écrivez ici vos instructions spéciales ou le mot doux..."></textarea>
+
+                    <h2 class="section-header mt-4">2. Mode de Paiement</h2>
+                    <select id="payment-method" class="form-select" onchange="togglePaymentFields()">
+                        <option value="wa">WhatsApp (Zelle / CashApp)</option>
+                        <option value="paypal">PayPal (Paiement Direct)</option>
+                        <option value="cc">Carte de Crédit (Sécurisé)</option>
+                    </select>
+
+                    <div id="card-info-fields">
+                        <div class="mb-3">
+                            <label class="form-label">Numéro de Carte</label>
+                            <input type="text" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19">
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <label class="form-label">Expiration (MM/AA)</label>
+                                <input type="text" class="form-control" placeholder="MM/AA" maxlength="5">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">CVV</label>
+                                <input type="text" class="form-control" placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn-submit mt-4">CONFIRMER MA COMMANDE</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="summary-card">
+                <h2 class="section-header">Résumé de la commande</h2>
+                <div id="summary-items"></div>
+                <div class="total-row">
+                    <span>Total</span>
+                    <span id="grand-total">$0.00</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function(){
+        emailjs.init("3rAwOG3LSxRlSBITj");
+    })();
+
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dateInput = document.getElementById('order_date');
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const minDate = tomorrow.toISOString().split('T')[0];
+        dateInput.setAttribute('min', minDate);
+    });
+
+    _supabase.auth.onAuthStateChange((event, session) => {
+        if (session) {
+            currentUser = session.user;
+            document.getElementById('checkout-content').style.display = 'flex';
+            document.getElementById('auth-overlay').style.display = 'none';
+            loadUserData(session.user.id);
+            syncCartFromDB(session.user.id);
+        } else {
+            document.getElementById('checkout-content').style.display = 'none';
+            document.getElementById('auth-overlay').style.display = 'block';
+        }
+    });
+
+    function togglePaymentFields() {
+        const method = document.getElementById('payment-method').value;
+        const cardFields = document.getElementById('card-info-fields');
+        cardFields.style.display = (method === 'cc') ? 'block' : 'none';
+    }
+
+    async function syncCartFromDB(userId) {
+        const { data: items, error } = await _supabase.from('cart_items').select('*').eq('user_id', userId);
+        if (!error && items) {
+            const cartMapped = items.map(i => ({
+                id: i.id,
+                name: i.product_name || i.name,
+                price: parseFloat(i.price),
+                quantity: i.quantity || 1,
+                recipient_name: i.recipient_name || null,
+                delivery_time: i.delivery_time || null,
+                is_surprise: i.is_surprise || false
+            }));
+            localStorage.setItem('cart', JSON.stringify(cartMapped));
+            renderSummary();
+        }
+    }
+
+    async function changeQtyDB(dbId, delta, localIndex) {
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart[localIndex]) {
+            const newQty = cart[localIndex].quantity + delta;
+            if (newQty <= 0) return removeItemDB(dbId, localIndex);
+            cart[localIndex].quantity = newQty;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderSummary();
+            if (currentUser && dbId) {
+                await _supabase.from('cart_items').update({ quantity: newQty }).eq('id', dbId);
+            }
+        }
+    }
+
+    async function removeItemDB(dbId, localIndex) {
+        if(!confirm("Supprimer cet article ?")) return;
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        cart.splice(localIndex, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderSummary();
+        if (currentUser && dbId) {
+            await _supabase.from('cart_items').delete().eq('id', dbId);
+        }
+    }
+
+    async function loadUserData(userId) {
+        const { data: profile } = await _supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
+        if (profile) {
+            document.getElementById('full_name').value = profile.full_name || '';
+            const savedStreet = profile.street || profile.address;
+            if (savedStreet && profile.zip) {
+                document.getElementById('zip').value = profile.zip;
+                document.getElementById('street').value = savedStreet;
+                fetchCity(profile.zip);
+                document.getElementById('change-address-btn').style.display = 'block';
+                document.getElementById('zip').disabled = true;
+                document.getElementById('street').disabled = true;
+            }
+        }
+    }
+
+    function enableNewAddress() {
+        const fields = ['zip', 'street'];
+        fields.forEach(f => document.getElementById(f).disabled = false);
+        document.getElementById('change-address-btn').style.display = 'none';
+        document.getElementById('zip').value = "";
+        document.getElementById('street').value = "";
+    }
+
+    async function fetchCity(zip) {
+        if (zip.length !== 5) return;
+        document.getElementById('zip-loader').style.display = 'block';
+        try {
+            const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('city').value = data.places[0]['place name'];
+                document.getElementById('state').value = data.places[0]['state abbreviation'];
+            }
+        } catch (e) { console.error("Error ZIP"); }
+        document.getElementById('zip-loader').style.display = 'none';
+    }
+
+    document.getElementById('zip').addEventListener('keyup', (e) => fetchCity(e.target.value));
+
+    async function sendEmails(orderData) {
+        const templateParams = {
+            subject: "🌸 Confirmation de commande - La Primavera",
+            order_id: orderData.id ? orderData.id.slice(0, 8).toUpperCase() : "NOUVEAU",
+            client_name: orderData.customer_name,
+            client_email: orderData.customer_email,
+            items: orderData.items,
+            total: orderData.total,
+            address: orderData.address,
+            delivery_date: orderData.delivery_date,
+            note: orderData.note || "Aucune note",
+            status: "EN ATTENTE D'APPROBATION"
+        };
+        try {
+            await emailjs.send("service_g3y43ep", "template_m6v2njk", templateParams);
+        } catch (err) { console.error("Erreur e-mail:", err); }
+    }
+
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const paymentMethod = document.getElementById('payment-method').value;
+
+        if (cart.length === 0) {
+            alert("Votre panier est vide!");
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = "Traitement en cours...";
+
+        try {
+            const fullAddress = `${document.getElementById('street').value}, ${document.getElementById('city').value}, ${document.getElementById('state').value} ${document.getElementById('zip').value}`;
+            const itemsList = cart.map(i => `${i.quantity}x ${i.name} ${i.recipient_name ? '(Pour: '+i.recipient_name+')' : ''}`).join(', ');
+            const grandTotal = document.getElementById('grand-total').innerText;
+            const rawAmount = parseFloat(grandTotal.replace('$',''));
+
+            const orderObj = {
+                user_id: currentUser.id,
+                customer_name: document.getElementById('full_name').value,
+                customer_email: currentUser.email,
+                items: itemsList,
+                total: rawAmount,
+                address: fullAddress,
+                delivery_date: document.getElementById('order_date').value,
+                note: document.getElementById('order_message').value,
+                status: "En attente d'approbation"
+            };
+
+            const { data: newOrder, error: orderError } = await _supabase.from('orders').insert([orderObj]).select().single();
+            if (orderError) throw orderError;
+
+            const orderIdShort = (newOrder || orderObj).id ? (newOrder || orderObj).id.slice(0, 8).toUpperCase() : "TEMP";
+
+            // LÓGICA WHATSAPP / PAYPAL / CC
+            if (paymentMethod === 'wa') {
+                const adminPhone = "13522982578";
+                const fLower = "\uD83C\uDF38"; 
+                const pIn = "\uD83D\uDCCC";    
+                const uSer = "\uD83D\uDC64";   
+                const bAg = "\uD83D\uDECD";    
+                const mOney = "\uD83D\uDCB0";  
+                const dAtate = "\uD83D\uDCC5"; 
+                const cArd = "\uD83D\uDCB3";   
+
+                const waMessage = 
+                    fLower + " *NOUVELLE COMMANDE - LA PRIMAVERA*\n\n" +
+                    pIn + " *ID Commande:* #" + orderIdShort + "\n" +
+                    uSer + " *Client:* " + orderObj.customer_name + "\n" +
+                    bAg + " *Articles:* " + itemsList + "\n" +
+                    mOney + " *Total:* " + grandTotal + "\n" +
+                    dAtate + " *Livraison:* " + orderObj.delivery_date + "\n" +
+                    pIn + " *Adresse:* " + fullAddress + "\n" +
+                    "📝 *Note:* " + (orderObj.note || "Aucune") + "\n\n" +
+                    cArd + " *PAIEMENT:* Je souhaite payer par *Zelle* ou *CashApp*.\n\n" +
+                    "Merci de me confirmer les informations pour finaliser le transfert.";
+
+                window.open("https://wa.me/" + adminPhone + "?text=" + encodeURIComponent(waMessage), "_blank");
+            } 
+            else if (paymentMethod === 'paypal') {
+                // Link oficial de checkout direto do PayPal (Mais estável)
+                const paypalURL = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=laprimavera951@gmail.com&item_name=Commande_" + orderIdShort + "&amount=" + rawAmount + "&currency_code=USD&no_shipping=1";
+                window.open(paypalURL, "_blank");
+            }
+
+            await sendEmails(newOrder || orderObj);
+            await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
+            localStorage.removeItem('cart');
+            
+            alert("Merci! Votre commande a été enregistrée. Veuillez finaliser le paiement pour confirmer la livraison.");
+            window.location.href = "mon-compte.html"; 
+
+        } catch (err) {
+            alert("Erreur lors de la validation: " + err.message);
+            btn.disabled = false;
+            btn.innerText = "CONFIRMER MA COMMANDE";
+        }
+    });
+
+    function renderSummary() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const summaryDiv = document.getElementById('summary-items');
+        let total = 0;
+        
+        if (cart.length === 0) {
+            summaryDiv.innerHTML = "<p class='text-muted p-3 text-center'>Votre panier est vide.</p>";
+            document.getElementById('grand-total').innerText = "$0.00";
+            return;
+        }
+
+        summaryDiv.innerHTML = cart.map((i, idx) => {
+            total += (i.price * i.quantity);
+            let extraInfo = i.recipient_name ? `
+                <div style="font-size: 0.75rem; color: #666; background: #fdfaf8; padding: 8px; border-radius: 5px; margin-top: 5px; border-left: 3px solid var(--rose);">
+                    <i class="bi bi-person-fill"></i> Pour: <strong>${i.recipient_name}</strong><br>
+                    <i class="bi bi-clock"></i> Heure: <strong>${i.delivery_time}</strong>
+                </div>` : "";
+
+            return `
+                <div class="item-row mb-3 pb-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div style="flex: 1;">
+                            <span class="d-block fw-bold">${i.name}</span>
+                            <div class="qty-controls mt-2">
+                                <button type="button" class="btn-qty" onclick="changeQtyDB('${i.id}', -1, ${idx})">-</button>
+                                <span>${i.quantity}</span>
+                                <button type="button" class="btn-qty" onclick="changeQtyDB('${i.id}', 1, ${idx})">+</button>
+                                <button type="button" class="btn-del ms-2" onclick="removeItemDB('${i.id}', ${idx})"><i class="bi bi-trash"></i></button>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <strong class="d-block">$${(i.price * i.quantity).toFixed(2)}</strong>
+                        </div>
+                    </div>
+                    ${extraInfo}
+                </div>`;
+        }).join('');
+        document.getElementById('grand-total').innerText = `$${total.toFixed(2)}`;
+    }
+</script>
+</body>
+</html>

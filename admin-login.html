@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion Admin | La Primavera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { background-color: #2C1810; font-family: 'Poppins', sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .admin-card { background: white; padding: 40px; border-radius: 25px; width: 100%; max-width: 400px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; position: relative; }
+        .admin-card h2 { font-family: 'Cinzel', serif; color: #B8860B; margin-bottom: 25px; }
+        
+        /* NOVO: Seletor de Idioma */
+        .lang-container-admin { position: absolute; top: 15px; right: 20px; }
+        .lang-select-admin { border: 1px solid #eee; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; outline: none; }
+
+        .form-control { border-radius: 10px; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; }
+        .btn-admin { background: #2C1810; color: white; border: none; border-radius: 50px; padding: 12px; width: 100%; font-weight: bold; transition: 0.3s; cursor: pointer; }
+        .btn-admin:hover { background: #B8860B; }
+        .admin-footer { margin-top: 20px; font-size: 0.85rem; }
+        .admin-link { color: #B8860B; text-decoration: none; display: block; margin-bottom: 10px; font-weight: 600; }
+        .admin-link:hover { text-decoration: underline; }
+        #msg { padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 0.9rem; display: none; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+
+        /* Estilo do Campo de Senha com Olho */
+        .password-wrapper { position: relative; }
+        .toggle-password { position: absolute; right: 15px; top: 13px; cursor: pointer; color: #666; }
+    </style>
+</head>
+<body>
+
+<div class="admin-card">
+    <div class="lang-container-admin">
+        <select class="lang-select-admin" onchange="changeLanguage(this.value)">
+            <option value="fr">FR 🇫🇷</option>
+            <option value="en">EN 🇺🇸</option>
+            <option value="es">ES 🇪🇸</option>
+        </select>
+    </div>
+
+    <h2 data-i18n="admin_title">ADMIN ACCESS</h2>
+    <form id="adminLoginForm">
+        <input type="email" id="adm-email" class="form-control" placeholder="Email Administrateur" data-i18n-placeholder="ph_email" required>
+        
+        <div class="password-wrapper">
+            <input type="password" id="adm-pass" class="form-control" placeholder="Mot de passe" data-i18n-placeholder="ph_pass" required style="padding-right: 45px;">
+            <i class="bi bi-eye toggle-password" id="eyeIcon" onclick="togglePass()"></i>
+        </div>
+
+        <button type="submit" class="btn-admin" id="btn-text" data-i18n="btn_enter">ENTRER</button>
+    </form>
+    
+    <div class="admin-footer">
+        <a href="#" class="admin-link" onclick="recoverPassword()" data-i18n="link_forgot">Mot de passe oublié ?</a>
+        <a href="admin-signup.html" class="admin-link" data-i18n="link_signup">Créer un nouveau compte Admin</a>
+    </div>
+
+    <div id="msg"></div>
+</div>
+
+<script>
+    // --- FUNÇÃO TOGGLE SENHA ---
+    function togglePass() {
+        const input = document.getElementById('adm-pass');
+        const icon = document.getElementById('eyeIcon');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('bi-eye', 'bi-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.replace('bi-eye-slash', 'bi-eye');
+        }
+    }
+
+    // --- DICIONÁRIO DE TRADUÇÕES ---
+    const translations = {
+        fr: {
+            admin_title: "ACCÈS ADMIN", ph_email: "Email Administrateur", ph_pass: "Mot de passe",
+            btn_enter: "ENTRER", link_forgot: "Mot de passe oublié ?", link_signup: "Créer um nouveau compte Admin",
+            verifying: "Vérification...", err_auth: "Email ou mot de passe incorrect.",
+            err_denied: "Accès refusé : Réservé aux administrateurs.", alert_email: "Veuillez saisir votre e-mail pour la récupération.",
+            msg_recovery: "Email de récupération envoyé !", msg_error: "Erreur: "
+        },
+        en: {
+            admin_title: "ADMIN ACCESS", ph_email: "Admin Email", ph_pass: "Password",
+            btn_enter: "LOGIN", link_forgot: "Forgot password?", link_signup: "Create new Admin account",
+            verifying: "Verifying...", err_auth: "Incorrect email or password.",
+            err_denied: "Access denied: Admin only.", alert_email: "Please enter your email for recovery.",
+            msg_recovery: "Recovery email sent!", msg_error: "Error: "
+        },
+        es: {
+            admin_title: "ACCESO ADMIN", ph_email: "Email Administrador", ph_pass: "Contraseña",
+            btn_enter: "ENTRAR", link_forgot: "¿Olvidaste tu contraseña?", link_signup: "Crear nueva cuenta Admin",
+            verifying: "Verificando...", err_auth: "Email o contraseña incorrectos.",
+            err_denied: "Acceso denegado: Solo administradores.", alert_email: "Por favor, ingrese su email para la recuperación.",
+            msg_recovery: "¡Email de recuperación enviado!", msg_error: "Error: "
+        }
+    };
+
+    function changeLanguage(lang) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) el.innerText = translations[lang][key];
+        });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (translations[lang][key]) el.placeholder = translations[lang][key];
+        });
+        localStorage.setItem('laprimavera_lang', lang);
+    }
+
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg', {
+        auth: {
+            storageKey: 'laprimavera-admin-session',
+            storage: window.localStorage,
+            autoRefreshToken: true,
+            persistSession: true
+        }
+    });
+
+    document.getElementById('adminLoginForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        const email = document.getElementById('adm-email').value;
+        const password = document.getElementById('adm-pass').value;
+        const msg = document.getElementById('msg');
+        const btn = document.getElementById('btn-text');
+
+        btn.innerText = translations[lang].verifying;
+        btn.disabled = true;
+
+        try {
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) throw new Error(translations[lang].err_auth);
+
+            const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', data.user.id).maybeSingle();
+
+            if (profile && profile.is_admin === true) {
+                window.location.href = "admin.html";
+            } else {
+                await _supabase.auth.signOut();
+                throw new Error(translations[lang].err_denied);
+            }
+        } catch (err) {
+            msg.innerText = err.message;
+            msg.className = "error";
+            msg.style.display = 'block';
+            btn.innerText = translations[lang].btn_enter;
+            btn.disabled = false;
+        }
+    };
+
+    async function recoverPassword() {
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        const email = document.getElementById('adm-email').value;
+        if (!email) return alert(translations[lang].alert_email);
+        
+        const { error } = await _supabase.auth.resetPasswordForEmail(email);
+        const msg = document.getElementById('msg');
+        if (error) {
+            msg.innerText = translations[lang].msg_error + error.message;
+            msg.className = "error";
+        } else {
+            msg.innerText = translations[lang].msg_recovery;
+            msg.className = "success";
+        }
+        msg.style.display = 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
+        document.querySelector('.lang-select-admin').value = savedLang;
+        changeLanguage(savedLang);
+    });
+</script>
+</body>
+</html>

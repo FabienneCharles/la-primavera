@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Primavera | Dashboard Suprême</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --sidebar-color: #2C1810; --accent: #B8860B; --gold: #D4AF37; --bg-light: #f4f1ee; }
+        body { background-color: var(--bg-light); font-family: 'Poppins', sans-serif; margin: 0; display: none; }
+        .wrapper { display: flex; min-height: 100vh; }
+        .sidebar { width: 280px; background: var(--sidebar-color); color: white; padding: 25px; position: fixed; height: 100%; border-right: 4px solid var(--accent); z-index: 1000; display: flex; flex-direction: column; }
+        .sidebar-logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent); display: block; margin: 0 auto 15px; object-fit: cover; }
+        .sidebar h4 { font-family: 'Cinzel', serif; color: var(--gold); text-align: center; margin-bottom: 30px; font-size: 1rem; letter-spacing: 2px; }
+        .nav-link-custom { display: block; width: 100%; padding: 12px; color: #d1c7c3; text-decoration: none; border: none; background: none; text-align: left; border-radius: 6px; margin-bottom: 5px; font-family: 'Cinzel', serif; font-size: 0.8rem; cursor: pointer; transition: 0.3s; position: relative; }
+        .nav-link-custom.active { background: var(--accent); color: white; }
+        .nav-link-custom:hover:not(.active) { background: rgba(255,255,255,0.1); color: white; }
+        .logout-box { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .btn-logout { background: #dc3545; color: white !important; font-weight: bold; text-align: center; }
+        .content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
+        .admin-header-bar { background: white; padding: 15px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-left: 8px solid var(--sidebar-color); margin-bottom: 35px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); margin-bottom: 30px; border-top: 4px solid var(--accent); }
+        .img-mini { width: 60px; height: 60px; object-fit: cover; border-radius: 10px; }
+        .btn-qty { border: none; background: var(--sidebar-color); color: white; width: 28px; height: 28px; border-radius: 50%; font-weight: bold; cursor: pointer; }
+        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .chat-list-item { cursor: pointer; border-bottom: 1px solid #eee; padding: 12px; transition: 0.2s; }
+        .chat-list-item.active { background: #e9ecef; border-left: 4px solid var(--accent); }
+        #admin-chat-box { height: 400px; overflow-y: auto; background: #fafafa; border-radius: 8px; padding: 15px; border: 1px solid #eee; display: flex; flex-direction: column; gap: 10px; }
+        .preview-home-img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px; }
+        .stat-badge { font-size: 1.5rem; font-weight: bold; color: var(--sidebar-color); }
+        .sort-header { cursor: pointer; position: relative; }
+        .sort-header:hover { color: var(--accent); }
+        .old-price-admin { text-decoration: line-through; color: #999; font-size: 0.8rem; }
+        .promo-badge-admin { background: #e63946; color: white; font-size: 0.7rem; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+        .table-input-small { width: 70px; text-align: center; border: 1px solid #ddd; border-radius: 4px; font-size: 0.85rem; }
+        .table-date-small { border: 1px solid #ddd; border-radius: 4px; font-size: 0.8rem; }
+        .preview-container-media { min-height: 150px; border: 1px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #f9f9f9; position: relative; }
+        .preview-container-media img, .preview-container-media video { max-width: 100%; max-height: 150px; object-fit: contain; transition: transform 0.5s ease; }
+        
+        .preview-container-media:hover img { transform: scale(1.5); }
+
+        @keyframes blinker { 50% { opacity: 0; } }
+        .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
+
+        #printableReceipt { font-family: 'Poppins', sans-serif; display: none; padding: 30px; border: 2px solid #eee; width: 400px; margin: auto; background: white; }
+        .receipt-header { border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
+        .receipt-logo { width: 70px; border-radius: 50%; margin-bottom: 10px; }
+        .receipt-title { font-family: 'Cinzel', serif; color: var(--sidebar-color); font-size: 1.2rem; margin: 0; }
+        .receipt-info { font-size: 0.8rem; line-height: 1.4; margin-bottom: 20px; }
+        .receipt-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
+        .receipt-table th { text-align: left; border-bottom: 1px solid #eee; padding: 5px; }
+        .receipt-table td { padding: 5px; vertical-align: top; }
+        .receipt-total { border-top: 2px dashed #eee; margin-top: 15px; padding-top: 10px; text-align: right; font-weight: bold; font-size: 1.1rem; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableReceipt, #printableReceipt * { visibility: visible; }
+            #printableReceipt { display: block !important; position: absolute; left: 0; top: 0; width: 100%; border: none; }
+            .btn-print-hidden { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loadingOverlay"><div class="spinner-border text-primary"></div></div>
+
+<div class="wrapper">
+    <nav class="sidebar">
+        <img src="images/Logo1.png" alt="Logo" class="sidebar-logo">
+        <h4>LA PRIMAVERA</h4>
+        <button class="nav-link-custom active" id="btn-flor" onclick="trocarPainel('flor')"><i class="bi bi-flower1 me-2"></i> Floristerie</button>
+        <button class="nav-link-custom" id="btn-deje" onclick="trocarPainel('deje')"><i class="bi bi-basket me-2"></i> Déjeuners</button>
+        <button class="nav-link-custom" id="btn-patis" onclick="trocarPainel('patis')"><i class="bi bi-cup-hot me-2"></i> Pâtisserie</button>
+        <button class="nav-link-custom" id="btn-moments" onclick="trocarPainel('moments')"><i class="bi bi-calendar-heart me-2"></i> Gérer Moments</button>
+        <button class="nav-link-custom" id="btn-slots" onclick="trocarPainel('slots')"><i class="bi bi-clock-history me-2"></i> Gestion Horaires</button>
+        <button class="nav-link-custom" id="btn-clients" onclick="trocarPainel('clients')"><i class="bi bi-people-fill me-2"></i> Gérer Clients</button>
+        <button class="nav-link-custom" id="btn-orders" onclick="trocarPainel('orders')"><i class="bi bi-receipt me-2"></i> Commandes</button>
+        <button class="nav-link-custom" id="btn-home" onclick="trocarPainel('home')"><i class="bi bi-house-gear me-2"></i> Gérer Home</button>
+        <button class="nav-link-custom" id="btn-chat" onclick="trocarPainel('chat')">
+            <i class="bi bi-chat-dots me-2"></i> Messages 
+            <span id="msg-badge-admin" class="badge bg-danger rounded-pill position-absolute" style="display:none; right: 10px; top: 12px; font-size: 0.6rem;">0</span>
+        </button>
+        
+        <div class="logout-box">
+            <button onclick="handleLogout()" class="nav-link-custom btn-logout"><i class="bi bi-box-arrow-left me-2"></i> DÉCONNEXION</button>
+            <button onclick="location.reload()" class="nav-link-custom text-info mt-2"><i class="bi bi-arrow-clockwise me-2"></i> Actualiser</button>
+        </div>
+    </nav>
+
+    <main class="content">
+        <div class="admin-header-bar">
+            <div class="quote-box"><i class="bi bi-quote"></i> Cultiver la beauté, partager la douceur...</div>
+            <div class="fw-bold small" style="color:var(--accent);">GESTIONNAIRE LA PRIMAVERA</div>
+        </div>
+
+        <div id="painel-flor">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">🌸 Inventaire Floristerie</h2>
+            <div class="admin-card">
+                <form id="formFlower" class="row g-3">
+                    <div class="col-md-4"><label class="fw-bold small">Nom</label><input type="text" id="f_name" class="form-control" required></div>
+                    <div class="col-md-3"><label class="fw-bold small">Moment</label><select id="f_moments_select" class="form-select" required></select></div>
+                    <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="f_price" class="form-control" step="0.01" required></div>
+                    <div class="col-md-3"><label class="fw-bold small">Stock</label><input type="number" id="f_stock" class="form-control" value="10"></div>
+                    <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="f_init_disc" class="form-control" placeholder="0"></div>
+                    <div class="col-md-3"><label class="fw-bold small text-danger">Expire le</label><input type="date" id="f_init_expiry" class="form-control promo-date-input"></div>
+                    <div class="col-md-7"><label class="fw-bold small">Image</label><input type="file" id="f_file" class="form-control" accept="image/*" required></div>
+                    <div class="col-12"><label class="fw-bold small">Description</label><textarea id="f_desc" class="form-control" rows="2"></textarea></div>
+                    <div class="col-12 text-end"><button type="submit" class="btn btn-dark px-5">ENREGISTRER</button></div>
+                </form>
+            </div>
+            <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Produit</th><th>Moment</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-flor"></tbody></table></div>
+        </div>
+
+        <div id="painel-deje" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">🍱 Inventaire Déjeuners</h2>
+            <div class="admin-card">
+                <form id="formDeje" class="row g-3">
+                    <div class="col-md-4"><label class="fw-bold small">Nom du Plateau</label><input type="text" id="d_name" class="form-control" required></div>
+                    <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="d_price" class="form-control" step="0.01" required></div>
+                    <div class="col-md-2"><label class="fw-bold small">Stock</label><input type="number" id="d_stock" class="form-control" value="5"></div>
+                    <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="d_init_disc" class="form-control" placeholder="0"></div>
+                    <div class="col-md-2"><label class="fw-bold small text-danger">Expire le</label><input type="date" id="d_init_expiry" class="form-control promo-date-input"></div>
+                    <div class="col-md-12"><label class="fw-bold small">Image</label><input type="file" id="d_file" class="form-control" accept="image/*" required></div>
+                    <div class="col-12"><label class="fw-bold small">Description</label><textarea id="d_desc" class="form-control" rows="2"></textarea></div>
+                    <div class="col-12 text-end"><button type="submit" class="btn btn-primary px-5" style="background: var(--sidebar-color); border:none;">ENREGISTRER</button></div>
+                </form>
+            </div>
+            <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Plateau</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-deje"></tbody></table></div>
+        </div>
+
+        <div id="painel-patis" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">🍰 Inventaire Pâtisserie</h2>
+            <div class="admin-card">
+                <form id="formPatis" class="row g-3">
+                    <div class="col-md-4"><label class="fw-bold small">Nom</label><input type="text" id="p_name" class="form-control" required></div>
+                    <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="p_price" class="form-control" step="0.01" required></div>
+                    <div class="col-md-2"><label class="fw-bold small">Stock</label><input type="number" id="p_stock" class="form-control" value="10"></div>
+                    <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="p_init_disc" class="form-control" placeholder="0"></div>
+                    <div class="col-md-2"><label class="fw-bold small text-danger">Expire le</label><input type="date" id="p_init_expiry" class="form-control promo-date-input"></div>
+                    <div class="col-md-12"><label class="fw-bold small">Image</label><input type="file" id="p_file" class="form-control" accept="image/*" required></div>
+                    <div class="col-12"><label class="fw-bold small">Description</label><textarea id="p_desc" class="form-control" rows="2" placeholder="Détails du délice..."></textarea></div>
+                    <div class="col-12 text-end"><button type="submit" class="btn btn-success px-5">ENREGISTRER</button></div>
+                </form>
+            </div>
+            <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Nom</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-patis"></tbody></table></div>
+        </div>
+
+        <div id="painel-home" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">🖼️ Gérer l'Accueil</h2>
+            <div class="admin-card">
+                <div class="row g-4">
+                    <div class="col-12 border-bottom pb-4 text-center">
+                        <label class="fw-bold d-block mb-2">Bannière Principale (Hero)</label>
+                        <input type="file" class="form-control mb-2" onchange="uploadHomeImage('hero_bg', this)">
+                        <div id="preview-hero_bg" class="preview-container-media"></div>
+                    </div>
+                    
+                    <div class="col-12 border-bottom py-4">
+                        <label class="fw-bold d-block mb-2" style="color:var(--accent)">Propagande Latérale (Image, GIF ou Vidéo)</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <input type="text" id="promo-title" class="form-control mb-2" placeholder="Titre">
+                                <textarea id="promo-text" class="form-control mb-2" placeholder="Texte de la publicité..."></textarea>
+                                <input type="file" id="promo-file" class="form-control mb-2" accept="image/*,video/*">
+                                <button class="btn btn-dark w-100" onclick="savePromoSidebar()">Mettre à jour la Publicité</button>
+                                <p class="mt-2 small text-muted"><i class="bi bi-info-circle"></i> Le titre clignotera et l'image aura un zoom au survol.</p>
+                            </div>
+                            <div class="col-md-6 text-center">
+                                <div id="preview-promo_sidebar" class="preview-container-media">
+                                    <p class="small text-muted">Aperçu</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Pâtisserie</label>
+                        <input type="text" id="title-card_patisserie" class="form-control form-control-sm mb-2" placeholder="Titre">
+                        <textarea id="desc-card_patisserie" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
+                        <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_patisserie', this)">
+                        <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_patisserie')">Sauvegarder</button>
+                        <div id="preview-card_patisserie" class="preview-container-media mt-2"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Déjeuners</label>
+                        <input type="text" id="title-card_dejeuner" class="form-control form-control-sm mb-2" placeholder="Titre">
+                        <textarea id="desc-card_dejeuner" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
+                        <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_dejeuner', this)">
+                        <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_dejeuner')">Sauvegarder</button>
+                        <div id="preview-card_dejeuner" class="preview-container-media mt-2"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Floristerie</label>
+                        <input type="text" id="title-card_floristeria" class="form-control form-control-sm mb-2" placeholder="Titre">
+                        <textarea id="desc-card_floristeria" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
+                        <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_floristeria', this)">
+                        <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_floristeria')">Sauvegarder</button>
+                        <div id="preview-card_floristeria" class="preview-container-media mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="painel-moments" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">⚙️ Gérer les Moments</h2>
+            <div class="admin-card">
+                <div class="row g-3 mb-4"><div class="col-md-9"><input type="text" id="new_moment_name" class="form-control" placeholder="Nouveau moment..."></div><div class="col-md-3"><button onclick="addMoment()" class="btn btn-dark w-100">AJOUTER</button></div></div>
+                <div id="moments-list-edit" class="row g-3"></div>
+            </div>
+        </div>
+
+        <div id="painel-slots" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">⏰ Créneaux de Livraison</h2>
+            <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Ordre</th><th>Horaire</th><th>Catégorie</th><th>Statut</th><th>Action</th></tr></thead><tbody id="lista-slots"></tbody></table></div>
+        </div>
+
+        <div id="painel-clients" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">👥 Gestion des Clients</h2>
+            <div class="admin-card">
+                <input type="text" id="searchClient" class="form-control mb-3" placeholder="Rechercher por nom ou email..." onkeyup="filterClients()">
+                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Nom complet</th><th>E-mail</th><th>Statut</th><th>Action</th></tr></thead><tbody id="lista-clients"></tbody></table></div>
+            </div>
+        </div>
+
+        <div id="painel-orders" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">📜 Analyse des Commandes</h2>
+            <div class="admin-card mb-4">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <input type="text" id="orderSearchInput" class="form-control" placeholder="Chercher par nom de client..." onkeyup="filterOrdersUI()">
+                    </div>
+                    <div class="col-md-4">
+                        <select id="orderStatusFilter" class="form-select" onchange="filterOrdersUI()">
+                            <option value="">Tous les statuts</option>
+                            <option value="En attente">En attente</option>
+                            <option value="Pago">Pago</option>
+                            <option value="Approuvée">Approuvée</option>
+                            <option value="cancelled">Annulée</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="height: 300px;"><canvas id="salesChart"></canvas></div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-6"><div class="admin-card text-center py-3"><h6 class="text-muted small text-uppercase">Total Encaissé</h6><div id="stat-total-vendas" class="stat-badge">$ 0.00</div></div></div>
+                <div class="col-md-6"><div class="admin-card text-center py-3"><h6 class="text-muted small text-uppercase">Commandes en Attente</h6><div id="stat-pedidos-pendentes" class="stat-badge">0</div></div></div>
+            </div>
+            <div class="admin-card table-responsive">
+                <table class="table align-middle" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th class="sort-header" onclick="sortOrders('created_at')">Date <i class="bi bi-sort-down"></i></th>
+                            <th class="sort-header" onclick="sortOrders('customer_name')">Client <i class="bi bi-sort-alpha-down"></i></th>
+                            <th>Produits</th>
+                            <th class="sort-header" onclick="sortOrders('total')">Total <i class="bi bi-sort-numeric-down"></i></th>
+                            <th>Statut</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-orders"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="painel-chat" style="display:none;">
+            <h2 class="mb-4" style="font-family: 'Cinzel';">💬 Centre de Messages</h2>
+            <div class="row">
+                <div class="col-md-4"><div class="admin-card p-0" style="max-height: 500px; overflow-y: auto;"><div class="list-group list-group-flush" id="chat-users-list"></div></div></div>
+                <div class="col-md-8"><div class="admin-card"><div id="admin-chat-box">Sélectionnez um client.</div><div class="input-group mt-3"><input type="text" id="admin-reply-input" class="form-control" placeholder="Répondre..."><button class="btn btn-dark" onclick="sendReply()">Envoyer</button></div></div></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="modal fade" id="modalReceipt" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <div id="printableReceipt">
+                    <div class="receipt-header">
+                        <img src="images/Logo1.png" class="receipt-logo" alt="Logo">
+                        <h5 class="receipt-title">LA PRIMAVERA</h5>
+                        <small>Authenticité & Élégance</small>
+                    </div>
+                    <div class="receipt-info" id="receiptContent"></div>
+                    <div class="receipt-total" id="receiptTotal"></div>
+                    <div class="mt-4 text-center btn-print-hidden">
+                        <button class="btn btn-dark btn-sm me-2" onclick="window.print()">Imprimer le Reçu</button>
+                        <button class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg', {
+        auth: { storageKey: 'laprimavera-admin-session', storage: window.localStorage, persistSession: true }
+    });
+
+    let ADMIN_ID = null; let salesChart = null; let selectedClientId = null; let allOrders = []; let currentSort = { field: 'created_at', direction: 'desc' };
+
+    async function checkAdmin() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session) { window.location.href = "admin-login.html"; return; }
+        ADMIN_ID = session.user.id;
+        const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', ADMIN_ID).single();
+        if (!profile?.is_admin) { window.location.href = "index.html"; } 
+        else { document.body.style.display = "block"; init(); }
+    }
+
+    async function handleLogout() { await _supabase.auth.signOut(); window.location.href = "admin-login.html"; }
+
+    const compressImage = (file, maxWidth = 450) => {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.4)); 
+                };
+            };
+        });
+    };
+
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader(); reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e);
+    });
+
+    async function init() { 
+        showLoading(true);
+        const today = new Date().toISOString().split('T')[0];
+        document.querySelectorAll('.promo-date-input').forEach(el => el.setAttribute('min', today));
+        
+        await autoCancelExpiredOrders();
+
+        await Promise.all([loadHomeSettings(), loadMoments(), loadData(), loadClients(), loadOrders(), loadSlots(), checkNewChatMessages()]);
+        setInterval(checkNewChatMessages, 10000);
+        
+        setInterval(() => {
+            const promo = document.getElementById('preview-promo_sidebar');
+            if (promo) promo.style.display = (promo.style.display === 'none' ? 'flex' : 'none');
+        }, 60000);
+
+        showLoading(false);
+    }
+
+    async function autoCancelExpiredOrders() {
+        const oneHourAgo = new Date();
+        oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+        
+        const { error } = await _supabase
+            .from('orders')
+            .update({ status: 'cancelled' })
+            .eq('status', 'En attente')
+            .lt('created_at', oneHourAgo.toISOString());
+            
+        if(error) console.error("Erro no auto-cancelamento:", error);
+    }
+
+    function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
+
+    async function loadHomeSettings() {
+        const { data } = await _supabase.from('site_settings').select('*');
+        if (data) {
+            data.forEach(s => {
+                const preview = document.getElementById(`preview-${s.id}`);
+                if (preview) {
+                    if (s.image_url && s.image_url.includes('data:video')) {
+                        preview.innerHTML = `<video src="${s.image_url}" autoplay loop muted></video>`;
+                    } else if (s.image_url) {
+                        preview.innerHTML = `<img src="${s.image_url}">`;
+                    }
+                }
+                if (document.getElementById(`title-${s.id}`)) document.getElementById(`title-${s.id}`).value = s.title || '';
+                if (document.getElementById(`desc-${s.id}`)) document.getElementById(`desc-${s.id}`).value = s.description || '';
+                if (s.id === 'promo_sidebar') {
+                    const titleInput = document.getElementById('promo-title');
+                    titleInput.value = s.title || '';
+                    titleInput.classList.add('blink-text'); 
+                    document.getElementById('promo-text').value = s.description || '';
+                }
+            });
+        }
+    }
+
+    async function uploadHomeImage(id, input) {
+        if (!input.files[0]) return;
+        showLoading(true);
+        try {
+            const base64 = await compressImage(input.files[0]);
+            await _supabase.from('site_settings').upsert({ id, image_url: base64 });
+            location.reload();
+        } catch (e) { alert("Erreur."); showLoading(false); }
+    }
+
+    async function saveHomeText(id) {
+        showLoading(true);
+        await _supabase.from('site_settings').update({ 
+            title: document.getElementById(`title-${id}`).value, 
+            description: document.getElementById(`desc-${id}`).value 
+        }).eq('id', id);
+        alert("Enregistré!"); showLoading(false);
+    }
+
+    async function savePromoSidebar() {
+        const title = document.getElementById('promo-title').value;
+        const description = document.getElementById('promo-text').value;
+        const fileInput = document.getElementById('promo-file');
+        showLoading(true);
+        try {
+            let updateObj = { id: 'promo_sidebar', title: title, description: description };
+            if (fileInput.files[0]) {
+                if (fileInput.files[0].type.includes('video')) {
+                    updateObj.image_url = await toBase64(fileInput.files[0]);
+                } else {
+                    updateObj.image_url = await compressImage(fileInput.files[0]);
+                }
+            }
+            const { error } = await _supabase.from('site_settings').upsert(updateObj);
+            if (error) throw error;
+            alert("Publicité mise à jour avec succès!");
+            loadHomeSettings();
+        } catch (err) {
+            alert("Erreur lors de l'enregistrement.");
+        } finally {
+            showLoading(false);
+        }
+    }
+
+    async function loadData() {
+        const { data: views } = await _supabase.from('product_views').select('*');
+        const viewMap = {};
+        if (views) views.forEach(v => viewMap[v.product_id] = v.view_count);
+
+        const { data: f } = await _supabase.from('products').select('*').eq('category', 'fleur').order('name');
+        const { data: d } = await _supabase.from('products').select('*').eq('category', 'dejeuner').order('name');
+        const { data: p } = await _supabase.from('patisserie').select('*').order('name');
+        
+        document.getElementById('lista-flor').innerHTML = f?.map(i => renderRow(i, 'products', true, viewMap[i.id])).join('') || '';
+        document.getElementById('lista-deje').innerHTML = d?.map(i => renderRow(i, 'products', false, viewMap[i.id])).join('') || '';
+        document.getElementById('lista-patis').innerHTML = p?.map(i => renderRow(i, 'patisserie', false, viewMap[i.id])).join('') || '';
+    }
+
+    function renderRow(p, table, isFleur, viewCount = 0) {
+        const today = new Date().toISOString().split('T')[0];
+        const isPromoValid = p.promo_discount_percent > 0 && (!p.promo_expiry_date || p.promo_expiry_date >= today);
+        let priceHTML = `<b>$${p.price.toFixed(2)}</b>`;
+        if (isPromoValid) {
+            const final = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
+            priceHTML = `<span class="text-danger"><b>$${final}</b></span> <small class="old-price-admin">$${p.price}</small>`;
+        }
+        return `<tr><td><img src="${p.image_url}" class="img-mini"></td><td>${p.name}</td>${isFleur?`<td>${p.moments||'-'}</td>`:''}<td><input type="number" class="table-input-small" value="${p.promo_discount_percent||0}" onchange="updatePromoField('${table}','${p.id}','promo_discount_percent',this.value)"></td><td><input type="date" class="table-date-small" min="${today}" value="${p.promo_expiry_date||''}" onchange="updatePromoField('${table}','${p.id}','promo_expiry_date',this.value)"></td><td>${p.stock||0}</td><td><span class="badge bg-info text-dark">${viewCount}</span></td><td>${priceHTML}</td><td><button onclick="toggleStatus('${table}','${p.id}',${p.is_active!==false})" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></button></td></tr>`;
+    }
+
+    async function updatePromoField(table, id, field, value) {
+        const updateData = {}; updateData[field] = value || null;
+        await _supabase.from(table).update(updateData).eq('id', id); loadData(); 
+    }
+
+    document.getElementById('formFlower').onsubmit = async (e) => {
+        e.preventDefault(); showLoading(true);
+        const img = await compressImage(document.getElementById('f_file').files[0]);
+        await _supabase.from('products').insert([{
+            name: document.getElementById('f_name').value, category: 'fleur', moments: document.getElementById('f_moments_select').value,
+            price: parseFloat(document.getElementById('f_price').value), stock: parseInt(document.getElementById('f_stock').value),
+            promo_discount_percent: parseInt(document.getElementById('f_init_disc').value) || null,
+            promo_expiry_date: document.getElementById('f_init_expiry').value || null,
+            description: document.getElementById('f_desc').value, image_url: img
+        }]);
+        location.reload();
+    };
+
+    document.getElementById('formDeje').onsubmit = async (e) => {
+        e.preventDefault(); showLoading(true);
+        const img = await compressImage(document.getElementById('d_file').files[0]);
+        await _supabase.from('products').insert([{
+            name: document.getElementById('d_name').value, category: 'dejeuner',
+            price: parseFloat(document.getElementById('d_price').value), stock: parseInt(document.getElementById('d_stock').value),
+            promo_discount_percent: parseInt(document.getElementById('d_init_disc').value) || null,
+            promo_expiry_date: document.getElementById('f_init_expiry').value || null,
+            description: document.getElementById('d_desc').value, image_url: img
+        }]);
+        location.reload();
+    };
+
+    document.getElementById('formPatis').onsubmit = async (e) => {
+        e.preventDefault(); showLoading(true);
+        const img = await compressImage(document.getElementById('p_file').files[0]);
+        await _supabase.from('patisserie').insert([{
+            name: document.getElementById('p_name').value, price: parseFloat(document.getElementById('p_price').value), 
+            stock: parseInt(document.getElementById('p_stock').value), description: document.getElementById('p_desc').value, image_url: img
+        }]);
+        location.reload();
+    };
+
+    async function loadOrders() { 
+        const {data:o}=await _supabase.from('orders').select('*'); 
+        allOrders = o || [];
+        renderOrdersList(allOrders); 
+        updateSalesChart(allOrders); 
+        
+        const totalVendas = allOrders.filter(x => x.status === 'Pago' || x.status === 'Approuvée').reduce((acc, curr) => acc + parseFloat(curr.total), 0);
+        document.getElementById('stat-total-vendas').innerText = `$ ${totalVendas.toFixed(2)}`;
+        document.getElementById('stat-pedidos-pendentes').innerText = allOrders.filter(x => x.status === 'En attente' || x.status === 'Awaiting Approval').length;
+    }
+
+    function sortOrders(field) {
+        currentSort.direction = (currentSort.field === field && currentSort.direction === 'asc') ? 'desc' : 'asc';
+        currentSort.field = field;
+        
+        allOrders.sort((a, b) => {
+            let valA = a[field], valB = b[field];
+            if(field === 'total') { valA = parseFloat(valA); valB = parseFloat(valB); }
+            if(valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+            if(valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+        filterOrdersUI();
+    }
+
+    function renderOrdersList(orders) { 
+        document.getElementById('lista-orders').innerHTML = orders.map(x=>`
+            <tr>
+                <td>${new Date(x.created_at).toLocaleDateString()}</td>
+                <td class="fw-bold">${x.customer_name}</td>
+                <td class="small">${x.items}</td>
+                <td class="fw-bold">$${parseFloat(x.total).toFixed(2)}</td>
+                <td>
+                    <select class="form-select form-select-sm" onchange="updateOrderStatus('${x.id}', this.value)">
+                        <option value="En attente" ${x.status==='En attente' || x.status==='Awaiting Approval' ? 'selected':''}>⏳ En attente</option>
+                        <option value="Pago" ${x.status==='Pago'?'selected':''}>💳 Pago</option>
+                        <option value="Approuvée" ${x.status==='Approuvée'?'selected':''}>✅ Approuvée</option>
+                        <option value="cancelled" ${x.status==='cancelled'?'selected':''}>❌ Annulée</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-dark" onclick="showReceipt('${x.id}')">Voir Reçu</button>
+                </td>
+            </tr>`).join(''); 
+    }
+
+    async function updateOrderStatus(orderId, newStatus) {
+        showLoading(true);
+        const { error } = await _supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
+        showLoading(false);
+        if(!error) loadOrders();
+    }
+
+    function filterOrdersUI() {
+        const search = document.getElementById('orderSearchInput').value.toLowerCase();
+        const status = document.getElementById('orderStatusFilter').value;
+        const filtered = allOrders.filter(o => {
+            const matchName = o.customer_name.toLowerCase().includes(search);
+            const matchStatus = status === "" || o.status === status || (status === "En attente" && o.status === "Awaiting Approval");
+            return matchName && matchStatus;
+        });
+        renderOrdersList(filtered);
+    }
+
+    async function showReceipt(orderId) {
+        const order = allOrders.find(x => x.id === orderId);
+        if (!order) return;
+        const receiptHTML = `
+            <p><b>Date:</b> ${new Date(order.created_at).toLocaleString()}</p>
+            <p><b>Client:</b> ${order.customer_name}</p>
+            <p><b>Commande ID:</b> #${order.id.substring(0, 8)}</p>
+            <table class="receipt-table mt-3">
+                <thead><tr><th>Détails des Produits</th></tr></thead>
+                <tbody><tr><td>${order.items.replace(/,/g, '<br>')}</td></tr></tbody>
+            </table>`;
+        document.getElementById('receiptContent').innerHTML = receiptHTML;
+        document.getElementById('receiptTotal').innerHTML = `TOTAL: $${parseFloat(order.total).toFixed(2)}`;
+        const modal = new bootstrap.Modal(document.getElementById('modalReceipt'));
+        document.getElementById('printableReceipt').style.display = 'block';
+        modal.show();
+    }
+
+    function updateSalesChart(orders) { const ctx = document.getElementById('salesChart').getContext('2d'); if (salesChart) salesChart.destroy(); salesChart = new Chart(ctx, { type: 'line', data: { labels: ['7d','6d','5d','4d','3d','2d','Hoje'], datasets: [{ label: 'Ventes ($)', data: [0,0,0,0,0,0,orders.length*10], borderColor: '#B8860B' }] }, options: { maintainAspectRatio: false } }); }
+    async function loadMoments() { const {data:m}=await _supabase.from('moments').select('*'); document.getElementById('f_moments_select').innerHTML = '<option value="">Choisir...</option>'+m.map(i=>`<option value="${i.name}">${i.name}</option>`).join(''); document.getElementById('moments-list-edit').innerHTML = m.map(i=>`<div class="col-md-4 mb-2"><div class="input-group"><input type="text" class="form-control form-control-sm" value="${i.name}"><button class="btn btn-sm btn-danger" onclick="deleteMoment('${i.id}')">✕</button></div></div>`).join(''); }
+    async function addMoment() { const n=document.getElementById('new_moment_name').value; if(n){await _supabase.from('moments').insert([{name:n}]); loadMoments();}}
+    async function deleteMoment(id){await _supabase.from('moments').delete().eq('id',id); loadMoments();}
+    async function loadSlots(){const {data:s}=await _supabase.from('delivery_slots').select('*'); document.getElementById('lista-slots').innerHTML=s?.map(x=>`<tr><td>${x.display_order}</td><td>${x.slot_label}</td><td>${x.slot_category}</td><td>${x.is_active?'On':'Off'}</td><td><button onclick="toggleSlot('${x.id}',${x.is_active})">Toggle</button></td></tr>`).join('');}
+    async function toggleSlot(id,st){await _supabase.from('delivery_slots').update({is_active:!st}).eq('id',id); loadSlots();}
+    async function loadClients(){const {data:p}=await _supabase.from('profiles').select('*'); document.getElementById('lista-clients').innerHTML=p?.map(c=>`<tr><td>${c.full_name}</td><td>${c.email}</td><td>Ativo</td><td>Ban</td></tr>`).join('');}
+    async function checkNewChatMessages(){const {data}=await _supabase.from('messages').select('id').eq('is_read',false); if(data?.length>0){document.getElementById('msg-badge-admin').innerText=data.length; document.getElementById('msg-badge-admin').style.display='block';}}
+    async function loadChatList(){const {data:p}=await _supabase.from('profiles').select('id,full_name'); document.getElementById('chat-users-list').innerHTML=p.map(x=>`<div class="chat-list-item" onclick="selectClientChat('${x.id}')">${x.full_name||'Client'}</div>`).join('');}
+    async function selectClientChat(id){selectedClientId=id; const {data:m}=await _supabase.from('messages').select('*').or(`sender_id.eq.${id},recipient_id.eq.${id}`).order('created_at'); document.getElementById('admin-chat-box').innerHTML=m.map(msg=>`<div style="text-align:${msg.sender_id===ADMIN_ID?'right':'left'}"><b>${msg.content}</b></div>`).join('');}
+    async function sendReply(){const c=document.getElementById('admin-reply-input').value; if(c && selectedClientId){await _supabase.from('messages').insert([{sender_id:ADMIN_ID,recipient_id:selectedClientId,content:c}]); document.getElementById('admin-reply-input').value=''; selectClientChat(selectedClientId);}}
+    function filterClients(){let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
+    function trocarPainel(p){['flor','patis','moments','deje','clients','orders','slots','home','chat'].forEach(id=>{document.getElementById('painel-'+id).style.display='none'; document.getElementById('btn-'+id).classList.remove('active');}); document.getElementById('painel-'+p).style.display='block'; document.getElementById('btn-'+p).classList.add('active'); if(p==='chat') loadChatList();}
+    async function toggleStatus(t,id,st){await _supabase.from(t).update({is_active:!st}).eq('id',id); loadData();}
+
+    checkAdmin();
+</script>
+</body>
+</html>

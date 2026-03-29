@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion Primavera | Dashboard Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root { --gold: #B8860B; --dark: #4A2419; --light: #f8f9fa; }
+        body { background-color: var(--light); font-family: 'Poppins', sans-serif; display: none; margin: 0; } 
+        
+        .sidebar { 
+            background: var(--dark); color: white; height: 100vh; width: 250px; 
+            position: fixed; border-right: 4px solid var(--gold); z-index: 1000;
+            padding: 20px; overflow-y: auto;
+        }
+
+        .nav-link { color: rgba(255,255,255,0.8); margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .nav-link.active { background: var(--gold) !important; color: white !important; font-weight: 600; }
+        .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        .main-content { margin-left: 250px; padding: 40px; }
+        .card-custom { background: white; border-radius: 15px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.05); padding: 25px; margin-bottom: 30px; }
+        
+        .btn-logout-top {
+            background-color: #dc3545; color: white !important; border: none; padding: 10px; 
+            border-radius: 8px; font-weight: 700; width: 100%; display: flex; 
+            align-items: center; justify-content: center; text-decoration: none; margin-bottom: 25px; font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="text-center mb-4">
+        <h3 style="color: var(--gold); font-family: serif; letter-spacing: 2px; margin-bottom: 5px;">LA PRIMAVERA</h3>
+        <small class="text-white-50 d-block mb-3">ADMIN PANEL</small>
+        
+        <a href="javascript:void(0)" class="btn-logout-top" onclick="handleLogout()">
+            <i class="bi bi-box-arrow-left me-2"></i> DÉCONNEXION
+        </a>
+    </div>
+
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item"><a class="nav-link active" id="btn-orders" onclick="showSection('orders')"><i class="bi bi-cart-check me-2"></i> COMMANDES</a></li>
+        <li class="nav-item"><a class="nav-link" id="btn-clients" onclick="showSection('clients')"><i class="bi bi-people me-2"></i> CLIENTS</a></li>
+        <li class="nav-item"><a class="nav-link" id="btn-settings" onclick="showSection('settings')"><i class="bi bi-shield-lock me-2"></i> SÉCURITÉ ADMIN</a></li>
+    </ul>
+    
+    <hr style="border-color: rgba(255,255,255,0.2);">
+    <button class="btn btn-sm btn-outline-light w-100 mb-4" onclick="refreshAll()"><i class="bi bi-arrow-clockwise"></i> ACTUALISER</button>
+</div>
+
+<div class="main-content">
+    
+    <!-- SEÇÃO DE PEDIDOS -->
+    <div id="section-orders">
+        <h2 class="mb-4">Gestion des Commandes</h2>
+        <div class="card-custom">
+            <table class="table align-middle">
+                <thead><tr><th>Livraison</th><th>Client</th><th>Total</th><th>Statut</th><th>Action</th></tr></thead>
+                <tbody id="orders-table-body"><tr><td colspan="5" class="text-center">Chargement...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SEÇÃO DE CLIENTES -->
+    <div id="section-clients" style="display:none;">
+        <h2 class="mb-4">Liste des Clients</h2>
+        <div class="card-custom">
+            <table class="table align-middle">
+                <thead><tr><th>Nom</th><th>Email</th><th>Statut</th><th>Action</th></tr></thead>
+                <tbody id="clients-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- NOVA SEÇÃO: SEGURANÇA E NOVO ADMIN -->
+    <div id="section-settings" style="display:none;">
+        <h2 class="mb-4">Sécurité & Administrateurs</h2>
+        
+        <div class="row">
+            <!-- CRIAR NOVO ADMIN -->
+            <div class="col-md-6">
+                <div class="card-custom">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-person-plus"></i> Créer un nouvel Admin</h5>
+                    <p class="small text-muted">L'admin recevra un email pour confirmer son compte.</p>
+                    <input type="email" id="new-admin-email" class="form-control mb-2" placeholder="Email du nouvel admin">
+                    <input type="password" id="new-admin-pass" class="form-control mb-3" placeholder="Mot de passe temporaire">
+                    <button class="btn btn-dark w-100" onclick="createNewAdmin()">CRÉER ADMIN</button>
+                </div>
+            </div>
+
+            <!-- RECUPERAR SENHA ADMIN -->
+            <div class="col-md-6">
+                <div class="card-custom">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-key"></i> Récupérer Mot de Passe</h5>
+                    <p class="small text-muted">Envoyer um link de réinitialisation par email.</p>
+                    <input type="email" id="recovery-email" class="form-control mb-3" placeholder="Email de l'admin">
+                    <button class="btn btn-outline-danger w-100" onclick="recoverPassword()">ENVOYER LIEN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+
+    async function checkAdmin() {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session) { window.location.href = "admin-login.html"; return; }
+        const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', session.user.id).single();
+        if (!profile || !profile.is_admin) {
+            window.location.href = "index.html";
+        } else {
+            document.body.style.display = "block";
+            loadOrders();
+        }
+    }
+
+    // --- FUNÇÃO: CRIAR NOVO ADMIN ---
+    async function createNewAdmin() {
+        const email = document.getElementById('new-admin-email').value;
+        const pass = document.getElementById('new-admin-pass').value;
+        if(!email || !pass) return alert("Remplissez tous les champs.");
+
+        // 1. Cadastra no Auth
+        const { data, error } = await _supabase.auth.signUp({ email, password: pass });
+        
+        if (error) return alert("Erreur: " + error.message);
+
+        // 2. Define como admin na tabela profiles
+        const { error: profError } = await _supabase
+            .from('profiles')
+            .update({ is_admin: true, full_name: "Nouvel Admin" })
+            .eq('id', data.user.id);
+
+        if(!profError) {
+            alert("Admin créé avec succès !");
+            document.getElementById('new-admin-email').value = "";
+            document.getElementById('new-admin-pass').value = "";
+        }
+    }
+
+    // --- FUNÇÃO: RECUPERAR SENHA ---
+    async function recoverPassword() {
+        const email = document.getElementById('recovery-email').value;
+        if(!email) return alert("Entrez l'email.");
+
+        const { error } = await _supabase.auth.resetPasswordForEmail(email);
+        if (error) alert("Erreur: " + error.message);
+        else alert("E-mail de récupération envoyé !");
+    }
+
+    function showSection(section) {
+        ['section-orders', 'section-clients', 'section-settings'].forEach(s => {
+            document.getElementById(s).style.display = (s === 'section-' + section) ? 'block' : 'none';
+        });
+        ['btn-orders', 'btn-clients', 'btn-settings'].forEach(b => {
+            document.getElementById(b).classList.toggle('active', b === 'btn-' + section);
+        });
+    }
+
+    async function handleLogout() {
+        if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+            await _supabase.auth.signOut();
+            window.location.href = "admin-login.html";
+        }
+    }
+
+    async function loadOrders() {
+        const { data: orders } = await _supabase.from('orders').select('*').order('created_at', {ascending: false});
+        const tbody = document.getElementById('orders-table-body');
+        if(!orders) return;
+        tbody.innerHTML = orders.map(o => `
+            <tr>
+                <td>${o.delivery_date || 'N/A'}</td>
+                <td>${o.customer_name}</td>
+                <td class="fw-bold">$${parseFloat(o.total || 0).toFixed(2)}</td>
+                <td><span class="badge ${o.status === 'Approuvée' ? 'bg-success' : 'bg-warning text-dark'}">${o.status || 'EN ATTENTE'}</span></td>
+                <td><button class="btn btn-sm btn-dark" onclick="updateStatus('${o.id}')">Approuver</button></td>
+            </tr>
+        `).join('');
+    }
+
+    async function updateStatus(id) {
+        await _supabase.from('orders').update({ status: 'Approuvée' }).eq('id', id);
+        loadOrders();
+    }
+
+    async function refreshAll() { loadOrders(); loadClients(); }
+    document.addEventListener('DOMContentLoaded', checkAdmin);
+</script>
+</body>
+</html>
