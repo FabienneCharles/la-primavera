@@ -57,7 +57,7 @@
     
     <div class="admin-footer">
         <a href="#" class="admin-link" onclick="recoverPassword()" data-i18n="link_forgot">Mot de passe oublié ?</a>
-        </div>
+    </div>
 
     <div id="msg"></div>
 </div>
@@ -113,12 +113,14 @@
         localStorage.setItem('laprimavera_lang', lang);
     }
 
+    // CONFIGURAÇÃO DO SUPABASE (Ajustada para Domínio Personalizado)
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg', {
         auth: {
             storageKey: 'laprimavera-admin-session',
             storage: window.localStorage,
             autoRefreshToken: true,
-            persistSession: true
+            persistSession: true,
+            detectSessionInUrl: true // Permite reconhecer a sessão após o redirecionamento do domínio
         }
     });
 
@@ -130,14 +132,30 @@
         const msg = document.getElementById('msg');
         const btn = document.getElementById('btn-text');
 
+        // Reset visual do feedback
+        msg.style.display = 'none';
         btn.innerText = translations[lang].verifying;
         btn.disabled = true;
 
         try {
             const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-            if (error) throw new Error(translations[lang].err_auth);
+            
+            if (error) {
+                console.error("Erro Auth:", error.message);
+                throw new Error(translations[lang].err_auth);
+            }
 
-            const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', data.user.id).maybeSingle();
+            // Busca o perfil para verificar se é admin
+            const { data: profile, error: profError } = await _supabase
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', data.user.id)
+                .maybeSingle();
+
+            if (profError) {
+                console.error("Erro Tabela Profiles:", profError.message);
+                throw new Error("Erro ao validar perfil.");
+            }
 
             if (profile && profile.is_admin === true) {
                 window.location.href = "admin.html";
