@@ -54,21 +54,22 @@
             object-fit: cover; 
             border: 1px solid var(--gold-title); 
         }
-	/* Efeito de Zoom na Propaganda */
-	#promo-sidebar-content {
-    		overflow: hidden; /* Garante que a imagem não saia da borda ao dar zoom */
-    		 border-radius: 15px;
-	}
 
-	#promo-sidebar-content img, 
-	#promo-sidebar-content video {
-    	 transition: transform 0.5s ease; /* Faz o zoom ser suave */
-	}
+        /* Efeito de Zoom na Propaganda */
+        #promo-sidebar-content {
+            overflow: hidden; 
+            border-radius: 15px;
+        }
 
-	#promo-sidebar-content:hover img, 
-	#promo-sidebar-content:hover video {
-    	 transform: scale(1.1); /* Aumenta a imagem em 10% */
-	}
+        #promo-sidebar-content img, 
+        #promo-sidebar-content video {
+            transition: transform 0.5s ease; 
+        }
+
+        #promo-sidebar-content:hover img, 
+        #promo-sidebar-content:hover video {
+            transform: scale(1.1); 
+        }
 
         .nav-link { 
             font-family: 'Cinzel', serif; 
@@ -113,6 +114,7 @@
                         url("images/ecrin-amour.JPEG") no-repeat center center;
             background-size: cover;
             display: flex; align-items: center; justify-content: center;
+            position: relative;
         }
 
         .hero-overlay {
@@ -180,8 +182,6 @@
             flex-direction: column;
             justify-content: space-between; 
         }
-	
-	
 
         .btn-luxury {
             display: inline-block;
@@ -222,6 +222,29 @@
 
         @keyframes blinker { 50% { opacity: 0; } }
         .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
+
+        /* --- MUDANÇAS PARA RESPONSIVIDADE (CELULAR) --- */
+        @media (max-width: 991px) {
+            .navbar { padding: 12px 20px; }
+            .navbar-collapse { background: white; padding: 20px; border-radius: 10px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+            .nav-link { padding: 10px 0; border-bottom: 1px solid #eee; }
+            .hero-section { height: 35vh; }
+            .hero-overlay { padding: 20px; margin: 0 20px; }
+            .hero-overlay h1 { font-size: 1.6rem; }
+            .section-title { font-size: 1.8rem; margin-bottom: 40px; }
+            .featured-section { padding: 50px 0; }
+            .promo-sidebar { position: relative; top: 0; margin-bottom: 50px; }
+            .img-container { height: 350px; }
+            .luxury-card { margin-bottom: 40px; }
+        }
+
+        @media (max-width: 576px) {
+            .navbar-brand { font-size: 1rem; gap: 8px; }
+            .brand-logo { width: 35px; height: 35px; }
+            .lang-select { margin-right: 5px; padding: 2px 6px; font-size: 0.65rem; }
+            .btn-luxury { padding: 10px 25px; font-size: 0.75rem; }
+            .hero-overlay h1 { font-size: 1.4rem; }
+        }
     </style>
 </head>
 <body>
@@ -233,7 +256,11 @@
             LA PRIMAVERA
         </a>
         
-        <div class="collapse navbar-collapse justify-content-center">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav gap-3">
                 <li class="nav-item"><a class="nav-link" href="index.html" data-i18n="nav_home">ACCUEIL</a></li>
                 <li class="nav-item"><a class="nav-link" href="boutique.html" data-i18n="nav_patis">PÂTISSERIE</a></li>
@@ -278,13 +305,13 @@
                 <div class="promo-sidebar" id="promo-sidebar-content">
                     <i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>
                     <h4 data-i18n="promo_title">Offres Spéciales</h4>
-                    <p data-i18n="promo_desc">Découvrez nos promotions exclusives ici.</p>
+                    <p data-i18n="promo_desc">Découvrez nos promotions exclusives aqui.</p>
                 </div>
             </div>
 
             <div class="col-lg-9">
                 <div class="row g-5">
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-lg-4">
                         <div class="luxury-card">
                             <div class="img-container"><img id="img-patisserie" src="images/Coquillole_caixa.png" alt="Pâtisserie"></div>
                             <div class="card-label">
@@ -294,7 +321,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-lg-4">
                         <div class="luxury-card">
                             <div class="img-container"><img id="img-dejeuner" src="images/L'Écrin Impérial Créole.png" alt="Déjeuners"></div>
                             <div class="card-label">
@@ -304,7 +331,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6 col-lg-4">
                         <div class="luxury-card">
                             <div class="img-container"><img id="img-floristeria" src="images/coracao-roses-passion.JPEG" alt="Floristerie"></div>
                             <div class="card-label">
@@ -350,7 +377,7 @@
         fr: {
             nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS",
             btn_login: "CONNEXION", hero_title: "Signature d'Excellence", hero_subtitle: "L'harmonie entre tradition haïtienne et raffinement floral.",
-            section_title: "La Collection de Saison", promo_title: "Offres Spéciales", promo_desc: "Découvrez nos promotions exclusives ici.",
+            section_title: "La Collection de Saison", promo_title: "Offres Spéciales", promo_desc: "Découvrez nos promotions exclusives aqui.",
             btn_discover: "Découvrir", btn_order: "Commander", btn_explore: "Explorer", btn_view_more: "Voir plus"
         },
         en: {
@@ -406,7 +433,7 @@
                 if (s.id === 'hero_bg') {
                     if (s.image_url && s.image_url.includes('video')) {
                         document.getElementById('hero-bg').style.backgroundImage = 'none';
-                        document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
+                        document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1; top: 0; left: 0;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
                     } else {
                         document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
                     }
