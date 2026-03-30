@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us | La Primavera Prestige</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --gold-title: #B8860B;
+            --deep-coffee: #2C1810;
+            --creme-luxo: #E8D5C4; 
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--creme-luxo) !important; 
+            color: var(--deep-coffee); 
+            margin: 0; 
+        }
+
+        .navbar { 
+            background: white !important; 
+            padding: 12px 50px; 
+            border-bottom: 2px solid var(--gold-title); 
+        }
+
+        .navbar-brand { 
+            font-family: 'Cinzel', serif; 
+            font-weight: 700; 
+            color: var(--deep-coffee) !important; 
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+
+        .nav-link { 
+            font-family: 'Cinzel', serif; 
+            font-size: 0.85rem; 
+            color: var(--deep-coffee) !important; 
+            font-weight: 600;
+        }
+
+        /* IDIOMA SELECTOR */
+        .lang-select {
+            border: 1px solid var(--gold-title);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            font-family: 'Cinzel', serif;
+            color: var(--deep-coffee);
+            background: white;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .about-header {
+            padding: 80px 0 40px;
+            text-align: center;
+        }
+
+        .about-header h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 3rem;
+            color: var(--gold-title);
+            margin-bottom: 10px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(44, 24, 16, 0.1);
+            height: 100%;
+            transition: transform 0.3s ease;
+            border-top: 5px solid var(--gold-title);
+            text-align: center;
+        }
+
+        .info-card:hover { transform: translateY(-10px); }
+
+        .info-card i {
+            font-size: 2.5rem;
+            color: var(--gold-title);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .info-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--deep-coffee);
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            line-height: 1.8;
+            color: #555;
+            text-align: justify;
+        }
+
+        footer { 
+            background-color: #1a0f0a; 
+            color: #fdfaf8; 
+            padding: 60px 20px; 
+            border-top: 4px solid var(--gold-title); 
+            margin-top: 80px;
+        }
+        
+        footer h5 { color: var(--gold-title); font-family: 'Cinzel'; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">LA PRIMAVERA</a>
+        
+        <div class="collapse navbar-collapse justify-content-center">
+            <ul class="navbar-nav gap-3">
+                <li class="nav-item"><a class="nav-link" href="index.html" data-i18n="nav_home">HOME</a></li>
+                <li class="nav-item"><a class="nav-link active" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
+                <li class="nav-item"><a class="nav-link" href="boutique.html" data-i18n="nav_patis">PASTRY</a></li>
+                <li class="nav-item"><a class="nav-link" href="floristeria.html" data-i18n="nav_flor">FLORISTRY</a></li>
+                <li class="nav-item"><a class="nav-link active" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
+                <li class="nav-item"><a class="nav-link active" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
+            </ul>
+        </div>
+
+        <div class="d-flex align-items-center">
+            <select class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="fr">FR 🇫🇷</option>
+                <option value="en">EN 🇺🇸</option>
+                <option value="es">ES 🇪🇸</option>
+            </select>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="about-header">
+        <h1 id="main-title" data-i18n="main_title">Notre Essence</h1>
+        <p class="lead" id="main-subtitle" data-i18n="main_subtitle">L'élégance haïtienne au cœur du Massachusetts</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4">
+            <div class="info-card">
+                <i class="bi bi-book"></i>
+                <h3 id="title-apropos" data-i18n="title_apropos">À Propos</h3>
+                <p id="desc-apropos">Chargement...</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="info-card">
+                <i class="bi bi-lightbulb"></i>
+                <h3 id="title-philosophie" data-i18n="title_philosophie">Philosophie</h3>
+                <p id="desc-philosophie">Chargement...</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="info-card">
+                <i class="bi bi-shield-check"></i>
+                <h3 id="title-normes" data-i18n="title_normes">Nos Normes</h3>
+                <p id="desc-normes">Chargement...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="text-center">
+    <div class="container">
+        <h5>LA PRIMAVERA</h5>
+        <p class="small opacity-75">Luxury Haitian Desserts & Floral Art</p>
+        <p class="small mt-3">+1 (352) 298-2578 | laprimavera951@gmail.com</p>
+    </div>
+</footer>
+
+<script>
+    const translations = {
+        fr: {
+            nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE",
+            main_title: "Notre Essence", main_subtitle: "L'élégance haïtienne au cœur du Massachusetts",
+            title_apropos: "À Propos", title_philosophie: "Philosophie", title_normes: "Nos Normes"
+        },
+        en: {
+            nav_home: "HOME", nav_about: "ABOUT US", nav_patis: "PASTRY", nav_flor: "FLORISTRY",
+            main_title: "Our Essence", main_subtitle: "Haitian elegance in the heart of Massachusetts",
+            title_apropos: "About Us", title_philosophie: "Philosophy", title_normes: "Our Standards"
+        },
+        es: {
+            nav_home: "INICIO", nav_about: "SOBRE NOSOTROS", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA",
+            main_title: "Nuestra Esencia", main_subtitle: "Elegancia haitiana en el corazón de Massachusetts",
+            title_apropos: "Sobre Nosotros", title_philosophie: "Filosofía", title_normes: "Nuestras Normas"
+        }
+    };
+
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+
+    function changeLanguage(lang) {
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[lang][key]) el.innerText = translations[lang][key];
+        });
+        localStorage.setItem('laprimavera_lang', lang);
+    }
+
+    async function loadAboutContent() {
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        const { data } = await _supabase.from('site_settings').select('*');
+        
+        if (data) {
+            data.forEach(item => {
+                if (item.id === 'about_apropos') document.getElementById('desc-apropos').innerText = item.description;
+                if (item.id === 'about_philosophie') document.getElementById('desc-philosophie').innerText = item.description;
+                if (item.id === 'about_normes') document.getElementById('desc-normes').innerText = item.description;
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
+        document.querySelector('.lang-select').value = savedLang;
+        changeLanguage(savedLang);
+        loadAboutContent();
+    });
+</script>
+</body>
+</html>

@@ -47,7 +47,8 @@
         
         .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
 
-        #printableReceipt { font-family: 'Poppins', sans-serif; display: none; padding: 30px; border: 1px solid #eee; width: 100%; max-width: 450px; margin: auto; background: white; }
+        /* AJUSTE NO COMPROVANTE */
+        #printableReceipt { font-family: 'Poppins', sans-serif; display: block; padding: 10px; width: 100%; background: white; }
         .receipt-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px; }
         .receipt-logo { width: 60px; margin-bottom: 10px; border-radius: 50%; }
         .receipt-table { width: 100%; font-size: 0.85rem; border-collapse: collapse; }
@@ -189,7 +190,6 @@
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
     const ADMIN_ID = '066bd462-a2aa-4d7d-9465-b42cefe1af7c'; 
 
-    // --- DICIONÁRIO DE TRADUÇÕES ---
     const translations = {
         fr: {
             nav_home: "Accueil", profile_title: "Mon Profil", btn_edit: "Modifier mes informations", label_name: "Nom Complet",
@@ -237,73 +237,59 @@
             await loadProfile(user);
             await loadOrders(user);
             await loadMessages();
-            setInterval(checkNewMessages, 5000);
         } catch (err) { console.error(err); } 
         finally { setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600); }
     }
 
-    // --- LOGIQUE DÉSACTIVATION RESTAURÉE ---
-    async function startDeactivationProcess() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        const { data: pendingOrders } = await _supabase.from('orders').select('id').eq('user_id', user.id).not('status', 'in', '("Livrée","Cancelled","cancelled")');
-
-        if (pendingOrders && pendingOrders.length > 0) {
-            alert("Opération impossible : Vous avez des commandes en cours.");
-            return;
-        }
-
-        if (!confirm("Voulez-vous vraiment désactiver votre compte ? Cette action é irréversible.")) return;
-
-        document.getElementById('confirm-password-input').value = "";
-        new bootstrap.Modal(document.getElementById('passwordConfirmModal')).show();
-    }
-
-    async function finalAccountDeactivation() {
-        const password = document.getElementById('confirm-password-input').value;
-        if (!password) return alert("Veuillez entrer votre mot de passe.");
-        document.getElementById('loader').style.display = 'flex';
-        
-        try {
-            const { data: { user } } = await _supabase.auth.getUser();
-            const { error: authError } = await _supabase.auth.signInWithPassword({ email: user.email, password: password });
-
-            if (authError) {
-                alert("Mot de passe incorrect. Action annulée.");
-                document.getElementById('loader').style.display = 'none';
-                return;
-            }
-
-            const { error: rpcError } = await _supabase.rpc('deactivate_user_account');
-            if (rpcError) throw rpcError;
-
-            await _supabase.auth.signOut();
-            alert("Votre compte a été désactivé.");
-            window.location.href = "index.html";
-        } catch (err) { alert("Erreur : " + err.message); } 
-        finally { document.getElementById('loader').style.display = 'none'; }
-    }
-
-    // --- AUTRES LOGIQUES (MANTIDAS) ---
-    async function loadMessages() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        const { data: msgs } = await _supabase.from('messages').select('*').or(`and(sender_id.eq.${user.id},recipient_id.eq.${ADMIN_ID}),and(sender_id.eq.${ADMIN_ID},recipient_id.eq.${user.id})`).order('created_at', { ascending: true });
-        if (msgs) {
-            document.getElementById('chat-box').innerHTML = msgs.map(m => `
-                <div style="align-self: ${m.sender_id === user.id ? 'flex-end' : 'flex-start'}; max-width: 85%;">
-                    <div style="background: ${m.sender_id === user.id ? '#E8D5C4' : '#f1f1f1'}; padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; color: var(--cafe);">
-                        ${m.content}
+    async function loadOrders(user) {
+        const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+        const list = document.getElementById('orders-list');
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        if (!orders || orders.length === 0) { list.innerHTML = `<p class="text-center py-4">${translations[lang].no_orders}</p>`; return; }
+        list.innerHTML = orders.map(o => `
+            <div class="order-card shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>#${o.id.slice(0, 8).toUpperCase()}</strong>
+                        <div class="small fw-bold text-rose">$${parseFloat(o.total).toFixed(2)}</div>
                     </div>
-                </div>`).join('');
-            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
-        }
+                    <div class="text-end">
+                        <span class="badge-status ${o.status === 'Approuvée' || o.status === 'Livrée' ? 'bg-success text-white' : 'bg-warning'}">${o.status}</span>
+                        <button class="btn btn-sm btn-outline-dark rounded-pill d-block mt-2 no-print" onclick="showReceipt('${o.id}')">
+                            <i class="bi bi-receipt me-1"></i> ${translations[lang].btn_reçu}
+                        </button>
+                    </div>
+                </div>
+            </div>`).join('');
     }
 
-    async function sendMessageToAdmin() {
-        const input = document.getElementById('user-msg-input');
-        if (!input.value.trim()) return;
-        const { data: { user } } = await _supabase.auth.getUser();
-        await _supabase.from('messages').insert([{ sender_id: user.id, recipient_id: ADMIN_ID, content: input.value.trim() }]);
-        input.value = ''; await loadMessages();
+    async function showReceipt(orderId) {
+        const { data: order } = await _supabase.from('orders').select('*').eq('id', orderId).single();
+        if (!order) return;
+        
+        const detailsHtml = `
+            <div class="receipt-info mt-3">
+                <p><strong>Client:</strong> ${document.getElementById('p-name').value}</p>
+                <p><strong>Date:</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
+                <p><strong>ID:</strong> #${order.id.slice(0,8).toUpperCase()}</p>
+            </div>
+            <table class="receipt-table">
+                <thead><tr><th>Détails</th><th class="text-end">Prix</th></tr></thead>
+                <tbody>
+                    <tr>
+                        <td>${order.items.split(',').join('<br>')}</td>
+                        <td class="text-end">$${parseFloat(order.total).toFixed(2)}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="receipt-total-box mt-3 text-end">
+                <p class="mb-0 small">TOTAL PAYÉ</p>
+                <h4 style="color: var(--gold);">$${parseFloat(order.total).toFixed(2)}</h4>
+            </div>`;
+            
+        document.getElementById('receipt-details').innerHTML = detailsHtml;
+        const myModal = new bootstrap.Modal(document.getElementById('receiptModal'));
+        myModal.show();
     }
 
     async function loadProfile(user) {
@@ -333,34 +319,26 @@
         document.getElementById('auth-area').innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle user-icon"></i><span>${p?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
     }
 
-    async function loadOrders(user) {
-        const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-        const list = document.getElementById('orders-list');
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        if (!orders || orders.length === 0) { list.innerHTML = `<p class="text-center py-4">${translations[lang].no_orders}</p>`; return; }
-        list.innerHTML = orders.map(o => `
-            <div class="order-card shadow-sm">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>#${o.id.slice(0, 8).toUpperCase()}</strong>
-                        <div class="small fw-bold text-rose">$${parseFloat(o.total).toFixed(2)}</div>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge-status ${o.status === 'Approuvée' || o.status === 'Livrée' ? 'bg-success text-white' : 'bg-warning'}">${o.status}</span>
-                        <button class="btn btn-sm btn-outline-dark rounded-pill d-block mt-2 no-print" onclick="showReceipt('${o.id}')">
-                            <i class="bi bi-receipt me-1"></i> ${translations[lang].btn_reçu}
-                        </button>
-                    </div>
-                </div>
-            </div>`).join('');
+    async function sendMessageToAdmin() {
+        const input = document.getElementById('user-msg-input');
+        if (!input.value.trim()) return;
+        const { data: { user } } = await _supabase.auth.getUser();
+        await _supabase.from('messages').insert([{ sender_id: user.id, recipient_id: ADMIN_ID, content: input.value.trim() }]);
+        input.value = ''; await loadMessages();
     }
 
-    async function showReceipt(orderId) {
-        const { data: order } = await _supabase.from('orders').select('*').eq('id', orderId).single();
-        if (!order) return;
-        const detailsHtml = `<div class="receipt-info mt-3"><p><strong>Client:</strong> ${document.getElementById('p-name').value}</p><p><strong>Date:</strong> ${new Date(order.created_at).toLocaleDateString()}</p><p><strong>ID:</strong> #${order.id.toUpperCase()}</p></div><table class="receipt-table"><thead><tr><th>Détails</th><th class="text-end">Prix</th></tr></thead><tbody><tr><td>${order.items.split(',').join('<br>')}</td><td class="text-end">$${parseFloat(order.total).toFixed(2)}</td></tr></tbody></table><div class="receipt-total-box mt-3 text-end"><p>TOTAL PAYÉ</p><h4 style="color: var(--gold);">$${parseFloat(order.total).toFixed(2)}</h4></div>`;
-        document.getElementById('receipt-details').innerHTML = detailsHtml;
-        new bootstrap.Modal(document.getElementById('receiptModal')).show();
+    async function loadMessages() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        const { data: msgs } = await _supabase.from('messages').select('*').or(`and(sender_id.eq.${user.id},recipient_id.eq.${ADMIN_ID}),and(sender_id.eq.${ADMIN_ID},recipient_id.eq.${user.id})`).order('created_at', { ascending: true });
+        if (msgs) {
+            document.getElementById('chat-box').innerHTML = msgs.map(m => `
+                <div style="align-self: ${m.sender_id === user.id ? 'flex-end' : 'flex-start'}; max-width: 85%;">
+                    <div style="background: ${m.sender_id === user.id ? '#E8D5C4' : '#f1f1f1'}; padding: 8px 12px; border-radius: 15px; font-size: 0.85rem; color: var(--cafe);">
+                        ${m.content}
+                    </div>
+                </div>`).join('');
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+        }
     }
 
     document.getElementById('profile-form').onsubmit = async (e) => {
@@ -371,7 +349,6 @@
     };
 
     async function logout() { await _supabase.auth.signOut(); window.location.href = "index.html"; }
-    async function checkNewMessages() { /* Logique badge */ }
 
     document.addEventListener('DOMContentLoaded', init);
 </script>

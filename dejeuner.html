@@ -33,6 +33,20 @@
         .brand-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--accent); }
         .nav-link { font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 1.5px; color: var(--primary) !important; font-weight: 600; text-transform: uppercase; }
 
+        /* ESTILO DA PROPAGANDA LATERAL */
+        .promo-sidebar {
+            background: white;
+            border: 2px dashed var(--accent);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 120px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .promo-sidebar img, .promo-sidebar video { width: 100%; border-radius: 10px; margin-bottom: 15px; transition: 0.5s; }
+        .promo-sidebar:hover img { transform: scale(1.1); }
+
         .user-dropdown .btn-user { 
             border: none; background: none; color: var(--primary); 
             display: flex; align-items: center; gap: 10px; 
@@ -64,7 +78,6 @@
         .card-body-custom { padding: 25px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
         .product-name { font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 8px; font-weight: 700; min-height: 45px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
         
-        /* NOVOS ESTILOS PARA PROMOÇÃO */
         .price-tag { color: var(--accent); font-weight: bold; font-size: 1.3rem; margin-bottom: 5px; }
         .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
         .new-price { color: #e63946; font-weight: 700; font-size: 1.4rem; }
@@ -101,6 +114,7 @@
                 <li class="nav-item"><a class="nav-link" href="boutique.html">Pâtisserie</a></li>
                 <li class="nav-item"><a class="nav-link" href="floristeria.html">Floristerie</a></li>
                 <li class="nav-item"><a class="nav-link active" href="dejeuner.html">Déjeuners</a></li>
+		<li class="nav-item"><a class="nav-link" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
         <div class="d-flex align-items-center">
@@ -125,13 +139,23 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid px-lg-5">
     <h2 class="section-title">Collection Petit-Déjeuner Signature</h2>
 
-    <div class="row g-4 justify-content-center mb-4" id="dejeuner-grid">
-        <div class="text-center w-100 py-5">
-            <div class="spinner-border text-brown" role="status"></div>
-            <p class="mt-2">Chargement de la collection...</p>
+    <div class="row">
+        <div class="col-lg-3 mb-5">
+            <div class="promo-sidebar" id="sidebar-promo-content">
+                <div class="spinner-border spinner-border-sm text-accent"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row g-4" id="dejeuner-grid">
+                <div class="text-center w-100 py-5">
+                    <div class="spinner-border text-brown" role="status"></div>
+                    <p class="mt-2">Chargement de la collection...</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -172,7 +196,7 @@
                 <input type="text" id="delivery_address" class="form-control" placeholder="Rue, número, appartement, ville...">
             </div>
             <div class="col-md-12">
-                <label class="fw-bold small mb-2">MESSAGE POUR LA CARTE (OPTIONNEL)</label>
+                <label class="fw-bold small mb-2">MESSAGE PARA LA CARTE (OPTIONNEL)</label>
                 <textarea id="order_message" class="form-control" rows="3" placeholder="Ex: Joyeux Anniversaire mon amour..."></textarea>
             </div>
             <div class="col-12 text-center mt-5">
@@ -224,11 +248,27 @@
         
         loadProducts();
         loadDeliverySlots();
+        loadPromoSidebar(); // CARREGA A PROPAGANDA
         updateNavbarAuth();
         persistentSync();
     });
 
-    // FUNÇÃO PARA CONTADORES REGRESSIVOS EM TEMPO REAL
+    // CARREGA A PROPAGANDA DO BANCO
+    async function loadPromoSidebar() {
+        const { data: promo } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
+        if (promo) {
+            const sidebar = document.getElementById('sidebar-promo-content');
+            let media = promo.image_url.includes('video') 
+                ? `<video src="${promo.image_url}" autoplay loop muted></video>` 
+                : `<img src="${promo.image_url}" alt="Promo">`;
+            sidebar.innerHTML = `
+                ${media}
+                <h4 style="font-family:'Cinzel'; color:var(--primary); margin-top:10px;">${promo.title}</h4>
+                <p class="small text-muted">${promo.description}</p>
+            `;
+        }
+    }
+
     function startCountdowns() {
         setInterval(() => {
             document.querySelectorAll('.countdown-timer').forEach(timer => {
@@ -265,7 +305,6 @@
                 ? p.description.split('\n').filter(line => line.trim() !== "").map(line => `<li><i class="bi bi-check2-circle"></i> ${line.trim()}</li>`).join('') 
                 : '';
 
-            // LÓGICA DE PROMOÇÃO
             const now = new Date();
             const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
             const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
@@ -291,7 +330,7 @@
             }
 
             return `
-            <div class="col-md-4">
+            <div class="col-md-6 col-xl-4">
                 <div class="product-card">
                     <img src="${p.image_url}" class="product-img" alt="${p.name}" style="${isOutOfStock ? 'filter: grayscale(1); opacity: 0.7;' : ''}">
                     <div class="card-body-custom">
@@ -367,7 +406,7 @@
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const itemWithAddress = cart.find(i => i.recipient_name); 
         if (itemWithAddress) {
-            if (confirm(`Vous avez déjà un article pour ${itemWithAddress.recipient_name}. Voulez-vous utiliser la mesmo endereço e data de livraison ?`)) {
+            if (confirm(`Vous avez déjà um article pour ${itemWithAddress.recipient_name}. Voulez-vous utilizar la mesmo endereço e data de livraison ?`)) {
                 document.getElementById('recipient_name').value = itemWithAddress.recipient_name;
                 document.getElementById('order_date').value = itemWithAddress.delivery_date || "";
                 document.getElementById('heure_livraison').value = itemWithAddress.delivery_time || "";

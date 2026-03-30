@@ -19,7 +19,7 @@
         body { 
             font-family: 'Poppins', sans-serif; 
             background-color: var(--luxury-bg) !important; 
-            padding-top: 90px; 
+            padding-top: 100px; 
             color: var(--cafe);
             margin: 0;
         }
@@ -35,6 +35,19 @@
             width: 100%;
             z-index: 10000;
         }
+
+        /* PROPAGANDA LATERAL */
+        .promo-sidebar {
+            background: white;
+            border: 2px dashed var(--gold);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 120px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .promo-sidebar img, .promo-sidebar video { width: 100%; border-radius: 10px; margin-bottom: 15px; }
 
         /* IDIOMA SELECTOR */
         .lang-select {
@@ -57,40 +70,15 @@
         }
 
         .user-dropdown .btn-user { 
-            border: none; 
-            background: none; 
-            color: var(--cafe); 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-weight: 700;
-            font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
-            text-decoration: none;
-            text-transform: uppercase;
+            border: none; background: none; color: var(--cafe); 
+            display: flex; align-items: center; gap: 10px; 
+            font-weight: 700; font-family: 'Cinzel', serif; font-size: 0.85rem; text-decoration: none; text-transform: uppercase;
         }
         .user-icon { font-size: 1.6rem; color: var(--cafe); }
 
-        .navbar-brand { 
-            font-family: 'Cinzel', serif; 
-            font-weight: 700; 
-            color: var(--cafe) !important; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            letter-spacing: 2px;
-        }
-
+        .navbar-brand { font-family: 'Cinzel', serif; font-weight: 700; color: var(--cafe) !important; display: flex; align-items: center; gap: 15px; letter-spacing: 2px; }
         .brand-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold); }
-
-        .nav-link { 
-            font-family: 'Cinzel', serif; 
-            font-size: 0.8rem; 
-            letter-spacing: 1.5px; 
-            color: var(--cafe) !important; 
-            font-weight: 600; 
-            text-transform: uppercase;
-        }
+        .nav-link { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 1.5px; color: var(--cafe) !important; font-weight: 600; text-transform: uppercase; }
 
         .product-card { 
             background: white; border-radius: 20px; overflow: hidden; border: none; 
@@ -114,28 +102,21 @@
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .btn-add { 
-            background: var(--cafe); color: white; border: none; padding: 12px; 
-            font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; 
-            transition: 0.3s; text-transform: uppercase; margin-top: auto;
-        }
+        .btn-add { background: var(--cafe); color: white; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; transition: 0.3s; text-transform: uppercase; margin-top: auto; }
         .btn-add:hover { background: var(--gold); }
 
-        .btn-unavailable {
-            background: #dcdcdc; color: #888; border: none; padding: 12px;
-            font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%;
-            text-transform: uppercase; margin-top: auto; cursor: not-allowed;
-        }
+        .order-section { background: white; padding: 50px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.1); margin: 50px 0; border-top: 5px solid var(--gold); }
+        .btn-order { background: var(--cafe); color: white; border: none; padding: 18px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; border-radius: 10px; transition: 0.3s; font-size: 1rem; }
+        .btn-order:hover { background: var(--gold); transform: scale(1.02); }
+
+        .btn-unavailable { background: #dcdcdc; color: #888; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; text-transform: uppercase; margin-top: auto; cursor: not-allowed; }
 
         footer { 
-            background-color: var(--cafe); 
-            color: #fdfaf8; 
-            padding: 60px 20px 20px; 
-            font-family: 'Poppins', sans-serif; 
-            margin-top: 80px;
-            border-top: 4px solid var(--gold); 
+            background-color: var(--cafe); color: #fdfaf8; padding: 60px 20px 20px; font-family: 'Poppins', sans-serif; margin-top: 80px; border-top: 4px solid var(--gold); 
         }
         .footer-title { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; margin-bottom: 20px; }
+        @keyframes blinker { 50% { opacity: 0; } }
+        .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -153,6 +134,7 @@
                 <li class="nav-item"><a class="nav-link active" href="boutique.html" style="border-bottom: 2px solid var(--gold);" data-i18n="nav_patis">PÂTISSERIE</a></li>
                 <li class="nav-item"><a class="nav-link" href="floristeria.html" data-i18n="nav_flor">FLORISTERIE</a></li>
                 <li class="nav-item"><a class="nav-link" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
         
@@ -162,7 +144,6 @@
                 <option value="en">EN 🇺🇸</option>
                 <option value="es">ES 🇪🇸</option>
             </select>
-
             <div id="auth-area"></div> 
             <a href="checkout.html" class="cart-container">
                 <i class="bi bi-cart3 fs-4"></i>
@@ -172,12 +153,68 @@
     </div>
 </nav>
 
-<div class="container py-5">
+<div class="container-fluid px-lg-5 py-5">
     <h2 class="display-5 fw-bold text-center mb-5" style="font-family: 'Cinzel', serif; color: var(--gold);" data-i18n="page_title">Douceurs Haïtiennes</h2>
-    <div class="row g-5" id="products">
-        <div class="text-center w-100 py-5">
-            <div class="spinner-border text-brown" role="status"></div>
-            <p class="mt-2" data-i18n="loading">Chargement de la pâtisserie...</p>
+    
+    <div class="row">
+        <div class="col-lg-3 mb-5">
+            <div class="promo-sidebar" id="promo-sidebar-content">
+                <i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold);"></i>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="row g-4" id="products">
+                <div class="text-center w-100 py-5">
+                    <div class="spinner-border text-brown" role="status"></div>
+                    <p class="mt-2" data-i18n="loading">Chargement de la pâtisserie...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-section" id="order-form">
+        <h3 class="text-center mb-5" style="font-family: 'Cinzel';">Personnaliser ma Livraison</h3>
+        <div class="row g-4">
+            <div class="col-md-12">
+                <label class="fw-bold small mb-2">MODÈLE SÉLECTIONNÉ</label>
+                <input type="text" id="selected_prod" class="form-control" readonly placeholder="Cliquez sur 'CHOISIR' plus haut">
+            </div>
+            <div class="col-md-12">
+                <label class="fw-bold small mb-2">NOM DU DESTINATAIRE *</label>
+                <input type="text" id="recipient_name" class="form-control" placeholder="Qui va receber ce délice ?">
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold small mb-2">DATE DE LIVRAISON (Min. 24h d'avance) *</label>
+                <input type="date" id="order_date" class="form-control">
+            </div>
+            <div class="col-md-6">
+                <label class="fw-bold small mb-2">CRÉNEAU HORAIRE *</label>
+                <select id="heure_livraison" class="form-select">
+                    <option value="" selected disabled>Chargement des horaires...</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <div class="p-3" style="background: #fff9f0; border-radius: 8px; border: 1px dashed var(--gold);">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="is_surprise">
+                        <label class="form-check-label fw-bold ms-2" for="is_surprise">🎁 C'EST UNE SURPRISE !</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <label class="fw-bold small mb-2">ADRESSE DE LIVRAISON *</label>
+                <input type="text" id="delivery_address" class="form-control" placeholder="Rue, número, appartement, ville...">
+            </div>
+            <div class="col-md-12">
+                <label class="fw-bold small mb-2">MESSAGE POUR LA CARTE (OPTIONNEL)</label>
+                <textarea id="order_message" class="form-control" rows="3" placeholder="Ex: Joyeux Anniversaire mon amour..."></textarea>
+            </div>
+            <div class="col-12 text-center mt-5">
+                <button class="btn-order shadow" onclick="addToCart()">
+                    <i class="bi bi-cart-plus-fill me-2"></i> AJOUTER AU PANIER
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -210,28 +247,26 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
 <script>
-    // --- DICIONÁRIO DE TRADUÇÕES ---
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+
+    let currentPrice = 0;
+    let currentId = null;
+
     const translations = {
         fr: {
-            nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS",
-            page_title: "Douceurs Haïtiennes", loading: "Chargement de la pâtisserie...", footer_brand: "L'excellence haïtienne raffinée.",
-            footer_contact: "CONTACT", footer_follow: "SUIVEZ-NOUS", btn_add: "Ajouter au panier", btn_out: "Indisponible",
-            alert_login: "Veuillez vous connecter.", alert_stock: "Désolé, ce produto vient d'être épuisé.", msg_added: "ajouté!",
-            no_products: "Aucun délice disponible."
+            nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "À PROPOS",
+            page_title: "Douceurs Haïtiennes", loading: "Chargement...", footer_brand: "L'excellence haïtienne raffinée.",
+            footer_contact: "CONTACT", footer_follow: "SUIVEZ-NOUS", btn_add: "CHOISIR", btn_out: "Indisponible"
         },
         en: {
-            nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES",
-            page_title: "Haitian Delights", loading: "Loading pastry shop...", footer_brand: "Refined Haitian excellence.",
-            footer_contact: "CONTACT", footer_follow: "FOLLOW US", btn_add: "Add to cart", btn_out: "Out of Stock",
-            alert_login: "Please log in first.", alert_stock: "Sorry, this product is out of stock.", msg_added: "added!",
-            no_products: "No delights available."
+            nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
+            page_title: "Haitian Delights", loading: "Loading...", footer_brand: "Refined Haitian excellence.",
+            footer_contact: "CONTACT", footer_follow: "FOLLOW US", btn_add: "CHOOSE", btn_out: "Out of Stock"
         },
         es: {
-            nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS",
-            page_title: "Dulces Haitianos", loading: "Cargando pastelería...", footer_brand: "Excelencia haitiana refinada.",
-            footer_contact: "CONTACTO", footer_follow: "SÍGUENOS", btn_add: "Añadir al carrito", btn_out: "Agotado",
-            alert_login: "Por favor, inicie sesión.", alert_stock: "Lo sentimos, producto agotado.", msg_added: "añadido!",
-            no_products: "No hay delicias disponibles."
+            nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS",
+            page_title: "Dulces Haitianos", loading: "Cargando...", footer_brand: "Excelencia haitiana refinada.",
+            footer_contact: "CONTACTO", footer_follow: "SÍGUENOS", btn_add: "ELEGIR", btn_out: "Agotado"
         }
     };
 
@@ -241,36 +276,98 @@
             if (translations[lang][key]) el.innerText = translations[lang][key];
         });
         localStorage.setItem('laprimavera_lang', lang);
-        load(); // Recarrega os botões dos produtos
     }
 
-    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+    async function load() {
+    // Busca produtos e taxas ao mesmo tempo
+    const { data: products } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
+    const { data: settings } = await _supabase.from('site_settings').select('*').in('id', ['global_shipping', 'global_tax']);
+    
+    const shipping = parseFloat(settings.find(s => s.id === 'global_shipping')?.description || 0);
+    const grid = document.getElementById('products');
+    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+    
+    // Traduções locais para o frete
+    const shipText = { fr: "Livraison Gratuite", en: "Free Shipping", es: "Envío Gratis" };
 
-    function startCountdowns() {
-        setInterval(() => {
-            document.querySelectorAll('.countdown-timer').forEach(timer => {
-                const expiryDate = new Date(timer.dataset.expiry).getTime();
-                const now = new Date().getTime();
-                const distance = expiryDate - now;
-                if (distance < 0) { timer.style.display = 'none'; return; }
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                timer.querySelector('.timer-val').innerText = `${days > 0 ? days + "d " : ""}${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m ${seconds.toString().padStart(2, '0')}s`;
-            });
-        }, 1000);
+    if(products) {
+        grid.innerHTML = products.map(p => {
+            const inStock = (p.stock > 0);
+            const now = new Date();
+            const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+            const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
+            let finalPrice = isPromoValid ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) : p.price;
+
+            // Selo de Frete Grátis
+            const shippingBadge = shipping === 0 
+                ? `<div class="mt-2"><span class="badge bg-success" style="font-size:0.7rem;">${shipText[lang]}</span></div>` 
+                : "";
+
+            return `
+            <div class="col-md-6 col-xl-4">
+                <div class="product-card">
+                    <div class="img-zoom-container">
+                        <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
+                    </div>
+                    <div class="product-body">
+                        <h4>${p.name}</h4>
+                        <div class="price-tag">${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price">$${finalPrice}</span>` : `$${p.price}`}</div>
+                        ${shippingBadge}
+                        ${inStock 
+                            ? `<button class="btn-add mt-3" onclick="selectProduct('${p.name.replace(/'/g, "\\'")}', ${finalPrice}, '${p.id}')">${translations[lang].btn_add}</button>` 
+                            : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+}
+
+    async function loadPromoSidebar() {
+        const { data } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
+        if (data) {
+            const box = document.getElementById('promo-sidebar-content');
+            let media = data.image_url.includes('video') ? `<video src="${data.image_url}" autoplay loop muted></video>` : `<img src="${data.image_url}">`;
+            box.innerHTML = `${media}<h4 class="blink-text" style="font-family:'Cinzel'; margin-top:10px;">${data.title}</h4><p class="small">${data.description}</p>`;
+        }
     }
 
-    async function trackView(productId) {
-        try {
-            const { data: existing } = await _supabase.from('product_views').select('*').eq('product_id', productId).maybeSingle();
-            if (existing) {
-                await _supabase.from('product_views').update({ view_count: existing.view_count + 1, last_view: new Date() }).eq('id', existing.id);
-            } else {
-                await _supabase.from('product_views').insert([{ product_id: productId, view_count: 1 }]);
-            }
-        } catch (e) { console.error("Tracking error", e); }
+    async function loadDeliverySlots() {
+        const select = document.getElementById('heure_livraison');
+        const { data } = await _supabase.from('delivery_slots').select('*').eq('is_active', true).order('display_order');
+        if (data) {
+            select.innerHTML = '<option value="" selected disabled>Choisir l’heure...</option>';
+            data.forEach(s => select.innerHTML += `<option value="${s.slot_label}">${s.slot_label}</option>`);
+        }
+    }
+
+    function selectProduct(name, price, id) {
+        document.getElementById('selected_prod').value = name;
+        currentPrice = price;
+        currentId = id;
+        document.getElementById('order-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function addToCart() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) { alert("Veuillez vous connecter."); return; }
+
+        const prod = document.getElementById('selected_prod').value;
+        const recipient = document.getElementById('recipient_name').value;
+        const date = document.getElementById('order_date').value;
+        const hour = document.getElementById('heure_livraison').value;
+        const addr = document.getElementById('delivery_address').value;
+        
+        if(!prod || !recipient || !date || !hour || !addr) { alert("Champs obligatoires manquants."); return; }
+
+        const { error } = await _supabase.from('cart_items').insert([{
+            user_id: user.id, product_name: prod, price: currentPrice, quantity: 1,
+            recipient_name: recipient, delivery_date: date, delivery_time: hour,
+            delivery_address: addr, card_message: document.getElementById('order_message').value,
+            is_surprise: document.getElementById('is_surprise').checked
+        }]);
+
+        if (!error) { alert("Ajouté au panier !"); window.location.href = "checkout.html"; }
     }
 
     async function updateNavbarAuth() {
@@ -278,111 +375,22 @@
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
             const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-            const firstName = profile?.full_name ? profile.full_name.split(' ')[0] : "Client";
-            area.innerHTML = `
-                <div class="dropdown user-dropdown">
-                    <a class="btn-user dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle user-icon"></i><span>${firstName}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                        <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
-                    </ul>
-                </div>`;
-            syncCartFromDB(user.id);
+            area.innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle user-icon"></i><span>${profile?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
         } else {
-            area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill px-3">Connexion</a>`;
+            area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark">Connexion</a>`;
         }
     }
 
-    async function logout() { localStorage.removeItem('cart'); await _supabase.auth.signOut(); window.location.reload(); }
-
-    async function syncCartFromDB(userId) {
-        const { data: items } = await _supabase.from('cart_items').select('*').eq('user_id', userId);
-        if (items) {
-            const cartMapped = items.map(i => ({ id: i.id, name: i.product_name || i.name, price: parseFloat(i.price) || 0, quantity: parseInt(i.quantity) || 1 }));
-            localStorage.setItem('cart', JSON.stringify(cartMapped));
-            updateCartCount();
-        }
-    }
-
-    function updateCartCount() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const count = cart.reduce((acc, item) => acc + item.quantity, 0);
-        const badge = document.getElementById('cartCount');
-        if(badge) badge.innerText = count;
-    }
-
-    async function load() {
-        const { data } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name', { ascending: true });
-        const grid = document.getElementById('products');
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        
-        if(data && data.length > 0) {
-            grid.innerHTML = data.map(p => {
-                const inStock = (p.stock > 0);
-                const now = new Date();
-                const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
-                const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
-                
-                let priceDisplay = `<div class="price-tag">$${parseFloat(p.price).toFixed(2)}</div>`;
-                let finalPrice = p.price;
-                let timerHTML = "";
-
-                if (isPromoValid) {
-                    finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
-                    priceDisplay = `<div class="mb-1"><span class="old-price">$${parseFloat(p.price).toFixed(2)}</span><span class="new-price">$${finalPrice}</span><span class="promo-badge">-${p.promo_discount_percent}%</span></div>`;
-                    if (expiry) timerHTML = `<div class="countdown-timer" data-expiry="${p.promo_expiry_date}T23:59:59"><i class="bi bi-clock-history me-1"></i> <span class="timer-val">--:--:--</span></div>`;
-                }
-
-                return `
-                <div class="col-md-4">
-                    <div class="product-card">
-                        <div class="img-zoom-container">
-                            <a href="${p.image_url}" class="zoom" data-id="${p.id}">
-                                <img src="${p.image_url}" class="product-img" alt="${p.name}" loading="lazy" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
-                            </a>
-                        </div>
-                        <div class="product-body">
-                            <h4 class="fw-bold mb-2">${p.name}</h4>
-                            <p class="text-muted small">${p.description || 'Artisanat haïtien haut de gamme.'}</p>
-                            ${priceDisplay}
-                            ${timerHTML}
-                            ${inStock 
-                                ? `<button class="btn-add" onclick="add('${p.name.replace(/'/g, "\\'")}', ${finalPrice}, '${p.image_url}', '${p.id}')">${translations[lang].btn_add}</button>`
-                                : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`
-                            }
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-            
-            startCountdowns();
-            document.querySelectorAll('.zoom').forEach(el => { new Luminous(el); el.addEventListener('click', () => trackView(el.getAttribute('data-id'))); });
-        } else {
-            grid.innerHTML = `<p class='text-center w-100 py-5 text-muted'>${translations[lang].no_products}</p>`;
-        }
-        updateCartCount();
-    }
-
-    async function add(name, price, imageUrl, productId) {
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { alert(translations[lang].alert_login); window.location.href = "login.html"; return; }
-        
-        const { data: check } = await _supabase.from('patisserie').select('stock').eq('id', productId).single();
-        if(check && check.stock <= 0) { alert(translations[lang].alert_stock); load(); return; }
-
-        trackView(productId);
-        const { error } = await _supabase.from('cart_items').insert([{ user_id: user.id, product_name: name, price: price, image_url: imageUrl, quantity: 1 }]);
-        if (!error) { await syncCartFromDB(user.id); alert(`${name} ${translations[lang].msg_added}`); }
-    }
+    async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
 
     document.addEventListener('DOMContentLoaded', () => {
+        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('order_date').setAttribute('min', tomorrow.toISOString().split('T')[0]);
         const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
-        document.querySelector('.lang-select').value = savedLang;
         changeLanguage(savedLang);
+        load();
+        loadPromoSidebar();
+        loadDeliverySlots();
         updateNavbarAuth();
     });
 </script>

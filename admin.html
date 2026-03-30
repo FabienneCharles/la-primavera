@@ -74,11 +74,14 @@
         <h4>LA PRIMAVERA</h4>
         <button class="nav-link-custom active" id="btn-flor" onclick="trocarPainel('flor')"><i class="bi bi-flower1 me-2"></i> Floristerie</button>
         <button class="nav-link-custom" id="btn-deje" onclick="trocarPainel('deje')"><i class="bi bi-basket me-2"></i> Déjeuners</button>
-        <button class="nav-link-custom" id="btn-patis" onclick="trocarPainel('patis')"><i class="bi bi-cup-hot me-2"></i> Pâtisserie</button>
+        <button class="nav-link-custom" id="btn-patis" onclick="trocarPainel('patis')"><i class="bi bi-cup-hot me-2"></i> PÂTISSERIE</button>
         <button class="nav-link-custom" id="btn-moments" onclick="trocarPainel('moments')"><i class="bi bi-calendar-heart me-2"></i> Gérer Moments</button>
         <button class="nav-link-custom" id="btn-slots" onclick="trocarPainel('slots')"><i class="bi bi-clock-history me-2"></i> Gestion Horaires</button>
         <button class="nav-link-custom" id="btn-clients" onclick="trocarPainel('clients')"><i class="bi bi-people-fill me-2"></i> Gérer Clients</button>
-        <button class="nav-link-custom" id="btn-orders" onclick="trocarPainel('orders')"><i class="bi bi-receipt me-2"></i> Commandes</button>
+        <button class="nav-link-custom" id="btn-orders" onclick="trocarPainel('orders')">
+            <i class="bi bi-receipt me-2"></i> Commandes
+            <span id="order-badge-admin" class="badge bg-danger rounded-pill position-absolute" style="display:none; right: 10px; top: 12px; font-size: 0.6rem;">0</span>
+        </button>
         <button class="nav-link-custom" id="btn-home" onclick="trocarPainel('home')"><i class="bi bi-house-gear me-2"></i> Gérer Home</button>
         <button class="nav-link-custom" id="btn-chat" onclick="trocarPainel('chat')">
             <i class="bi bi-chat-dots me-2"></i> Messages 
@@ -150,13 +153,72 @@
         </div>
 
         <div id="painel-home" style="display:none;">
-            <h2 class="mb-4" style="font-family: 'Cinzel';">🖼️ Gérer l'Accueil</h2>
+            <h2 class="mb-4" style="font-family: 'Cinzel';">🖼️ Gérer l'Accueil & Pages</h2>
             <div class="admin-card">
                 <div class="row g-4">
                     <div class="col-12 border-bottom pb-4 text-center">
                         <label class="fw-bold d-block mb-2">Bannière Principale (Hero)</label>
                         <input type="file" class="form-control mb-2" onchange="uploadHomeImage('hero_bg', this)">
                         <div id="preview-hero_bg" class="preview-container-media"></div>
+                    </div>
+
+                    <div class="col-12 border-bottom py-4">
+                        <label class="fw-bold d-block mb-3" style="color:var(--accent); font-size:1.1rem;"><i class="bi bi-info-circle-fill"></i> Gestion Page "About Us" (Fiches)</label>
+                        <div class="row g-3">
+                            <div class="col-md-4 border-end">
+                                <label class="small fw-bold">À Propos</label>
+                                <textarea id="desc-about_apropos" class="form-control mb-2" rows="5"></textarea>
+                                <button class="btn btn-sm btn-dark w-100" onclick="saveIndividualAbout('about_apropos')">Mettre à jour À Propos</button>
+                            </div>
+                            <div class="col-md-4 border-end">
+                                <label class="small fw-bold">Philosophie</label>
+                                <textarea id="desc-about_philosophie" class="form-control mb-2" rows="5"></textarea>
+                                <button class="btn btn-sm btn-dark w-100" onclick="saveIndividualAbout('about_philosophie')">Mettre à jour Philosophie</button>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small fw-bold">Nos Normes</label>
+                                <textarea id="desc-about_normes" class="form-control mb-2" rows="5"></textarea>
+                                <button class="btn btn-sm btn-dark w-100" onclick="saveIndividualAbout('about_normes')">Mettre à jour Normes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 border-bottom py-4">
+                        <label class="fw-bold d-block mb-3" style="color:var(--accent); font-size:1.1rem;"><i class="bi bi-cash-stack"></i> Configuration des Frais & Taxes</label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="small fw-bold">Frais de Livraison Fixe ($)</label>
+                                <input type="number" id="input-global_shipping" class="form-control" step="0.01" placeholder="Ex: 5.00 (0 = Gratuit)">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="small fw-bold">Taxe de Service (%)</label>
+                                <input type="number" id="input-global_tax" class="form-control" step="0.01" placeholder="Ex: 10 pour 10%">
+                            </div>
+                            <div class="col-12 text-end">
+                                <button class="btn btn-dark px-4 fw-bold" onclick="saveGlobalTaxes()">ENREGISTRER LES TAXES</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 border-bottom py-4">
+                        <label class="fw-bold d-block mb-3" style="color:var(--accent); font-size:1.1rem;"><i class="bi bi-tag-fill"></i> Rabais Global sur Sous-Total</label>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="small fw-bold">Type de Rabais</label>
+                                <select id="input-discount_type" class="form-select">
+                                    <option value="none">Aucun</option>
+                                    <option value="fixed">Montant Fixe ($)</option>
+                                    <option value="percent">Pourcentage (%)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small fw-bold">Valeur du Rabais</label>
+                                <input type="number" id="input-discount_value" class="form-control" step="0.01" placeholder="Ex: 5.00 ou 10">
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button class="btn btn-dark w-100 fw-bold" onclick="saveGlobalDiscount()">ENREGISTRER LE RABAIS</button>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="col-12 border-bottom py-4">
@@ -167,7 +229,7 @@
                                 <textarea id="promo-text" class="form-control mb-2" placeholder="Texte de la publicité..."></textarea>
                                 <input type="file" id="promo-file" class="form-control mb-2" accept="image/*,video/*">
                                 <button class="btn btn-dark w-100" onclick="savePromoSidebar()">Mettre à jour la Publicité</button>
-                                <p class="mt-2 small text-muted"><i class="bi bi-info-circle"></i> Le titre clignotera et l'image aura un zoom au survol.</p>
+                                <p class="mt-2 small text-muted"><i class="bi bi-info-circle"></i> Le titre clignotera et l'image aura un zoom ao survol.</p>
                             </div>
                             <div class="col-md-6 text-center">
                                 <div id="preview-promo_sidebar" class="preview-container-media">
@@ -349,8 +411,11 @@
         
         await autoCancelExpiredOrders();
 
-        await Promise.all([loadHomeSettings(), loadMoments(), loadData(), loadClients(), loadOrders(), loadSlots(), checkNewChatMessages()]);
-        setInterval(checkNewChatMessages, 10000);
+        await Promise.all([loadHomeSettings(), loadMoments(), loadData(), loadClients(), loadOrders(), loadSlots(), checkNewChatMessages(), checkNewOrders()]);
+        setInterval(() => {
+            checkNewChatMessages();
+            checkNewOrders();
+        }, 10000);
         
         setInterval(() => {
             const promo = document.getElementById('preview-promo_sidebar');
@@ -382,13 +447,24 @@
                 const preview = document.getElementById(`preview-${s.id}`);
                 if (preview) {
                     if (s.image_url && s.image_url.includes('data:video')) {
-                        preview.innerHTML = `<video src="${s.image_url}" autoplay loop muted></video>`;
+                        preview.innerHTML = `<video src="${s.image_url}" autoplay loop muted style="width:100%"></video>`;
                     } else if (s.image_url) {
-                        preview.innerHTML = `<img src="${s.image_url}">`;
+                        preview.innerHTML = `<img src="${s.image_url}" style="width:100%">`;
                     }
                 }
                 if (document.getElementById(`title-${s.id}`)) document.getElementById(`title-${s.id}`).value = s.title || '';
-                if (document.getElementById(`desc-${s.id}`)) document.getElementById(`desc-${s.id}`).value = s.description || '';
+                if (document.getElementById(`subtitle-${s.id}`)) document.getElementById(`subtitle-${s.id}`).value = s.subtitle || '';
+                
+                if (document.getElementById(`desc-${s.id}`)) {
+                    document.getElementById(`desc-${s.id}`).value = s.description || '';
+                }
+
+                if (s.id === 'global_shipping') document.getElementById('input-global_shipping').value = s.description || '0';
+                if (s.id === 'global_tax') document.getElementById('input-global_tax').value = s.description || '0';
+                
+                if (s.id === 'global_discount_type') document.getElementById('input-discount_type').value = s.description || 'none';
+                if (s.id === 'global_discount_value') document.getElementById('input-discount_value').value = s.description || '0';
+
                 if (s.id === 'promo_sidebar') {
                     const titleInput = document.getElementById('promo-title');
                     titleInput.value = s.title || '';
@@ -399,22 +475,63 @@
         }
     }
 
+    async function saveGlobalTaxes() {
+        showLoading(true);
+        const ship = document.getElementById('input-global_shipping').value;
+        const tax = document.getElementById('input-global_tax').value;
+
+        const { error } = await _supabase.from('site_settings').upsert([
+            { id: 'global_shipping', description: ship },
+            { id: 'global_tax', description: tax }
+        ]);
+
+        if (!error) alert("Frais et Taxes mis à jour !");
+        else alert("Erreur lors de la sauvegarde.");
+        showLoading(false);
+    }
+
+    async function saveGlobalDiscount() {
+        showLoading(true);
+        const type = document.getElementById('input-discount_type').value;
+        const value = document.getElementById('input-discount_value').value;
+
+        const { error } = await _supabase.from('site_settings').upsert([
+            { id: 'global_discount_type', description: type },
+            { id: 'global_discount_value', description: value }
+        ]);
+
+        if (!error) alert("Rabais global mis à jour !");
+        else alert("Erreur lors de la sauvegarde.");
+        showLoading(false);
+    }
+
+    async function saveIndividualAbout(id) {
+        showLoading(true);
+        const desc = document.getElementById(`desc-${id}`).value;
+        const { error } = await _supabase.from('site_settings').upsert({ id: id, description: desc });
+        if (!error) alert("Fiche mise à jour !");
+        else alert("Erreur.");
+        showLoading(false);
+    }
+
     async function uploadHomeImage(id, input) {
         if (!input.files[0]) return;
         showLoading(true);
         try {
             const base64 = await compressImage(input.files[0]);
             await _supabase.from('site_settings').upsert({ id, image_url: base64 });
-            location.reload();
-        } catch (e) { alert("Erreur."); showLoading(false); }
+            loadHomeSettings();
+            alert("Image mise à jour!");
+        } catch (e) { alert("Erreur."); } finally { showLoading(false); }
     }
 
     async function saveHomeText(id) {
         showLoading(true);
-        await _supabase.from('site_settings').update({ 
+        await _supabase.from('site_settings').upsert({ 
+            id: id,
             title: document.getElementById(`title-${id}`).value, 
             description: document.getElementById(`desc-${id}`).value 
-        }).eq('id', id);
+        });
         alert("Enregistré!"); showLoading(false);
     }
 
@@ -559,7 +676,10 @@
         showLoading(true);
         const { error } = await _supabase.from('orders').update({ status: newStatus }).eq('id', orderId);
         showLoading(false);
-        if(!error) loadOrders();
+        if(!error) {
+            loadOrders();
+            checkNewOrders(); // Atualiza o badge ao mudar o status
+        }
     }
 
     function filterOrdersUI() {
@@ -599,6 +719,21 @@
     async function toggleSlot(id,st){await _supabase.from('delivery_slots').update({is_active:!st}).eq('id',id); loadSlots();}
     async function loadClients(){const {data:p}=await _supabase.from('profiles').select('*'); document.getElementById('lista-clients').innerHTML=p?.map(c=>`<tr><td>${c.full_name}</td><td>${c.email}</td><td>Ativo</td><td>Ban</td></tr>`).join('');}
     async function checkNewChatMessages(){const {data}=await _supabase.from('messages').select('id').eq('is_read',false); if(data?.length>0){document.getElementById('msg-badge-admin').innerText=data.length; document.getElementById('msg-badge-admin').style.display='block';}}
+    
+    // FUNÇÃO PARA CONTAR NOVAS COMANDAS (PENDENTES)
+    async function checkNewOrders(){
+        const {data, error} = await _supabase.from('orders').select('id').or('status.eq.En attente,status.eq.Awaiting Approval');
+        if(!error && data){
+            const badge = document.getElementById('order-badge-admin');
+            if(data.length > 0){
+                badge.innerText = data.length;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
     async function loadChatList(){const {data:p}=await _supabase.from('profiles').select('id,full_name'); document.getElementById('chat-users-list').innerHTML=p.map(x=>`<div class="chat-list-item" onclick="selectClientChat('${x.id}')">${x.full_name||'Client'}</div>`).join('');}
     async function selectClientChat(id){selectedClientId=id; const {data:m}=await _supabase.from('messages').select('*').or(`sender_id.eq.${id},recipient_id.eq.${id}`).order('created_at'); document.getElementById('admin-chat-box').innerHTML=m.map(msg=>`<div style="text-align:${msg.sender_id===ADMIN_ID?'right':'left'}"><b>${msg.content}</b></div>`).join('');}
     async function sendReply(){const c=document.getElementById('admin-reply-input').value; if(c && selectedClientId){await _supabase.from('messages').insert([{sender_id:ADMIN_ID,recipient_id:selectedClientId,content:c}]); document.getElementById('admin-reply-input').value=''; selectClientChat(selectedClientId);}}

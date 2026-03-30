@@ -54,6 +54,21 @@
             object-fit: cover; 
             border: 1px solid var(--gold-title); 
         }
+	/* Efeito de Zoom na Propaganda */
+	#promo-sidebar-content {
+    		overflow: hidden; /* Garante que a imagem não saia da borda ao dar zoom */
+    		 border-radius: 15px;
+	}
+
+	#promo-sidebar-content img, 
+	#promo-sidebar-content video {
+    	 transition: transform 0.5s ease; /* Faz o zoom ser suave */
+	}
+
+	#promo-sidebar-content:hover img, 
+	#promo-sidebar-content:hover video {
+    	 transform: scale(1.1); /* Aumenta a imagem em 10% */
+	}
 
         .nav-link { 
             font-family: 'Cinzel', serif; 
@@ -77,14 +92,12 @@
             outline: none;
         }
 
-        /* CARRINHO */
         .cart-wrapper { position: relative; margin-left: 20px; color: var(--deep-coffee); text-decoration: none; }
         .cart-badge { 
             position: absolute; top: -8px; right: -12px; background: red; color: white; 
             font-size: 0.7rem; border-radius: 50%; padding: 2px 6px; font-weight: bold; 
         }
 
-        /* USER DROPDOWN (BONEQUINHA) */
         .user-dropdown .btn-user { 
             border: none; background: none; color: var(--deep-coffee); 
             display: flex; align-items: center; gap: 8px; 
@@ -100,7 +113,6 @@
                         url("images/L'Écrin d'Amour Éternel.JPEG") no-repeat center center;
             background-size: cover;
             display: flex; align-items: center; justify-content: center;
-            transition: background 0.5s ease;
         }
 
         .hero-overlay {
@@ -128,11 +140,10 @@
             text-align: center; 
             margin-bottom: 70px; 
             letter-spacing: 4px; 
-            color: var(--gold-title) !important; /* COR GOLD GARANTIDA */
+            color: var(--gold-title) !important; 
             font-weight: 700;
         }
 
-        /* ESPAÇO DE PROPAGANDA LATERAL ORIGINAL */
         .promo-sidebar {
             background: white;
             border: 2px dashed var(--gold-title);
@@ -142,12 +153,14 @@
             position: sticky;
             top: 120px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            transition: 0.3s;
         }
-        .promo-sidebar h4 { font-family: 'Cinzel', serif; color: var(--deep-coffee); margin-top: 10px; font-size: 1.2rem; }
-        .promo-sidebar p { font-size: 0.85rem; color: #666; }
 
-        /* LUXURY CARDS & ALIGNMENT */
+        .promo-sidebar img, .promo-sidebar video {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
         .luxury-card {
             height: 100%;
             display: flex;
@@ -167,12 +180,8 @@
             flex-direction: column;
             justify-content: space-between; 
         }
-
-        /* DESCRIÇÕES EM GOLD */
-        .card-label p {
-            color: var(--gold-title) !important;
-            font-weight: 600;
-        }
+	
+	
 
         .btn-luxury {
             display: inline-block;
@@ -191,14 +200,28 @@
         }
         .btn-luxury:hover { background: var(--deep-coffee); color: white; transform: translateY(-4px); }
 
-        /* FOOTER */
+        /* FOOTER ESTILIZADO */
         footer { 
-            background-color: #2C1810; 
+            background-color: #1a0f0a; 
             color: #fdfaf8; 
-            padding: 60px 20px 20px; 
-            font-family: 'Poppins', sans-serif; 
+            padding: 80px 20px 40px; 
             border-top: 4px solid var(--gold-title); 
         }
+        footer h5, footer h6 {
+            color: var(--gold-title) !important;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+        footer p {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.6;
+        }
+
+        @keyframes blinker { 50% { opacity: 0; } }
+        .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -216,6 +239,7 @@
                 <li class="nav-item"><a class="nav-link" href="boutique.html" data-i18n="nav_patis">PÂTISSERIE</a></li>
                 <li class="nav-item"><a class="nav-link" href="floristeria.html" data-i18n="nav_flor">FLORISTERIE</a></li>
                 <li class="nav-item"><a class="nav-link" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
         
@@ -246,7 +270,7 @@
 </section>
 
 <section class="featured-section">
-    <div class="container-fluid px-lg-5">
+    <div class="container-fluid px-lg-5 text-center">
         <h2 class="section-title" data-i18n="section_title">La Collection de Saison</h2>
         
         <div class="row">
@@ -270,7 +294,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-4">
                         <div class="luxury-card">
                             <div class="img-container"><img id="img-dejeuner" src="images/L'Écrin Impérial Créole.png" alt="Déjeuners"></div>
@@ -281,13 +304,12 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-4">
                         <div class="luxury-card">
                             <div class="img-container"><img id="img-floristeria" src="images/Le Cœur de Roses Passion.JPEG" alt="Floristerie"></div>
                             <div class="card-label">
                                 <h3 id="title-floristeria">Art Floral</h3>
-                                <p id="desc-floristeria">Arrangements signatures créés para élever vos espaces.</p>
+                                <p id="desc-floristeria">Arrangements signatures créés pour élever vos espaços.</p>
                                 <a href="floristeria.html" class="btn-luxury" data-i18n="btn_explore">Explorer</a>
                             </div>
                         </div>
@@ -298,28 +320,47 @@
     </div>
 </section>
 
-<footer>
-    <div class="container text-center">
-        <p style="font-size: 0.65rem; color: #888; letter-spacing: 2px; text-transform: uppercase;">LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS</p>
+<footer class="text-center">
+    <div class="container">
+        <div class="row g-5 justify-content-center">
+            <div class="col-md-4">
+                <h5>LA PRIMAVERA</h5>
+                <p>Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA.</p>
+            </div>
+            <div class="col-md-4">
+                <h5>CUSTOMER SUPPORT</h5>
+                <p>Mon-Fri: 9:00 AM - 6:00 PM EST<br>
+                <strong>Email:</strong> laprimavera951@gmail.com<br>
+                <strong>Phone:</strong> +1 (352) 298-2578</p>
+            </div>
+            <div class="col-md-4">
+                <h5>LOCAL DELIVERY 🚗</h5>
+                <p>Serving the state of<br><strong>Massachusetts (MA)</strong></p>
+            </div>
+        </div>
+        <div class="mt-5 pt-4 border-top border-secondary">
+            <p style="font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5;">LA PRIMAVERA &copy; 2026 | ALL RIGHTS RESERVED</p>
+        </div>
     </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const translations = {
         fr: {
-            nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS",
+            nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS",
             btn_login: "CONNEXION", hero_title: "Signature d'Excellence", hero_subtitle: "L'harmonie entre tradition haïtienne et raffinement floral.",
             section_title: "La Collection de Saison", promo_title: "Offres Spéciales", promo_desc: "Découvrez nos promotions exclusives ici.",
             btn_discover: "Découvrir", btn_order: "Commander", btn_explore: "Explorer", btn_view_more: "Voir plus"
         },
         en: {
-            nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES",
+            nav_home: "HOME", nav_about: "ABOUT US", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES",
             btn_login: "LOGIN", hero_title: "Signature of Excellence", hero_subtitle: "The harmony between Haitian tradition and floral refinement.",
             section_title: "Seasonal Collection", promo_title: "Special Offers", promo_desc: "Discover our exclusive promotions here.",
             btn_discover: "Discover", btn_order: "Order", btn_explore: "Explore", btn_view_more: "View more"
         },
         es: {
-            nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS",
+            nav_home: "INICIO", nav_about: "SOBRE NOSOTROS", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS",
             btn_login: "CONEXIÓN", hero_title: "Sello de Excelencia", hero_subtitle: "La armonía entre la tradición haitiana y el refinamiento floral.",
             section_title: "Colección de Temporada", promo_title: "Ofertas Especiales", promo_desc: "Descubra nuestras promociones exclusivas aquí.",
             btn_discover: "Descubrir", btn_order: "Ordenar", btn_explore: "Explorar", btn_view_more: "Ver más"
@@ -336,12 +377,24 @@
 
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
+    async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
+
     async function updateNavbarAuth() {
         const area = document.getElementById('auth-area');
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
             const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-            area.innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle user-icon"></i><span>${profile?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"><li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
+            area.innerHTML = `
+                <div class="dropdown user-dropdown">
+                    <a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle user-icon"></i>
+                        <span>${profile?.full_name?.split(' ')[0] || 'Client'}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
+                        <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
+                    </ul>
+                </div>`;
         }
     }
 
@@ -351,34 +404,47 @@
         if (data) {
             data.forEach(s => {
                 if (s.id === 'hero_bg') {
-                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
-                } 
-                else if (s.id === 'card_patisserie' && s.image_url) { document.getElementById('img-patisserie').src = s.image_url; }
-                else if (s.id === 'card_dejeuner' && s.image_url) { document.getElementById('img-dejeuner').src = s.image_url; }
-                else if (s.id === 'card_floristeria' && s.image_url) { document.getElementById('img-floristeria').src = s.image_url; }
+                    if (s.image_url && s.image_url.includes('video')) {
+                        document.getElementById('hero-bg').style.backgroundImage = 'none';
+                        document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
+                    } else {
+                        document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
+                    }
+                }
+                else if (s.id === 'card_patisserie') document.getElementById('img-patisserie').src = s.image_url;
+                else if (s.id === 'card_dejeuner') document.getElementById('img-dejeuner').src = s.image_url;
+                else if (s.id === 'card_floristeria') document.getElementById('img-floristeria').src = s.image_url;
+                
                 else if (s.id === 'promo_sidebar') {
                     const promoBox = document.getElementById('promo-sidebar-content');
-                    let mediaHtml = s.image_url ? `<img src="${s.image_url}" style="width:100%; border-radius:10px; margin-bottom:15px;">` : `<i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>`;
+                    let mediaHtml = "";
+                    if (s.image_url) {
+                        if (s.image_url.includes('video') || s.image_url.includes('mp4') || s.image_url.includes('data:video')) {
+                            mediaHtml = `<video src="${s.image_url}" autoplay loop muted></video>`;
+                        } else {
+                            mediaHtml = `<img src="${s.image_url}" alt="Promo">`;
+                        }
+                    } else {
+                        mediaHtml = `<i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>`;
+                    }
+
                     promoBox.innerHTML = `
                         ${mediaHtml}
-                        <h4 style="font-family:'Cinzel'">${s.title || translations[lang].promo_title}</h4>
-                        <p class="small text-muted">${s.description || translations[lang].promo_desc}</p>
-                        <hr class="w-75 mx-auto">
-                        <a href="floristeria.html" class="btn-luxury" style="font-size:0.65rem; padding: 8px 15px;">${translations[lang].btn_view_more}</a>
+                        <h4 class="blink-text">${s.title || (translations[lang] ? translations[lang].promo_title : "Offres")}</h4>
+                        <p>${s.description || (translations[lang] ? translations[lang].promo_desc : "")}</p>
+                        <a href="floristeria.html" class="btn btn-sm btn-outline-dark mt-2">${translations[lang] ? translations[lang].btn_view_more : "Voir plus"}</a>
                     `;
                 }
             });
         }
     }
 
-    async function logout() { await _supabase.auth.signOut(); localStorage.removeItem('cart'); window.location.reload(); }
-
     document.addEventListener('DOMContentLoaded', () => {
         const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
         document.querySelector('.lang-select').value = savedLang;
         changeLanguage(savedLang);
         loadDynamicContent();
-        updateNavbarAuth(); // CHAMA A FUNÇÃO PARA MOSTRAR O USUÁRIO
+        updateNavbarAuth(); // ADICIONADO PARA MOSTRAR A BONEQUINHA
     });
 </script>
 </body>

@@ -10,13 +10,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- BIBLIOTECA EMAILJS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <style>
         :root { --dark: #4A2419; --rose: #C98986; --bg: #f8f9fa; --gold: #B8860B; }
         
-        /* CORREÇÃO DE PADDING PARA NÃO FICAR SOB O MENU FIXO */
         body { 
             font-family: 'Poppins', sans-serif; 
             background-color: var(--bg); 
@@ -24,7 +22,6 @@
             padding-top: 150px; 
         }
 
-        /* NAVBAR FIXA (IGUAL ÀS OUTRAS PÁGINAS) */
         .navbar { background: white !important; padding: 12px 50px; border-bottom: 2px solid var(--gold); position: fixed; top: 0; left: 0; width: 100%; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
 
         .main-container { max-width: 1100px; margin: 0 auto; padding: 20px; }
@@ -35,7 +32,11 @@
         .zip-status { font-size: 0.8rem; font-weight: 600; color: var(--rose); margin-top: -15px; margin-bottom: 15px; display: none; }
         .summary-card { background: #fff; border-radius: 15px; padding: 25px; border: 1px solid #e1e1e1; position: sticky; top: 160px; }
         .item-row { border-bottom: 1 solid #f1f1f1; padding: 15px 0; }
-        .total-row { font-size: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; margin-top: 15px; color: #28a745; }
+        
+        .fee-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #666; margin-top: 10px; }
+        .discount-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #e63946; margin-top: 10px; font-weight: 600; }
+        
+        .total-row { font-size: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; margin-top: 15px; color: #28a745; border-top: 2px solid #eee; padding-top: 15px; }
         .btn-submit { background: var(--dark); color: white; border-radius: 10px; padding: 18px; width: 100%; border: none; font-weight: 700; font-size: 1.2rem; transition: 0.3s; cursor: pointer; }
         .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
         
@@ -145,6 +146,26 @@
             <div class="summary-card">
                 <h2 class="section-header">Résumé de la commande</h2>
                 <div id="summary-items"></div>
+                
+                <div class="border-top pt-3 mt-3">
+                    <div class="fee-row">
+                        <span>Sous-total</span>
+                        <span id="sub-total">$0.00</span>
+                    </div>
+                    <div id="discount-area" class="discount-row" style="display: none;">
+                        <span>Rabais appliqué</span>
+                        <span id="discount-amount">-$0.00</span>
+                    </div>
+                    <div class="fee-row">
+                        <span>Frais de Service (<span id="tax-percent">0</span>%)</span>
+                        <span id="tax-amount">$0.00</span>
+                    </div>
+                    <div class="fee-row">
+                        <span>Livraison</span>
+                        <span id="shipping-amount">$0.00</span>
+                    </div>
+                </div>
+
                 <div class="total-row">
                     <span>Total</span>
                     <span id="grand-total">$0.00</span>
@@ -161,6 +182,10 @@
 
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
     let currentUser = null;
+    let globalShipping = 0;
+    let globalTaxPercent = 0;
+    let globalDiscountType = 'none';
+    let globalDiscountValue = 0;
 
     document.addEventListener('DOMContentLoaded', () => {
         const dateInput = document.getElementById('order_date');
@@ -168,7 +193,21 @@
         tomorrow.setDate(tomorrow.getDate() + 1);
         const minDate = tomorrow.toISOString().split('T')[0];
         dateInput.setAttribute('min', minDate);
+        loadGlobalSettings(); 
     });
+
+    async function loadGlobalSettings() {
+        const { data } = await _supabase.from('site_settings').select('*').in('id', ['global_shipping', 'global_tax', 'global_discount_type', 'global_discount_value']);
+        if (data) {
+            globalShipping = parseFloat(data.find(s => s.id === 'global_shipping')?.description || 0);
+            globalTaxPercent = parseFloat(data.find(s => s.id === 'global_tax')?.description || 0);
+            globalDiscountType = data.find(s => s.id === 'global_discount_type')?.description || 'none';
+            globalDiscountValue = parseFloat(data.find(s => s.id === 'global_discount_value')?.description || 0);
+            
+            document.getElementById('tax-percent').innerText = globalTaxPercent;
+            renderSummary();
+        }
+    }
 
     _supabase.auth.onAuthStateChange((event, session) => {
         if (session) {
@@ -326,7 +365,6 @@
 
             const orderIdShort = (newOrder || orderObj).id ? (newOrder || orderObj).id.slice(0, 8).toUpperCase() : "TEMP";
 
-            // LÓGICA WHATSAPP / PAYPAL / CC
             if (paymentMethod === 'wa') {
                 const adminPhone = "13522982578";
                 const fLower = "\uD83C\uDF38"; 
@@ -347,12 +385,11 @@
                     pIn + " *Adresse:* " + fullAddress + "\n" +
                     "📝 *Note:* " + (orderObj.note || "Aucune") + "\n\n" +
                     cArd + " *PAIEMENT:* Je souhaite payer par *Zelle* ou *CashApp*.\n\n" +
-                    "Merci de me confirmer les informations pour finaliser le transfert.";
+                    "Merci de me confirmer les informações pour finaliser le transfert.";
 
                 window.open("https://wa.me/" + adminPhone + "?text=" + encodeURIComponent(waMessage), "_blank");
             } 
             else if (paymentMethod === 'paypal') {
-                // Link oficial de checkout direto do PayPal (Mais estável)
                 const paypalURL = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=laprimavera951@gmail.com&item_name=Commande_" + orderIdShort + "&amount=" + rawAmount + "&currency_code=USD&no_shipping=1";
                 window.open(paypalURL, "_blank");
             }
@@ -361,7 +398,7 @@
             await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
             localStorage.removeItem('cart');
             
-            alert("Merci! Votre commande a été enregistrée. Veuillez finaliser le paiement pour confirmer la livraison.");
+            alert("Merci! Votre commande a été enregistrée. Veuillez finaliser le pagamento pour confirmer la livraison.");
             window.location.href = "mon-compte.html"; 
 
         } catch (err) {
@@ -374,16 +411,20 @@
     function renderSummary() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const summaryDiv = document.getElementById('summary-items');
-        let total = 0;
+        let subtotal = 0;
         
         if (cart.length === 0) {
             summaryDiv.innerHTML = "<p class='text-muted p-3 text-center'>Votre panier est vide.</p>";
+            document.getElementById('sub-total').innerText = "$0.00";
+            document.getElementById('tax-amount').innerText = "$0.00";
+            document.getElementById('shipping-amount').innerText = "$0.00";
             document.getElementById('grand-total').innerText = "$0.00";
+            document.getElementById('discount-area').style.display = 'none';
             return;
         }
 
         summaryDiv.innerHTML = cart.map((i, idx) => {
-            total += (i.price * i.quantity);
+            subtotal += (i.price * i.quantity);
             let extraInfo = i.recipient_name ? `
                 <div style="font-size: 0.75rem; color: #666; background: #fdfaf8; padding: 8px; border-radius: 5px; margin-top: 5px; border-left: 3px solid var(--rose);">
                     <i class="bi bi-person-fill"></i> Pour: <strong>${i.recipient_name}</strong><br>
@@ -409,7 +450,30 @@
                     ${extraInfo}
                 </div>`;
         }).join('');
-        document.getElementById('grand-total').innerText = `$${total.toFixed(2)}`;
+
+        // CÁLCULO DO DESCONTO
+        let discount = 0;
+        if (globalDiscountType === 'fixed') {
+            discount = globalDiscountValue;
+        } else if (globalDiscountType === 'percent') {
+            discount = subtotal * (globalDiscountValue / 100);
+        }
+
+        if (discount > 0) {
+            document.getElementById('discount-area').style.display = 'flex';
+            document.getElementById('discount-amount').innerText = `-$${discount.toFixed(2)}`;
+        } else {
+            document.getElementById('discount-area').style.display = 'none';
+        }
+
+        const baseAmount = Math.max(0, subtotal - discount);
+        const taxAmount = baseAmount * (globalTaxPercent / 100);
+        const finalTotal = baseAmount + taxAmount + globalShipping;
+
+        document.getElementById('sub-total').innerText = `$${subtotal.toFixed(2)}`;
+        document.getElementById('tax-amount').innerText = `$${taxAmount.toFixed(2)}`;
+        document.getElementById('shipping-amount').innerText = `$${globalShipping.toFixed(2)}`;
+        document.getElementById('grand-total').innerText = `$${finalTotal.toFixed(2)}`;
     }
 </script>
 </body>
