@@ -166,7 +166,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // --- DICIONÁRIO DE TRADUÇÕES ---
     const translations = {
         fr: {
             title_login: "Connexion", subtitle_login: "Heureux de vous revoir !", title_reg: "Inscription", subtitle_reg: "Complétez votre profil USA.",
@@ -195,7 +194,7 @@
             err_pass_match: "Las contraseñas no coinciden.", link_forgot: "¿Olvidaste tu contraseña?", btn_login_text: "Conectarse", btn_reg_text: "Registrarse",
             recover_text: "Ingresa tu email para recibir un enlace de restablecimiento.", btn_send_link: "Enviar enlace", link_back_login: "← Volver al login",
             toggle_no_acc: "¿No tienes cuenta?", toggle_create: "Crear cuenta", toggle_has_acc: "¿Ya estás registrado?", toggle_login: "Conectarse",
-            ban_title: "Cuenta Suspendida", ban_text: "Tu cuenta ha sido suspendida por la administración. Para más información o para reactivarla, contáctanos:",
+            ban_title: "Cuenta Suspendida", ban_text: "Tu cuenta ha sido suspendida por la administração. Para más información o para reactivarla, contáctanos:",
             btn_back: "Volver al login", alert_error: "Email o contraseña incorrectos.", msg_welcome: "¡Bienvenido a La Primavera!"
         }
     };
@@ -211,7 +210,6 @@
         });
         localStorage.setItem('laprimavera_lang', lang);
         
-        // Ajusta textos que mudam dependendo do modo (login/register)
         const currentLang = translations[lang];
         if (mode === "login") {
             document.getElementById('display-title').innerText = currentLang.title_login;
@@ -327,11 +325,61 @@
         } else {
             const confirmPass = document.getElementById('confirm-password').value;
             if (password !== confirmPass) { alert(translations[lang].err_pass_match); btn.disabled = false; return; }
-            const { data, error: authErr } = await _supabase.auth.signUp({
-                email, password, options: { data: { full_name: document.getElementById('reg-name').value, phone: document.getElementById('reg-phone').value, zip: document.getElementById('reg-zip').value, city: document.getElementById('reg-city').value, state: document.getElementById('reg-state').value, street: document.getElementById('reg-street').value } }
+            
+            // CAPTURA DE DADOS COMPLETA
+            const fullName = document.getElementById('reg-name').value;
+            const phone = document.getElementById('reg-phone').value;
+            const zip = document.getElementById('reg-zip').value;
+            const city = document.getElementById('reg-city').value;
+            const state = document.getElementById('reg-state').value;
+            const street = document.getElementById('reg-street').value;
+
+            // 1. CRIAR USUÁRIO NO AUTH COM METADADOS
+            const { data: authData, error: authErr } = await _supabase.auth.signUp({
+                email, password,
+                options: {
+                    data: { 
+                        full_name: fullName, 
+                        phone: phone, 
+                        zip: zip, 
+                        city: city, 
+                        state: state, 
+                        street: street 
+                    }
+                }
             });
-            if (authErr) { alert(authErr.message); btn.disabled = false; return; }
-            alert(translations[lang].msg_welcome); window.location.href = "mon-compte.html";
+
+            if (authErr) { 
+                console.error("Erro Auth:", authErr);
+                alert("Erro Auth: " + authErr.message); 
+                btn.disabled = false; 
+                return; 
+            }
+
+            // 2. SALVAMENTO MANUAL NA TABELA PROFILES COM DELAY PARA GARANTIR O REGISTRO NO AUTH
+            if (authData.user) {
+                setTimeout(async () => {
+                    const { error: profileError } = await _supabase.from('profiles').upsert({
+                        id: authData.user.id,
+                        email: email,
+                        full_name: fullName,
+                        phone: phone,
+                        zip: zip,
+                        city: city,
+                        state: state,
+                        street: street
+                    });
+                    
+                    if (profileError) {
+                        console.error("ERRO CRÍTICO NO BANCO:", profileError);
+                        // Tentamos prosseguir pois o Auth já funcionou, o usuário pode completar o perfil depois
+                    }
+                    window.location.href = "mon-compte.html";
+                }, 1000);
+            } else {
+                alert(translations[lang].msg_welcome); 
+                window.location.href = "mon-compte.html";
+            }
         }
     };
 
