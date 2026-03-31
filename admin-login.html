@@ -82,7 +82,7 @@
             admin_title: "ACCÈS ADMIN", ph_email: "Email Administrateur", ph_pass: "Mot de passe",
             btn_enter: "ENTRER", link_forgot: "Mot de passe oublié ?", link_signup: "Créer um nouveau compte Admin",
             verifying: "Vérification...", err_auth: "Email ou mot de passe incorrect.",
-            err_denied: "Accès refusé : Réservé aux administrateurs.", alert_email: "Veuillez saisir votre e-mail pour la récupération.",
+            err_denied: "Accès refusé : Réservé aux administrateurs.", alert_email: "Veuillez saisir votre e-mail para la récupération.",
             msg_recovery: "Email de récupération envoyé !", msg_error: "Erreur: "
         },
         en: {
@@ -94,7 +94,7 @@
         },
         es: {
             admin_title: "ACCESO ADMIN", ph_email: "Email Administrador", ph_pass: "Contraseña",
-            btn_enter: "ENTRAR", link_forgot: "¿Olvidaste tu contraseña?", link_signup: "Crear nueva cuenta Admin",
+            btn_enter: "ENTRAR", link_forgot: "¿Olvidaste tu contraseña?", link_signup: "Crear nova conta Admin",
             verifying: "Verificando...", err_auth: "Email o contraseña incorrectos.",
             err_denied: "Acceso denegado: Solo administradores.", alert_email: "Por favor, ingrese su email para la recuperación.",
             msg_recovery: "¡Email de recuperación enviado!", msg_error: "Error: "
@@ -113,52 +113,44 @@
         localStorage.setItem('laprimavera_lang', lang);
     }
 
-    // CONFIGURAÇÃO DO SUPABASE (Ajustada para Domínio Personalizado)
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg', {
         auth: {
             storageKey: 'laprimavera-admin-session',
             storage: window.localStorage,
             autoRefreshToken: true,
             persistSession: true,
-            detectSessionInUrl: true // Permite reconhecer a sessão após o redirecionamento do domínio
+            detectSessionInUrl: true
         }
     });
 
     document.getElementById('adminLoginForm').onsubmit = async (e) => {
         e.preventDefault();
         const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        const email = document.getElementById('adm-email').value;
+        const email = document.getElementById('adm-email').value.trim();
         const password = document.getElementById('adm-pass').value;
         const msg = document.getElementById('msg');
         const btn = document.getElementById('btn-text');
 
-        // Reset visual do feedback
         msg.style.display = 'none';
         btn.innerText = translations[lang].verifying;
         btn.disabled = true;
 
         try {
             const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-            
-            if (error) {
-                console.error("Erro Auth:", error.message);
-                throw new Error(translations[lang].err_auth);
-            }
+            if (error) throw new Error(translations[lang].err_auth);
 
-            // Busca o perfil para verificar se é admin
+            // Atraso de segurança para garantir a gravação da sessão no dispositivo
+            await new Promise(resolve => setTimeout(resolve, 800));
+
             const { data: profile, error: profError } = await _supabase
                 .from('profiles')
                 .select('is_admin')
                 .eq('id', data.user.id)
-                .maybeSingle();
-
-            if (profError) {
-                console.error("Erro Tabela Profiles:", profError.message);
-                throw new Error("Erro ao validar perfil.");
-            }
+                .single();
 
             if (profile && profile.is_admin === true) {
-                window.location.href = "admin.html";
+                // Redirecionamento forçado para evitar loop no celular
+                window.location.replace("admin.html");
             } else {
                 await _supabase.auth.signOut();
                 throw new Error(translations[lang].err_denied);
