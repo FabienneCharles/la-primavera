@@ -55,7 +55,13 @@
             border: 1px solid var(--gold-title); 
         }
 
-        /* Efeito de Zoom na Propaganda */
+        /* BARRA DE BUSCA */
+        .search-box input:focus {
+            box-shadow: 0 0 5px rgba(184, 134, 11, 0.5);
+            border-color: var(--gold-title);
+            outline: none;
+        }
+
         #promo-sidebar-content {
             overflow: hidden; 
             border-radius: 15px;
@@ -71,15 +77,16 @@
             transform: scale(1.1); 
         }
 
-        .nav-link { 
-            font-family: 'Cinzel', serif; 
-            font-size: 0.85rem; 
-            letter-spacing: 1.5px; 
-            color: var(--deep-coffee) !important; 
-            font-weight: 600; text-transform: uppercase;
-        }
+   .nav-link { 
+    font-family: 'Cinzel', serif; 
+    font-size: 0.75rem; /* Reduzi um pouco para ajudar a caber tudo */
+    letter-spacing: 1px; /* Diminuir o espaço entre letras também ajuda muito */
+    color: var(--deep-coffee) !important; 
+    font-weight: 600; 
+    text-transform: uppercase;
+    white-space: nowrap; /* ESTA LINHA IMPEDE A QUEBRA */
+}
 
-        /* IDIOMA SELECTOR */
         .lang-select {
             border: 1px solid var(--gold-title);
             border-radius: 20px;
@@ -107,7 +114,6 @@
         }
         .user-icon { font-size: 1.7rem; color: var(--deep-coffee); }
 
-        /* HERO SECTION */
         .hero-section {
             height: 45vh;
             background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), 
@@ -133,7 +139,6 @@
             letter-spacing: 3px;
         }
 
-        /* SECTIONS */
         .featured-section { padding: 100px 0; background-color: var(--creme-luxo) !important; }
         
         .section-title { 
@@ -200,7 +205,6 @@
         }
         .btn-luxury:hover { background: var(--deep-coffee); color: white; transform: translateY(-4px); }
 
-        /* FOOTER ESTILIZADO */
         footer { 
             background-color: #1a0f0a; 
             color: #fdfaf8; 
@@ -223,7 +227,6 @@
         @keyframes blinker { 50% { opacity: 0; } }
         .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
 
-        /* --- MUDANÇAS PARA RESPONSIVIDADE (CELULAR) --- */
         @media (max-width: 991px) {
             .navbar { padding: 12px 20px; }
             .navbar-collapse { background: white; padding: 20px; border-radius: 10px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
@@ -271,19 +274,22 @@
         </div>
         
         <div class="d-flex align-items-center">
+            <div class="search-box d-none d-lg-flex align-items-center me-3">
+                <i class="bi bi-search me-2" style="color: var(--deep-coffee);"></i>
+                <input type="text" class="form-control form-control-sm" placeholder="Rechercher..." style="border-radius: 20px; border: 1px solid var(--gold-title); width: 150px;">
+            </div>
+
             <select class="lang-select" onchange="changeLanguage(this.value)">
                 <option value="fr">FR 🇫🇷</option>
                 <option value="en">EN 🇺🇸</option>
                 <option value="es">ES 🇪🇸</option>
             </select>
 
-            <div id="auth-area">
-                <a href="login.html" class="btn-luxury" style="padding: 8px 18px; font-size: 0.75rem; border-width: 1px;" data-i18n="btn_login">CONNEXION</a>
-            </div>
+            <div id="auth-area"></div>
 
             <a href="checkout.html" class="cart-wrapper">
                 <i class="bi bi-cart3 fs-4"></i>
-                <span class="cart-badge" id="cart-count">0</span>
+                <span id="cartCount" class="cart-badge">0</span>
             </a>
         </div>
     </div>
@@ -394,6 +400,8 @@
         }
     };
 
+    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+
     function changeLanguage(lang) {
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -402,13 +410,12 @@
         localStorage.setItem('laprimavera_lang', lang);
     }
 
-    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
-
     async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
 
     async function updateNavbarAuth() {
         const area = document.getElementById('auth-area');
         const { data: { user } } = await _supabase.auth.getUser();
+        
         if (user) {
             const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
             area.innerHTML = `
@@ -422,6 +429,22 @@
                         <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
                     </ul>
                 </div>`;
+            updateCartBadge(); // Atualiza o badge se logado
+        } else {
+            area.innerHTML = `<a href="login.html" class="btn-luxury" style="padding: 8px 18px; font-size: 0.75rem; border-width: 1px;">CONNEXION</a>`;
+            document.getElementById('cartCount').innerText = "0";
+        }
+    }
+
+    async function updateCartBadge() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            const { data: items } = await _supabase.from('cart_items').select('quantity').eq('user_id', user.id);
+            if (items) {
+                const total = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
+                const badge = document.getElementById('cartCount');
+                if (badge) badge.innerText = total;
+            }
         }
     }
 
@@ -434,7 +457,7 @@
                     if (s.image_url && s.image_url.includes('video')) {
                         document.getElementById('hero-bg').style.backgroundImage = 'none';
                         document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1; top: 0; left: 0;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
-                    } else {
+                    } else if (s.image_url) {
                         document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
                     }
                 }
@@ -446,7 +469,7 @@
                     const promoBox = document.getElementById('promo-sidebar-content');
                     let mediaHtml = "";
                     if (s.image_url) {
-                        if (s.image_url.includes('video') || s.image_url.includes('mp4') || s.image_url.includes('data:video')) {
+                        if (s.image_url.includes('video') || s.image_url.includes('mp4')) {
                             mediaHtml = `<video src="${s.image_url}" autoplay loop muted></video>`;
                         } else {
                             mediaHtml = `<img src="${s.image_url}" alt="Promo">`;
@@ -454,12 +477,11 @@
                     } else {
                         mediaHtml = `<i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>`;
                     }
-
                     promoBox.innerHTML = `
                         ${mediaHtml}
-                        <h4 class="blink-text">${s.title || (translations[lang] ? translations[lang].promo_title : "Offres")}</h4>
-                        <p>${s.description || (translations[lang] ? translations[lang].promo_desc : "")}</p>
-                        <a href="floristeria.html" class="btn btn-sm btn-outline-dark mt-2">${translations[lang] ? translations[lang].btn_view_more : "Voir plus"}</a>
+                        <h4 class="blink-text">${s.title || "Offres"}</h4>
+                        <p>${s.description || ""}</p>
+                        <a href="floristeria.html" class="btn btn-sm btn-outline-dark mt-2">Voir plus</a>
                     `;
                 }
             });

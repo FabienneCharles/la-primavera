@@ -25,16 +25,16 @@
         }
 
         .navbar { 
-            background: white !important; 
-            padding: 12px 50px; 
-            border-bottom: 2px solid var(--gold); 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 10000;
-        }
+    background: white !important; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+    padding: 12px 50px; /* 12px de altura, 50px de cada lado */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10000 !important;
+    border-bottom: 2px solid var(--gold);
+}
 
         /* PROPAGANDA LATERAL */
         .promo-sidebar {
@@ -76,7 +76,19 @@
         }
         .user-icon { font-size: 1.6rem; color: var(--cafe); }
 
-        .navbar-brand { font-family: 'Cinzel', serif; font-weight: 700; color: var(--cafe) !important; display: flex; align-items: center; gap: 15px; letter-spacing: 2px; }
+        .navbar-brand { 
+            font-family: 'Cinzel', serif; 
+            font-weight: 700; 
+            color: var(--deep-coffee) !important; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            font-size: 1.4rem;
+            text-decoration: none;
+        }
+
         .brand-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold); }
         .nav-link { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 1.5px; color: var(--cafe) !important; font-weight: 600; text-transform: uppercase; }
 
@@ -98,18 +110,13 @@
         .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
         .new-price { color: #e63946; font-weight: 700; }
         .promo-badge { background: #e63946; color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; margin-left: 8px; display: inline-block; vertical-align: middle; animation: pulse 2s infinite; }
-        .countdown-timer { font-size: 0.75rem; color: #e63946; font-weight: 700; background: rgba(230, 57, 70, 0.1); padding: 4px 12px; border-radius: 50px; display: inline-block; margin-top: 8px; border: 1px solid rgba(230, 57, 70, 0.2); }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        .btn-add { background: var(--cafe); color: white; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; transition: 0.3s; text-transform: uppercase; margin-top: auto; }
+        .btn-add { background: var(--cafe); color: white; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; transition: 0.3s; text-transform: uppercase; margin-top: auto; border-radius: 50px; }
         .btn-add:hover { background: var(--gold); }
 
-        .order-section { background: white; padding: 50px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.1); margin: 50px 0; border-top: 5px solid var(--gold); }
-        .btn-order { background: var(--cafe); color: white; border: none; padding: 18px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; border-radius: 10px; transition: 0.3s; font-size: 1rem; }
-        .btn-order:hover { background: var(--gold); transform: scale(1.02); }
-
-        .btn-unavailable { background: #dcdcdc; color: #888; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; text-transform: uppercase; margin-top: auto; cursor: not-allowed; }
+        .btn-unavailable { background: #dcdcdc; color: #888; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; text-transform: uppercase; margin-top: auto; cursor: not-allowed; border-radius: 50px; }
 
         footer { 
             background-color: var(--cafe); color: #fdfaf8; padding: 60px 20px 20px; font-family: 'Poppins', sans-serif; margin-top: 80px; border-top: 4px solid var(--gold); 
@@ -172,51 +179,6 @@
             </div>
         </div>
     </div>
-
-    <div class="order-section" id="order-form">
-        <h3 class="text-center mb-5" style="font-family: 'Cinzel';">Personnaliser ma Livraison</h3>
-        <div class="row g-4">
-            <div class="col-md-12">
-                <label class="fw-bold small mb-2">MODÈLE SÉLECTIONNÉ</label>
-                <input type="text" id="selected_prod" class="form-control" readonly placeholder="Cliquez sur 'CHOISIR' plus haut">
-            </div>
-            <div class="col-md-12">
-                <label class="fw-bold small mb-2">NOM DU DESTINATAIRE *</label>
-                <input type="text" id="recipient_name" class="form-control" placeholder="Qui va receber ce délice ?">
-            </div>
-            <div class="col-md-6">
-                <label class="fw-bold small mb-2">DATE DE LIVRAISON (Min. 24h d'avance) *</label>
-                <input type="date" id="order_date" class="form-control">
-            </div>
-            <div class="col-md-6">
-                <label class="fw-bold small mb-2">CRÉNEAU HORAIRE *</label>
-                <select id="heure_livraison" class="form-select">
-                    <option value="" selected disabled>Chargement des horaires...</option>
-                </select>
-            </div>
-            <div class="col-12">
-                <div class="p-3" style="background: #fff9f0; border-radius: 8px; border: 1px dashed var(--gold);">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="is_surprise">
-                        <label class="form-check-label fw-bold ms-2" for="is_surprise">🎁 C'EST UNE SURPRISE !</label>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-12">
-                <label class="fw-bold small mb-2">ADRESSE DE LIVRAISON *</label>
-                <input type="text" id="delivery_address" class="form-control" placeholder="Rue, número, appartement, ville...">
-            </div>
-            <div class="col-md-12">
-                <label class="fw-bold small mb-2">MESSAGE POUR LA CARTE (OPTIONNEL)</label>
-                <textarea id="order_message" class="form-control" rows="3" placeholder="Ex: Joyeux Anniversaire mon amour..."></textarea>
-            </div>
-            <div class="col-12 text-center mt-5">
-                <button class="btn-order shadow" onclick="addToCart()">
-                    <i class="bi bi-cart-plus-fill me-2"></i> AJOUTER AU PANIER
-                </button>
-            </div>
-        </div>
-    </div>
 </div>
 
 <footer>
@@ -249,24 +211,21 @@
 <script>
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
-    let currentPrice = 0;
-    let currentId = null;
-
     const translations = {
         fr: {
             nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "À PROPOS",
             page_title: "Douceurs Haïtiennes", loading: "Chargement...", footer_brand: "L'excellence haïtienne raffinée.",
-            footer_contact: "CONTACT", footer_follow: "SUIVEZ-NOUS", btn_add: "CHOISIR", btn_out: "Indisponible"
+            footer_contact: "CONTACT", footer_follow: "SUIVEZ-NOUS", btn_add: "AJOUTER AU PANIER", btn_out: "Indisponible"
         },
         en: {
             nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
             page_title: "Haitian Delights", loading: "Loading...", footer_brand: "Refined Haitian excellence.",
-            footer_contact: "CONTACT", footer_follow: "FOLLOW US", btn_add: "CHOOSE", btn_out: "Out of Stock"
+            footer_contact: "CONTACT", footer_follow: "FOLLOW US", btn_add: "ADD TO CART", btn_out: "Out of Stock"
         },
         es: {
             nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS",
             page_title: "Dulces Haitianos", loading: "Cargando...", footer_brand: "Excelencia haitiana refinada.",
-            footer_contact: "CONTACTO", footer_follow: "SÍGUENOS", btn_add: "ELEGIR", btn_out: "Agotado"
+            footer_contact: "CONTACTO", footer_follow: "SÍGUENOS", btn_add: "AÑADIR AO CARRITO", btn_out: "Agotado"
         }
     };
 
@@ -278,50 +237,68 @@
         localStorage.setItem('laprimavera_lang', lang);
     }
 
-    async function load() {
-    // Busca produtos e taxas ao mesmo tempo
-    const { data: products } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
-    const { data: settings } = await _supabase.from('site_settings').select('*').in('id', ['global_shipping', 'global_tax']);
-    
-    const shipping = parseFloat(settings.find(s => s.id === 'global_shipping')?.description || 0);
-    const grid = document.getElementById('products');
-    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-    
-    // Traduções locais para o frete
-    const shipText = { fr: "Livraison Gratuite", en: "Free Shipping", es: "Envío Gratis" };
-
-    if(products) {
-        grid.innerHTML = products.map(p => {
-            const inStock = (p.stock > 0);
-            const now = new Date();
-            const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
-            const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
-            let finalPrice = isPromoValid ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) : p.price;
-
-            // Selo de Frete Grátis
-            const shippingBadge = shipping === 0 
-                ? `<div class="mt-2"><span class="badge bg-success" style="font-size:0.7rem;">${shipText[lang]}</span></div>` 
-                : "";
-
-            return `
-            <div class="col-md-6 col-xl-4">
-                <div class="product-card">
-                    <div class="img-zoom-container">
-                        <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
-                    </div>
-                    <div class="product-body">
-                        <h4>${p.name}</h4>
-                        <div class="price-tag">${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price">$${finalPrice}</span>` : `$${p.price}`}</div>
-                        ${shippingBadge}
-                        ${inStock 
-                            ? `<button class="btn-add mt-3" onclick="selectProduct('${p.name.replace(/'/g, "\\'")}', ${finalPrice}, '${p.id}')">${translations[lang].btn_add}</button>` 
-                            : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
+    // NOVA FUNÇÃO PARA ATUALIZAR O NÚMERO DO CARRINHO
+    async function updateCartBadge() {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            const { data: items } = await _supabase.from('cart_items').select('quantity').eq('user_id', user.id);
+            if (items) {
+                const total = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
+                document.getElementById('cartCount').innerText = total;
+            }
+        }
     }
-}
+
+    async function load() {
+        const { data: products } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
+        const grid = document.getElementById('products');
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+
+        if(products) {
+            grid.innerHTML = products.map(p => {
+                const inStock = (p.stock > 0);
+                const now = new Date();
+                const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+                const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
+                let finalPrice = isPromoValid ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) : p.price;
+
+                return `
+                <div class="col-md-6 col-xl-4">
+                    <div class="product-card">
+                        <div class="img-zoom-container">
+                            <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
+                        </div>
+                        <div class="product-body">
+                            <h4>${p.name}</h4>
+                            <div class="price-tag">${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${p.price}`}</div>
+                            ${inStock 
+                                ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">${translations[lang].btn_add}</button>` 
+                                : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    }
+
+    async function quickAdd(id, name, price) {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
+
+        const { error } = await _supabase.from('cart_items').insert([{
+            user_id: user.id, 
+            product_name: name, 
+            price: price, 
+            quantity: 1
+        }]);
+
+        if (!error) { 
+            alert(name + " ajouté au panier !"); 
+            updateCartBadge(); // Atualiza o número assim que adiciona
+        } else {
+            alert("Erreur: " + error.message);
+        }
+    }
 
     async function loadPromoSidebar() {
         const { data } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
@@ -332,50 +309,13 @@
         }
     }
 
-    async function loadDeliverySlots() {
-        const select = document.getElementById('heure_livraison');
-        const { data } = await _supabase.from('delivery_slots').select('*').eq('is_active', true).order('display_order');
-        if (data) {
-            select.innerHTML = '<option value="" selected disabled>Choisir l’heure...</option>';
-            data.forEach(s => select.innerHTML += `<option value="${s.slot_label}">${s.slot_label}</option>`);
-        }
-    }
-
-    function selectProduct(name, price, id) {
-        document.getElementById('selected_prod').value = name;
-        currentPrice = price;
-        currentId = id;
-        document.getElementById('order-form').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    async function addToCart() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { alert("Veuillez vous connecter."); return; }
-
-        const prod = document.getElementById('selected_prod').value;
-        const recipient = document.getElementById('recipient_name').value;
-        const date = document.getElementById('order_date').value;
-        const hour = document.getElementById('heure_livraison').value;
-        const addr = document.getElementById('delivery_address').value;
-        
-        if(!prod || !recipient || !date || !hour || !addr) { alert("Champs obligatoires manquants."); return; }
-
-        const { error } = await _supabase.from('cart_items').insert([{
-            user_id: user.id, product_name: prod, price: currentPrice, quantity: 1,
-            recipient_name: recipient, delivery_date: date, delivery_time: hour,
-            delivery_address: addr, card_message: document.getElementById('order_message').value,
-            is_surprise: document.getElementById('is_surprise').checked
-        }]);
-
-        if (!error) { alert("Ajouté au panier !"); window.location.href = "checkout.html"; }
-    }
-
     async function updateNavbarAuth() {
         const area = document.getElementById('auth-area');
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
             const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
             area.innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle user-icon"></i><span>${profile?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
+            updateCartBadge(); // Chama a contagem se o usuário estiver logado
         } else {
             area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark">Connexion</a>`;
         }
@@ -384,13 +324,10 @@
     async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
 
     document.addEventListener('DOMContentLoaded', () => {
-        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('order_date').setAttribute('min', tomorrow.toISOString().split('T')[0]);
         const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
         changeLanguage(savedLang);
         load();
         loadPromoSidebar();
-        loadDeliverySlots();
         updateNavbarAuth();
     });
 </script>

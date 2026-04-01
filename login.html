@@ -36,7 +36,6 @@
             position: relative;
         }
 
-        /* NOVO: Seletor de Idioma */
         .lang-container { position: absolute; top: 20px; right: 30px; }
         .lang-select { border: 1px solid #eee; border-radius: 20px; padding: 2px 8px; font-size: 0.7rem; cursor: pointer; outline: none; }
 
@@ -56,7 +55,6 @@
             box-shadow: 0 10px 30px rgba(74, 36, 25, 0.2); margin-top: 10px; 
         }
         .btn-primavera:hover { background: var(--rose); transform: translateY(-3px); }
-        .btn-primavera:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .ban-alert {
             display: none;
@@ -72,7 +70,6 @@
 
         .link-alt { font-size: 0.85rem; color: var(--rose); text-decoration: none; font-weight: 500; cursor: pointer; }
         .toggle-section { text-align: center; margin-top: 25px; border-top: 1px solid #f1f1f1; padding-top: 20px; }
-        .zip-loader { font-size: 0.75rem; color: var(--rose); margin-top: -10px; margin-bottom: 10px; display: none; }
         .error-msg { font-size: 0.75rem; margin-top: -10px; margin-bottom: 10px; display: none; color: #dc3545; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -100,10 +97,10 @@
             <i class="bi bi-exclamation-octagon-fill me-2 fs-4"></i>
             <strong style="font-size: 1rem;" data-i18n="ban_title">Compte Suspendu</strong>
         </div>
-        <p data-i18n="ban_text">Votre compte a été suspendu par l'administration. Pour plus d'informations ou pour réactiver votre compte, veuillez nous contacter :</p>
+        <p data-i18n="ban_text">Votre compte a été suspendu par l'administration. Pour plus d'informations ou <strong>pour</strong> réactiver votre compte, veuillez nous contacter :</p>
         <div class="mt-2">
             <i class="bi bi-telephone-fill me-1"></i> <strong>+1 (352) 298-2578</strong><br>
-            <i class="bi bi-envelope-fill me-1"></i> <strong>camieannesteus@gmail.com</strong>
+            <i class="bi bi-envelope-fill me-1"></i> <strong>laprimavera951@gmail.com</strong>
         </div>
         <button class="btn btn-sm btn-outline-danger mt-3 w-100" onclick="showLogin()" data-i18n="btn_back">Retour à la connexion</button>
     </div>
@@ -112,47 +109,31 @@
         <div id="register-fields" style="display: none;">
             <input type="text" id="reg-name" class="form-control" data-i18n-placeholder="ph_name" placeholder="Nom Complet *">
             <input type="text" id="reg-phone" class="form-control" data-i18n-placeholder="ph_phone" placeholder="Téléphone (USA) *">
-            
-            <div class="row g-2">
-                <div class="col-6">
-                    <input type="text" id="reg-zip" class="form-control" placeholder="Zip Code *" maxlength="5">
-                    <div id="zip-loader" class="zip-loader" data-i18n="zip_loading">Localisation...</div>
-                </div>
-                <div class="col-6">
-                    <input type="text" id="reg-state" class="form-control" data-i18n-placeholder="ph_state" placeholder="État" readonly>
-                </div>
-            </div>
-            <input type="text" id="reg-city" class="form-control" data-i18n-placeholder="ph_city" placeholder="Ville" readonly>
-            <input type="text" id="reg-street" class="form-control" data-i18n-placeholder="ph_address" placeholder="Adresse (Rue et Numéro) *">
+            <input type="text" id="reg-zip" class="form-control" placeholder="Zip Code *" maxlength="5">
+            <input type="text" id="reg-city" class="form-control" placeholder="Ville" readonly>
+            <input type="text" id="reg-state" class="form-control" placeholder="État" readonly>
+            <input type="text" id="reg-street" class="form-control" placeholder="Adresse *">
         </div>
 
         <input type="email" id="email" class="form-control" required data-i18n-placeholder="ph_email" placeholder="Adresse Email *">
-        
         <div id="password-area">
             <div class="password-wrapper">
                 <input type="password" id="password" class="form-control" data-i18n-placeholder="ph_pass" placeholder="Mot de passe *">
                 <i class="bi bi-eye toggle-password" onclick="togglePass('password', this)"></i>
             </div>
-
             <div id="confirm-area" style="display: none;">
-                <div class="password-wrapper">
-                    <input type="password" id="confirm-password" class="form-control" data-i18n-placeholder="ph_confirm" placeholder="Confirmer le mot de passe *">
-                    <i class="bi bi-eye toggle-password" onclick="togglePass('confirm-password', this)"></i>
-                </div>
-                <div id="pass-error" class="error-msg" data-i18n="err_pass_match">Les mots de passe ne correspondent pas.</div>
+                <input type="password" id="confirm-password" class="form-control" data-i18n-placeholder="ph_confirm" placeholder="Confirmer le mot de passe *">
             </div>
-
             <div id="forgot-link-div" class="text-end mb-3">
                 <span class="link-alt" onclick="showRecover()" data-i18n="link_forgot">Mot de passe oublié ?</span>
             </div>
         </div>
-
         <button type="submit" class="btn-submit btn-primavera" id="btn-submit" data-i18n="btn_login_text">Se connecter</button>
     </form>
 
     <div id="recover-area" style="display: none;" class="fade-in">
         <p class="small text-center mb-4 text-muted" data-i18n="recover_text">Entrez votre email pour recevoir un lien de réinitialisation.</p>
-        <button class="btn-primavera" id="btn-recover" onclick="handleRecover()" data-i18n="btn_send_link">Envoyer le lien</button>
+        <button class="btn-primavera" onclick="handleRecover()" data-i18n="btn_send_link">Envoyer le lien</button>
         <div class="text-center mt-3">
             <span class="link-alt" onclick="showLogin()" data-i18n="link_back_login">← Retour à la connexion</span>
         </div>
@@ -160,42 +141,40 @@
 
     <div class="toggle-section" id="toggle-container">
         <span id="toggle-text" data-i18n="toggle_no_acc">Pas de conta ?</span>
-        <span class="link-alt fw-bold ms-1" onclick="toggleMode()" id="toggle-link" data-i18n="toggle_create">Créer un compte</span>
+        <span class="link-alt fw-bold ms-1" onclick="toggleMode()" id="toggle-link" data-i18n="toggle_create">Créer um compte</span>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // DICIONÁRIO DE TRADUÇÃO CORRIGIDO (Mudei de "para" para "pour")
     const translations = {
         fr: {
-            title_login: "Connexion", subtitle_login: "Heureux de vous revoir !", title_reg: "Inscription", subtitle_reg: "Complétez votre profil USA.",
-            ph_name: "Nom Complet *", ph_phone: "Téléphone (USA) *", zip_loading: "Localisation...", ph_state: "État", ph_city: "Ville",
-            ph_address: "Adresse (Rue et Numéro) *", ph_email: "Adresse Email *", ph_pass: "Mot de passe *", ph_confirm: "Confirmer le mot de passe *",
-            err_pass_match: "Les mots de passe ne correspondent pas.", link_forgot: "Mot de passe oublié ?", btn_login_text: "Se connecter", btn_reg_text: "S'inscrire",
+            title_login: "Connexion", subtitle_login: "Heureux de vous revoir !", title_reg: "Inscription", subtitle_reg: "Complétez votre perfil USA.",
+            ph_name: "Nom Complet *", ph_phone: "Téléphone (USA) *", ph_email: "Adresse Email *", ph_pass: "Mot de passe *", ph_confirm: "Confirmer le mot de passe *",
+            link_forgot: "Mot de passe oublié ?", btn_login_text: "Se connecter", btn_reg_text: "S'inscrire",
             recover_text: "Entrez votre email pour recevoir un lien de réinitialisation.", btn_send_link: "Envoyer le lien", link_back_login: "← Retour à la connexion",
-            toggle_no_acc: "Pas de compte ?", toggle_create: "Créer un compte", toggle_has_acc: "Déjà inscrit ?", toggle_login: "Se connecter",
-            ban_title: "Compte Suspendu", ban_text: "Votre compte a été suspendu par l'administration. Pour plus d'informations ou para réactiver votre compte, veuillez nous contacter :",
-            btn_back: "Retour à la connexion", alert_error: "Email ou mot de passe incorrect.", msg_welcome: "Bienvenue chez La Primavera !"
+            toggle_no_acc: "Pas de compte ?", toggle_create: "Créer um compte", toggle_has_acc: "Déjà inscrit ?", toggle_login: "Se connecter",
+            ban_title: "Compte Suspendu", 
+            ban_text: "Votre compte a été suspendu par l'administration. Pour plus d'informations ou pour réactiver votre compte, veuillez nous contacter :",
+            btn_back: "Retour à la connexion", alert_error: "Email ou mot de passe incorrect."
         },
         en: {
             title_login: "Login", subtitle_login: "Happy to see you again!", title_reg: "Sign Up", subtitle_reg: "Complete your USA profile.",
-            ph_name: "Full Name *", ph_phone: "Phone (USA) *", zip_loading: "Locating...", ph_state: "State", ph_city: "City",
-            ph_address: "Address (Street & Number) *", ph_email: "Email Address *", ph_pass: "Password *", ph_confirm: "Confirm Password *",
-            err_pass_match: "Passwords do not match.", link_forgot: "Forgot password?", btn_login_text: "Login", btn_reg_text: "Sign Up",
+            ph_name: "Full Name *", ph_phone: "Phone (USA) *", ph_email: "Email Address *", ph_pass: "Password *", ph_confirm: "Confirm Password *",
+            link_forgot: "Forgot password?", btn_login_text: "Login", btn_reg_text: "Sign Up",
             recover_text: "Enter your email to receive a reset link.", btn_send_link: "Send link", link_back_login: "← Back to login",
             toggle_no_acc: "No account?", toggle_create: "Create account", toggle_has_acc: "Already registered?", toggle_login: "Login",
             ban_title: "Account Suspended", ban_text: "Your account has been suspended by the administration. For more info or to reactivate, please contact us:",
-            btn_back: "Back to login", alert_error: "Incorrect email or password.", msg_welcome: "Welcome to La Primavera!"
+            btn_back: "Back to login", alert_error: "Incorrect email or password."
         },
         es: {
             title_login: "Conexión", subtitle_login: "¡Feliz de verte de nuevo!", title_reg: "Registro", subtitle_reg: "Completa tu perfil USA.",
-            ph_name: "Nombre Completo *", ph_phone: "Teléfono (USA) *", zip_loading: "Localizando...", ph_state: "Estado", ph_city: "Ciudad",
-            ph_address: "Dirección (Calle y Número) *", ph_email: "Correo Electrónico *", ph_pass: "Contraseña *", ph_confirm: "Confirmar contraseña *",
-            err_pass_match: "Las contraseñas no coinciden.", link_forgot: "¿Olvidaste tu contraseña?", btn_login_text: "Conectarse", btn_reg_text: "Registrarse",
+            ph_name: "Nombre Completo *", ph_phone: "Teléfono (USA) *", ph_email: "Correo Electrónico *", ph_pass: "Contraseña *", ph_confirm: "Confirmar contraseña *",
+            link_forgot: "¿Olvidaste tu contraseña?", btn_login_text: "Conectarse", btn_reg_text: "Registrarse",
             recover_text: "Ingresa tu email para recibir un enlace de restablecimiento.", btn_send_link: "Enviar enlace", link_back_login: "← Volver al login",
             toggle_no_acc: "¿No tienes cuenta?", toggle_create: "Crear cuenta", toggle_has_acc: "¿Ya estás registrado?", toggle_login: "Conectarse",
             ban_title: "Cuenta Suspendida", ban_text: "Tu cuenta ha sido suspendida por la administração. Para más información o para reactivarla, contáctanos:",
-            btn_back: "Volver al login", alert_error: "Email o contraseña incorrectos.", msg_welcome: "¡Bienvenido a La Primavera!"
+            btn_back: "Volver al login", alert_error: "Email o contraseña incorrectos."
         }
     };
 
@@ -209,109 +188,41 @@
             if (translations[lang][key]) el.placeholder = translations[lang][key];
         });
         localStorage.setItem('laprimavera_lang', lang);
-        
-        const currentLang = translations[lang];
-        if (mode === "login") {
-            document.getElementById('display-title').innerText = currentLang.title_login;
-            document.getElementById('btn-submit').innerText = currentLang.btn_login_text;
-        } else if (mode === "register") {
-            document.getElementById('display-title').innerText = currentLang.title_reg;
-            document.getElementById('btn-submit').innerText = currentLang.btn_reg_text;
-        }
     }
 
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
     let mode = "login";
 
-    async function init() {
-        const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
-        document.querySelector('.lang-select').value = savedLang;
-        changeLanguage(savedLang);
-
-        const { data: { session } } = await _supabase.auth.getSession();
-        if (session) { window.location.href = "mon-compte.html"; }
+    function showLogin() {
+        document.getElementById('ban-message').style.display = "none";
+        document.getElementById('main-form').style.display = "block";
+        document.getElementById('toggle-container').style.display = "block";
     }
 
     function togglePass(id, icon) {
         const input = document.getElementById(id);
-        if (input.type === "password") {
-            input.type = "text"; icon.classList.replace('bi-eye', 'bi-eye-slash');
-        } else {
-            input.type = "password"; icon.classList.replace('bi-eye-slash', 'bi-eye');
-        }
+        input.type = input.type === "password" ? "text" : "password";
+        icon.classList.toggle('bi-eye');
+        icon.classList.toggle('bi-eye-slash');
     }
 
     function toggleMode() {
+        mode = mode === "login" ? "register" : "login";
         const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        const cur = translations[lang];
-        mode = (mode === "login") ? "register" : "login";
-        
-        document.getElementById('ban-message').style.display = "none";
-        document.getElementById('main-form').style.display = "block";
-        
-        document.getElementById('display-title').innerText = (mode === "login") ? cur.title_login : cur.title_reg;
-        document.getElementById('display-subtitle').innerText = (mode === "login") ? cur.subtitle_login : cur.subtitle_reg;
-        document.getElementById('register-fields').style.display = (mode === "login") ? "none" : "block";
-        document.getElementById('confirm-area').style.display = (mode === "login") ? "none" : "block";
-        document.getElementById('forgot-link-div').style.display = (mode === "login") ? "block" : "none";
-        document.getElementById('btn-submit').innerText = (mode === "login") ? cur.btn_login_text : cur.btn_reg_text;
-        document.getElementById('toggle-text').innerText = (mode === "login") ? cur.toggle_no_acc : cur.toggle_has_acc;
-        document.getElementById('toggle-link').innerText = (mode === "login") ? cur.toggle_create : cur.toggle_login;
-    }
-
-    function showRecover() {
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        mode = "recover";
-        document.getElementById('display-title').innerText = translations[lang].link_forgot;
-        document.getElementById('main-form').style.display = "none";
-        document.getElementById('toggle-container').style.display = "none";
-        document.getElementById('recover-area').style.display = "block";
-    }
-
-    function showLogin() {
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        mode = "login";
-        document.getElementById('ban-message').style.display = "none";
-        document.getElementById('main-form').style.display = "block";
-        document.getElementById('toggle-container').style.display = "block";
-        document.getElementById('recover-area').style.display = "none";
-        document.getElementById('display-title').innerText = translations[lang].title_login;
-    }
-
-    document.getElementById('reg-zip').addEventListener('keyup', async (e) => {
-        if (e.target.value.length === 5) {
-            document.getElementById('zip-loader').style.display = 'block';
-            const res = await fetch(`https://api.zippopotam.us/us/${e.target.value}`);
-            if (res.ok) {
-                const data = await res.json();
-                document.getElementById('reg-city').value = data.places[0]['place name'];
-                document.getElementById('reg-state').value = data.places[0]['state abbreviation'];
-            }
-            document.getElementById('zip-loader').style.display = 'none';
-        }
-    });
-
-    async function handleRecover() {
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        const emailInput = document.getElementById('email');
-        if (!emailInput.value) { alert("Veuillez entrer votre email."); return; }
-        const { error } = await _supabase.auth.resetPasswordForEmail(emailInput.value, { redirectTo: window.location.origin + '/reset-password.html' });
-        if (error) alert(error.message);
-        else alert("Lien envoyé !");
+        changeLanguage(lang);
+        document.getElementById('register-fields').style.display = mode === "login" ? "none" : "block";
+        document.getElementById('confirm-area').style.display = mode === "login" ? "none" : "block";
     }
 
     document.getElementById('main-form').onsubmit = async (e) => {
         e.preventDefault();
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const btn = document.getElementById('btn-submit');
-        btn.disabled = true;
-
+        
         if (mode === "login") {
-            const { data: authData, error: authError } = await _supabase.auth.signInWithPassword({ email, password });
-            if (authError) { alert(translations[lang].alert_error); btn.disabled = false; return; }
+            const { data: authData, error } = await _supabase.auth.signInWithPassword({ email, password });
+            if (error) { alert("Erreur: " + error.message); return; }
 
             const { data: profile } = await _supabase.from('profiles').select('is_banned').eq('id', authData.user.id).single();
             if (profile && profile.is_banned) {
@@ -319,71 +230,16 @@
                 document.getElementById('main-form').style.display = "none";
                 document.getElementById('toggle-container').style.display = "none";
                 document.getElementById('ban-message').style.display = "block";
-                btn.disabled = false; return;
-            }
-            window.location.href = localStorage.getItem('redirectAfterLogin') || 'mon-compte.html';
-        } else {
-            const confirmPass = document.getElementById('confirm-password').value;
-            if (password !== confirmPass) { alert(translations[lang].err_pass_match); btn.disabled = false; return; }
-            
-            // CAPTURA DE DADOS COMPLETA
-            const fullName = document.getElementById('reg-name').value;
-            const phone = document.getElementById('reg-phone').value;
-            const zip = document.getElementById('reg-zip').value;
-            const city = document.getElementById('reg-city').value;
-            const state = document.getElementById('reg-state').value;
-            const street = document.getElementById('reg-street').value;
-
-            // 1. CRIAR USUÁRIO NO AUTH COM METADADOS
-            const { data: authData, error: authErr } = await _supabase.auth.signUp({
-                email, password,
-                options: {
-                    data: { 
-                        full_name: fullName, 
-                        phone: phone, 
-                        zip: zip, 
-                        city: city, 
-                        state: state, 
-                        street: street 
-                    }
-                }
-            });
-
-            if (authErr) { 
-                console.error("Erro Auth:", authErr);
-                alert("Erro Auth: " + authErr.message); 
-                btn.disabled = false; 
-                return; 
-            }
-
-            // 2. SALVAMENTO MANUAL NA TABELA PROFILES COM DELAY PARA GARANTIR O REGISTRO NO AUTH
-            if (authData.user) {
-                setTimeout(async () => {
-                    const { error: profileError } = await _supabase.from('profiles').upsert({
-                        id: authData.user.id,
-                        email: email,
-                        full_name: fullName,
-                        phone: phone,
-                        zip: zip,
-                        city: city,
-                        state: state,
-                        street: street
-                    });
-                    
-                    if (profileError) {
-                        console.error("ERRO CRÍTICO NO BANCO:", profileError);
-                        // Tentamos prosseguir pois o Auth já funcionou, o usuário pode completar o perfil depois
-                    }
-                    window.location.href = "mon-compte.html";
-                }, 1000);
             } else {
-                alert(translations[lang].msg_welcome); 
                 window.location.href = "mon-compte.html";
             }
         }
     };
 
-    init();
+    window.onload = () => {
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        changeLanguage(lang);
+    };
 </script>
 </body>
 </html>

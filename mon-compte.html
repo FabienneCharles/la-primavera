@@ -47,7 +47,6 @@
         
         .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
 
-        /* AJUSTE NO COMPROVANTE */
         #printableReceipt { font-family: 'Poppins', sans-serif; display: block; padding: 10px; width: 100%; background: white; }
         .receipt-header { text-align: center; border-bottom: 2px solid var(--gold); padding-bottom: 10px; margin-bottom: 20px; }
         .receipt-logo { width: 60px; margin-bottom: 10px; border-radius: 50%; }
@@ -197,7 +196,7 @@
             btn_save: "Enregistrer", btn_cancel: "Annuler", sec_title: "Sécurité", btn_reset: "Réinitialiser le mot de passe",
             chat_title: "Service Client", chat_start: "Démarrer une conversation...", btn_send: "Envoyer",
             orders_title: "Mes Commandes", receipt_header: "Reçu de Commande Officiel", btn_print: "Imprimer le Reçu", btn_close: "Fermer",
-            no_orders: "Aucune commande.", btn_reçu: "Reçu"
+            no_orders: "Aucune commande.", btn_reçu: "Reçu", btn_annuler: "Annuler la commande"
         },
         en: {
             nav_home: "Home", profile_title: "My Profile", btn_edit: "Edit my information", label_name: "Full Name",
@@ -205,7 +204,7 @@
             btn_save: "Save Changes", btn_cancel: "Cancel", sec_title: "Security", btn_reset: "Reset Password",
             chat_title: "Customer Service", chat_start: "Start a conversation...", btn_send: "Send",
             orders_title: "My Orders", receipt_header: "Official Order Receipt", btn_print: "Print Receipt", btn_close: "Close",
-            no_orders: "No orders found.", btn_reçu: "Receipt"
+            no_orders: "No orders found.", btn_reçu: "Receipt", btn_annuler: "Cancel Order"
         },
         es: {
             nav_home: "Inicio", profile_title: "Mi Perfil", btn_edit: "Editar mi información", label_name: "Nombre Completo",
@@ -213,7 +212,7 @@
             btn_save: "Guardar", btn_cancel: "Cancelar", sec_title: "Seguridad", btn_reset: "Restablecer contraseña",
             chat_title: "Servicio al Cliente", chat_start: "Iniciar una conversación...", btn_send: "Enviar",
             orders_title: "Mis Pedidos", receipt_header: "Recibo de Pedido Oficial", btn_print: "Imprimir Recibo", btn_close: "Cerrar",
-            no_orders: "No hay pedidos.", btn_reçu: "Recibo"
+            no_orders: "No hay pedidos.", btn_reçu: "Recibo", btn_annuler: "Cancelar pedido"
         }
     };
 
@@ -245,22 +244,35 @@
         const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
         const list = document.getElementById('orders-list');
         const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        
         if (!orders || orders.length === 0) { list.innerHTML = `<p class="text-center py-4">${translations[lang].no_orders}</p>`; return; }
-        list.innerHTML = orders.map(o => `
+        
+        list.innerHTML = orders.map(o => {
+            // LÓGICA DO BOTÃO DE CANCELAR DENTRO DO MAP
+            const cancelBtn = (o.status !== 'Annulé' && o.status !== 'Livrée' && o.status !== 'Approuvée') ? `
+                <button class="btn btn-sm btn-outline-danger rounded-pill mt-2" 
+                        onclick="handleCancelOrder('${o.id}', '${o.created_at}')">
+                    <i class="bi bi-x-circle me-1"></i> ${translations[lang].btn_annuler}
+                </button>` : o.status === 'Annulé' ? '<span class="badge bg-secondary mt-2">Annulée</span>' : '';
+
+            return `
             <div class="order-card shadow-sm">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <strong>#${o.id.slice(0, 8).toUpperCase()}</strong>
                         <div class="small fw-bold text-rose">$${parseFloat(o.total).toFixed(2)}</div>
+                        <div class="small text-muted">${new Date(o.created_at).toLocaleDateString()}</div>
                     </div>
                     <div class="text-end">
                         <span class="badge-status ${o.status === 'Approuvée' || o.status === 'Livrée' ? 'bg-success text-white' : 'bg-warning'}">${o.status}</span>
                         <button class="btn btn-sm btn-outline-dark rounded-pill d-block mt-2 no-print" onclick="showReceipt('${o.id}')">
                             <i class="bi bi-receipt me-1"></i> ${translations[lang].btn_reçu}
                         </button>
+                        ${cancelBtn}
                     </div>
                 </div>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
 
     async function showReceipt(orderId) {
@@ -290,6 +302,37 @@
         document.getElementById('receipt-details').innerHTML = detailsHtml;
         const myModal = new bootstrap.Modal(document.getElementById('receiptModal'));
         myModal.show();
+    }
+
+    async function handleCancelOrder(orderId, createdAt) {
+        const now = new Date();
+        const orderTime = new Date(createdAt);
+        const diffInHours = (now - orderTime) / (1000 * 60 * 60);
+
+        if (diffInHours > 2) {
+            alert("Désolé, le délai de 2 heures pour l'annulation est dépassé. Veuillez nous contacter via WhatsApp.");
+            return;
+        }
+
+        const reasons = ["Erreur de commande", "Changement d'avis", "Délai trop long", "Autre"];
+        let reason = prompt("Raison de l'annulation :\n" + reasons.join("\n"));
+        
+        if (reason === null || reason.trim() === "") return;
+
+        const { error } = await _supabase
+            .from('orders')
+            .update({ 
+                status: 'Annulé', 
+                cancellation_reason: reason 
+            })
+            .eq('id', orderId);
+
+        if (!error) {
+            alert("Votre commande a été annulée avec succès.");
+            location.reload();
+        } else {
+            alert("Erreur: " + error.message);
+        }
     }
 
     async function loadProfile(user) {

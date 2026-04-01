@@ -14,207 +14,171 @@
 
     <style>
         :root { --dark: #4A2419; --rose: #C98986; --bg: #f8f9fa; --gold: #B8860B; }
-        
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--dark); 
-            padding-top: 150px; 
-        }
-
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--dark); padding-top: 120px; }
         .navbar { background: white !important; padding: 12px 50px; border-bottom: 2px solid var(--gold); position: fixed; top: 0; left: 0; width: 100%; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-
         .main-container { max-width: 1100px; margin: 0 auto; padding: 20px; }
         .checkout-box { background: #ffffff; border-radius: 15px; padding: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); border: 1px solid #e1e1e1; }
-        .section-header { font-weight: 700; font-size: 1.25rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 25px; }
+        .section-header { font-weight: 700; font-size: 1.25rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 25px; color: var(--dark); }
         .form-label { font-weight: 600; font-size: 0.9rem; color: #555; margin-bottom: 5px; }
-        .form-control, .form-select { padding: 12px; border-radius: 8px; border: 1px solid #ced4da; margin-bottom: 20px; font-size: 1rem; transition: border-color 0.2s; }
-        .zip-status { font-size: 0.8rem; font-weight: 600; color: var(--rose); margin-top: -15px; margin-bottom: 15px; display: none; }
-        .summary-card { background: #fff; border-radius: 15px; padding: 25px; border: 1px solid #e1e1e1; position: sticky; top: 160px; }
-        .item-row { border-bottom: 1 solid #f1f1f1; padding: 15px 0; }
-        
-        .fee-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #666; margin-top: 10px; }
-        .discount-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: #e63946; margin-top: 10px; font-weight: 600; }
-        
+        .form-control, .form-select { padding: 12px; border-radius: 8px; border: 1px solid #ced4da; margin-bottom: 20px; font-size: 1rem; }
+        .summary-card { background: #fff; border-radius: 15px; padding: 25px; border: 1px solid #e1e1e1; position: sticky; top: 140px; }
+        .item-row { border-bottom: 1px solid #f1f1f1; padding: 15px 0; }
+        .qty-controls { display: flex; align-items: center; gap: 10px; }
+        .btn-qty { border: none; background: #eee; width: 28px; height: 28px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-qty:hover { background: var(--rose); color: white; }
+        .btn-del { color: #dc3545; border: none; background: none; cursor: pointer; }
         .total-row { font-size: 1.5rem; font-weight: 700; display: flex; justify-content: space-between; margin-top: 15px; color: #28a745; border-top: 2px solid #eee; padding-top: 15px; }
         .btn-submit { background: var(--dark); color: white; border-radius: 10px; padding: 18px; width: 100%; border: none; font-weight: 700; font-size: 1.2rem; transition: 0.3s; cursor: pointer; }
-        .btn-submit:disabled { background: #ccc; cursor: not-allowed; }
-        
-        .qty-controls { display: flex; align-items: center; gap: 8px; }
-        .btn-qty { border: none; background: #eee; width: 24px; height: 24px; border-radius: 4px; font-weight: bold; font-size: 14px; cursor: pointer; }
-        .btn-qty:hover { background: #ddd; }
-        .btn-del { color: #dc3545; border: none; background: none; cursor: pointer; padding: 0 5px; }
-
-        #auth-overlay { display: none; text-align: center; padding: 50px; background: white; border-radius: 15px; border: 2px dashed var(--rose); }
-        .btn-auth { background: var(--rose); color: white; border-radius: 8px; padding: 10px 25px; text-decoration: none; font-weight: 600; margin: 5px; display: inline-block; }
-        
-        .btn-change-address { font-size: 0.85rem; color: var(--rose); text-decoration: underline; background: none; border: none; padding: 0; margin-bottom: 15px; display: none; cursor: pointer;}
-        
-        #card-info-fields { background: #fdfdfd; padding: 15px; border-radius: 10px; border: 1px solid #eee; margin-bottom: 20px; display: none; }
+        .btn-submit:hover { background: var(--gold); }
+        .method-card { border: 2px solid #eee; border-radius: 12px; padding: 15px; cursor: pointer; transition: 0.3s; text-align: center; }
+        .method-card.active { border-color: var(--gold); background: #fff9f0; }
+        .disabled-fields { opacity: 0.4; pointer-events: none; filter: grayscale(1); }
+        .surprise-box { background: #fff9f0; border-radius: 8px; border: 1px dashed var(--gold); padding: 15px; margin-bottom: 20px; }
+        #card-fields-container { display: none; background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #eee; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="index.html" style="color: var(--dark); letter-spacing: 2px;">LA PRIMAVERA</a>
+        <a class="navbar-brand fw-bold" href="index.html" style="color: var(--dark); letter-spacing: 2px; text-decoration:none;">LA PRIMAVERA</a>
         <a href="index.html" class="btn btn-outline-dark btn-sm rounded-pill px-3">← Retour</a>
     </div>
 </nav>
 
 <div class="main-container">
-    <div id="auth-overlay">
-        <i class="bi bi-lock-fill" style="font-size: 3rem; color: var(--rose);"></i>
-        <h2 class="mt-3">Veuillez vous connecter</h2>
-        <div class="mt-4">
-            <a href="login.html" class="btn-auth">Connexion</a>
-            <a href="signup.html" class="btn-auth" style="background: var(--dark);">Créer um conta</a>
-        </div>
+    <div id="auth-overlay" style="display:none; text-align:center; padding:50px;">
+        <h2>Connexion requise</h2>
+        <a href="login.html" class="btn btn-primary px-5 mt-3">Se connecter</a>
     </div>
 
-    <div class="row g-4" id="checkout-content" style="display: none;">
+    <div class="row g-4" id="checkout-content">
         <div class="col-lg-7">
             <div class="checkout-box">
                 <form id="checkout-form">
-                    <h2 class="section-header">1. Informations de Livraison (USA)</h2>
-                    
-                    <button type="button" id="change-address-btn" class="btn-change-address" onclick="enableNewAddress()">Utiliser une adresse différente</button>
-
-                    <div class="row">
-                        <div class="col-md-12">
-                            <label class="form-label">Nom Complet du Destinataire *</label>
-                            <input type="text" id="full_name" class="form-control" required placeholder="Qui recebe la commande?">
+                    <h2 class="section-header">1. Mode de réception</h2>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="method-card active" id="opt-delivery" onclick="setMethod('delivery')">
+                                <i class="bi bi-truck fs-2 mb-2"></i><br><strong>Livraison</strong>
+                            </div>
                         </div>
-                        <div class="col-md-5">
-                            <label class="form-label">Code ZIP *</label>
-                            <input type="text" id="zip" class="form-control" required maxlength="5">
-                            <div id="zip-loader" class="zip-status">Recherche...</div>
-                        </div>
-                        <div class="col-md-7">
-                            <label class="form-label">Ville *</label>
-                            <input type="text" id="city" class="form-control" required readonly placeholder="Auto">
+                        <div class="col-6">
+                            <div class="method-card" id="opt-pickup" onclick="setMethod('pickup')">
+                                <i class="bi bi-shop fs-2 mb-2"></i><br><strong>Pick up</strong>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label">État *</label>
-                            <input type="text" id="state" class="form-control" required readonly placeholder="Auto">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Date de Livraison Souhaitée *</label>
-                            <input type="date" id="order_date" class="form-control" required>
-                        </div>
-                    </div>
-                    
-                    <label class="form-label">Adresse Complette (Rue et Numéro) *</label>
-                    <input type="text" id="street" class="form-control" required placeholder="ex: 123 Main St, Apt 4">
 
-                    <label class="form-label">Note ou Message para la carte (Optionnel)</label>
-                    <textarea id="order_message" class="form-control" rows="3" placeholder="Écrivez ici vos instructions spéciales ou le mot doux..."></textarea>
-
-                    <h2 class="section-header mt-4">2. Mode de Paiement</h2>
-                    <select id="payment-method" class="form-select" onchange="togglePaymentFields()">
-                        <option value="wa">WhatsApp (Zelle / CashApp)</option>
-                        <option value="paypal">PayPal (Paiement Direct)</option>
-                        <option value="cc">Carte de Crédit (Sécurisé)</option>
-                    </select>
-
-                    <div id="card-info-fields">
-                        <div class="mb-3">
-                            <label class="form-label">Numéro de Carte</label>
-                            <input type="text" class="form-control" placeholder="0000 0000 0000 0000" maxlength="19">
+                    <div id="delivery-fields-group">
+                        <h2 class="section-header">2. Détails (USA)</h2>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label">Destinataire *</label>
+                                <input type="text" id="full_name" class="form-control" required placeholder="Qui reçoit la commande ?">
+                            </div>
+                            <div class="col-md-5">
+                                <label class="form-label">ZIP *</label>
+                                <input type="text" id="zip" class="form-control" required maxlength="5">
+                            </div>
+                            <div class="col-md-7">
+                                <label class="form-label">Ville *</label>
+                                <input type="text" id="city" class="form-control" readonly>
+                            </div>
                         </div>
                         <div class="row">
-                            <div class="col-6">
-                                <label class="form-label">Expiration (MM/AA)</label>
-                                <input type="text" class="form-control" placeholder="MM/AA" maxlength="5">
+                            <div class="col-md-6">
+                                <label class="form-label">État *</label>
+                                <input type="text" id="state" class="form-control" readonly>
                             </div>
-                            <div class="col-6">
-                                <label class="form-label">CVV</label>
-                                <input type="text" class="form-control" placeholder="123" maxlength="3">
+                            <div class="col-md-6">
+                                <label class="form-label">Date *</label>
+                                <input type="date" id="order_date" class="form-control" required>
+                            </div>
+                        </div>
+                        <label class="form-label">Adresse *</label>
+                        <input type="text" id="street" class="form-control" required placeholder="Rue et numéro">
+                        
+                        <div class="surprise-box">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="is_surprise">
+                                <label class="form-check-label fw-bold ms-2" for="is_surprise">🎁 C'EST UNE SURPRISE !</label>
                             </div>
                         </div>
                     </div>
 
-                    <button type="submit" id="submit-btn" class="btn-submit mt-4">CONFIRMER MA COMMANDE</button>
+                    <h2 class="section-header">3. Paiement</h2>
+                    <select id="payment-method" class="form-select" onchange="togglePaymentFields()">
+                        <option value="wa">WhatsApp (Zelle / CashApp)</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="card">Carte de Crédit</option>
+                    </select>
+
+                    <div id="card-fields-container">
+                        <div class="alert alert-warning py-2 small">Indisponible temporairement. Utilisez WhatsApp.</div>
+                    </div>
+
+                    <label class="form-label">Note / Message carte</label>
+                    <textarea id="order_message" class="form-control" rows="3"></textarea>
+
+                    <button type="submit" id="submit-btn" class="btn-submit">CONFIRMER MA COMMANDE</button>
                 </form>
             </div>
         </div>
 
         <div class="col-lg-5">
             <div class="summary-card">
-                <h2 class="section-header">Résumé de la commande</h2>
+                <h2 class="section-header">Résumé</h2>
                 <div id="summary-items"></div>
-                
                 <div class="border-top pt-3 mt-3">
-                    <div class="fee-row">
-                        <span>Sous-total</span>
-                        <span id="sub-total">$0.00</span>
-                    </div>
-                    <div id="discount-area" class="discount-row" style="display: none;">
-                        <span>Rabais appliqué</span>
-                        <span id="discount-amount">-$0.00</span>
-                    </div>
-                    <div class="fee-row">
-                        <span>Frais de Service (<span id="tax-percent">0</span>%)</span>
-                        <span id="tax-amount">$0.00</span>
-                    </div>
-                    <div class="fee-row">
-                        <span>Livraison</span>
-                        <span id="shipping-amount">$0.00</span>
-                    </div>
+                    <div class="d-flex justify-content-between mb-2"><span>Sous-total</span><span id="sub-total">$0.00</span></div>
+                    <div class="d-flex justify-content-between mb-2"><span>Service (1%)</span><span id="tax-amount">$0.00</span></div>
+                    <div class="d-flex justify-content-between mb-2"><span>Livraison</span><span id="shipping-amount">$0.00</span></div>
                 </div>
-
-                <div class="total-row">
-                    <span>Total</span>
-                    <span id="grand-total">$0.00</span>
-                </div>
+                <div class="total-row"><span>Total</span><span id="grand-total">$0.00</span></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    (function(){
-        emailjs.init("3rAwOG3LSxRlSBITj");
-    })();
-
+    (function(){ emailjs.init("3rAwOG3LSxRlSBITj"); })();
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+    
     let currentUser = null;
-    let globalShipping = 0;
-    let globalTaxPercent = 0;
-    let globalDiscountType = 'none';
-    let globalDiscountValue = 0;
-
-    document.addEventListener('DOMContentLoaded', () => {
-        const dateInput = document.getElementById('order_date');
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const minDate = tomorrow.toISOString().split('T')[0];
-        dateInput.setAttribute('min', minDate);
-        loadGlobalSettings(); 
-    });
+    let selectedMethod = 'delivery';
+    let globalShipping = 2.00;
 
     async function loadGlobalSettings() {
-        const { data } = await _supabase.from('site_settings').select('*').in('id', ['global_shipping', 'global_tax', 'global_discount_type', 'global_discount_value']);
+        const { data } = await _supabase.from('site_settings').select('*');
         if (data) {
-            globalShipping = parseFloat(data.find(s => s.id === 'global_shipping')?.description || 0);
-            globalTaxPercent = parseFloat(data.find(s => s.id === 'global_tax')?.description || 0);
-            globalDiscountType = data.find(s => s.id === 'global_discount_type')?.description || 'none';
-            globalDiscountValue = parseFloat(data.find(s => s.id === 'global_discount_value')?.description || 0);
-            
-            document.getElementById('tax-percent').innerText = globalTaxPercent;
+            globalShipping = parseFloat(data.find(s => s.id === 'global_shipping')?.description || 2);
             renderSummary();
         }
+    }
+
+    function setMethod(m) {
+        selectedMethod = m;
+        document.getElementById('opt-delivery').classList.toggle('active', m === 'delivery');
+        document.getElementById('opt-pickup').classList.toggle('active', m === 'pickup');
+        document.getElementById('delivery-fields-group').classList.toggle('disabled-fields', m === 'pickup');
+        renderSummary();
+        validateCheckoutForm(); // Valida ao trocar método
+    }
+
+    function togglePaymentFields() {
+        const m = document.getElementById('payment-method').value;
+        document.getElementById('card-fields-container').style.display = (m === 'card') ? 'block' : 'none';
+        validateCheckoutForm(); // Valida ao trocar pagamento
     }
 
     _supabase.auth.onAuthStateChange((event, session) => {
         if (session) {
             currentUser = session.user;
-            document.getElementById('checkout-content').style.display = 'flex';
-            document.getElementById('auth-overlay').style.display = 'none';
-            loadUserData(session.user.id);
+            const dateInput = document.getElementById('order_date');
+            const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+            dateInput.min = tomorrow.toISOString().split('T')[0];
+            loadGlobalSettings();
             syncCartFromDB(session.user.id);
         } else {
             document.getElementById('checkout-content').style.display = 'none';
@@ -222,259 +186,182 @@
         }
     });
 
-    function togglePaymentFields() {
-        const method = document.getElementById('payment-method').value;
-        const cardFields = document.getElementById('card-info-fields');
-        cardFields.style.display = (method === 'cc') ? 'block' : 'none';
-    }
-
     async function syncCartFromDB(userId) {
-        const { data: items, error } = await _supabase.from('cart_items').select('*').eq('user_id', userId);
-        if (!error && items) {
-            const cartMapped = items.map(i => ({
-                id: i.id,
-                name: i.product_name || i.name,
-                price: parseFloat(i.price),
-                quantity: i.quantity || 1,
-                recipient_name: i.recipient_name || null,
-                delivery_time: i.delivery_time || null,
-                is_surprise: i.is_surprise || false
+        const { data: items } = await _supabase.from('cart_items').select('*').eq('user_id', userId);
+        if (items) {
+            const mapped = items.map(i => ({ 
+                id: i.id, 
+                name: i.product_name || i.name || 'Produit', 
+                price: parseFloat(i.price) || 0, 
+                quantity: i.quantity || 1 
             }));
-            localStorage.setItem('cart', JSON.stringify(cartMapped));
+            localStorage.setItem('cart', JSON.stringify(mapped));
             renderSummary();
+            validateCheckoutForm(); // Valida ao carregar itens
         }
     }
-
-    async function changeQtyDB(dbId, delta, localIndex) {
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cart[localIndex]) {
-            const newQty = cart[localIndex].quantity + delta;
-            if (newQty <= 0) return removeItemDB(dbId, localIndex);
-            cart[localIndex].quantity = newQty;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            renderSummary();
-            if (currentUser && dbId) {
-                await _supabase.from('cart_items').update({ quantity: newQty }).eq('id', dbId);
-            }
-        }
-    }
-
-    async function removeItemDB(dbId, localIndex) {
-        if(!confirm("Supprimer cet article ?")) return;
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        cart.splice(localIndex, 1);
-        localStorage.setItem('cart', JSON.stringify(cart));
-        renderSummary();
-        if (currentUser && dbId) {
-            await _supabase.from('cart_items').delete().eq('id', dbId);
-        }
-    }
-
-    async function loadUserData(userId) {
-        const { data: profile } = await _supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
-        if (profile) {
-            document.getElementById('full_name').value = profile.full_name || '';
-            const savedStreet = profile.street || profile.address;
-            if (savedStreet && profile.zip) {
-                document.getElementById('zip').value = profile.zip;
-                document.getElementById('street').value = savedStreet;
-                fetchCity(profile.zip);
-                document.getElementById('change-address-btn').style.display = 'block';
-                document.getElementById('zip').disabled = true;
-                document.getElementById('street').disabled = true;
-            }
-        }
-    }
-
-    function enableNewAddress() {
-        const fields = ['zip', 'street'];
-        fields.forEach(f => document.getElementById(f).disabled = false);
-        document.getElementById('change-address-btn').style.display = 'none';
-        document.getElementById('zip').value = "";
-        document.getElementById('street').value = "";
-    }
-
-    async function fetchCity(zip) {
-        if (zip.length !== 5) return;
-        document.getElementById('zip-loader').style.display = 'block';
-        try {
-            const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
-            if (res.ok) {
-                const data = await res.json();
-                document.getElementById('city').value = data.places[0]['place name'];
-                document.getElementById('state').value = data.places[0]['state abbreviation'];
-            }
-        } catch (e) { console.error("Error ZIP"); }
-        document.getElementById('zip-loader').style.display = 'none';
-    }
-
-    document.getElementById('zip').addEventListener('keyup', (e) => fetchCity(e.target.value));
-
-    async function sendEmails(orderData) {
-        const templateParams = {
-            subject: "🌸 Confirmation de commande - La Primavera",
-            order_id: orderData.id ? orderData.id.slice(0, 8).toUpperCase() : "NOUVEAU",
-            client_name: orderData.customer_name,
-            client_email: orderData.customer_email,
-            items: orderData.items,
-            total: orderData.total,
-            address: orderData.address,
-            delivery_date: orderData.delivery_date,
-            note: orderData.note || "Aucune note",
-            status: "EN ATTENTE D'APPROBATION"
-        };
-        try {
-            await emailjs.send("service_g3y43ep", "template_m6v2njk", templateParams);
-        } catch (err) { console.error("Erreur e-mail:", err); }
-    }
-
-    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('submit-btn');
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const paymentMethod = document.getElementById('payment-method').value;
-
-        if (cart.length === 0) {
-            alert("Votre panier est vide!");
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerText = "Traitement en cours...";
-
-        try {
-            const fullAddress = `${document.getElementById('street').value}, ${document.getElementById('city').value}, ${document.getElementById('state').value} ${document.getElementById('zip').value}`;
-            const itemsList = cart.map(i => `${i.quantity}x ${i.name} ${i.recipient_name ? '(Pour: '+i.recipient_name+')' : ''}`).join(', ');
-            const grandTotal = document.getElementById('grand-total').innerText;
-            const rawAmount = parseFloat(grandTotal.replace('$',''));
-
-            const orderObj = {
-                user_id: currentUser.id,
-                customer_name: document.getElementById('full_name').value,
-                customer_email: currentUser.email,
-                items: itemsList,
-                total: rawAmount,
-                address: fullAddress,
-                delivery_date: document.getElementById('order_date').value,
-                note: document.getElementById('order_message').value,
-                status: "En attente d'approbation"
-            };
-
-            const { data: newOrder, error: orderError } = await _supabase.from('orders').insert([orderObj]).select().single();
-            if (orderError) throw orderError;
-
-            const orderIdShort = (newOrder || orderObj).id ? (newOrder || orderObj).id.slice(0, 8).toUpperCase() : "TEMP";
-
-            if (paymentMethod === 'wa') {
-                const adminPhone = "13522982578";
-                const fLower = "\uD83C\uDF38"; 
-                const pIn = "\uD83D\uDCCC";    
-                const uSer = "\uD83D\uDC64";   
-                const bAg = "\uD83D\uDECD";    
-                const mOney = "\uD83D\uDCB0";  
-                const dAtate = "\uD83D\uDCC5"; 
-                const cArd = "\uD83D\uDCB3";   
-
-                const waMessage = 
-                    fLower + " *NOUVELLE COMMANDE - LA PRIMAVERA*\n\n" +
-                    pIn + " *ID Commande:* #" + orderIdShort + "\n" +
-                    uSer + " *Client:* " + orderObj.customer_name + "\n" +
-                    bAg + " *Articles:* " + itemsList + "\n" +
-                    mOney + " *Total:* " + grandTotal + "\n" +
-                    dAtate + " *Livraison:* " + orderObj.delivery_date + "\n" +
-                    pIn + " *Adresse:* " + fullAddress + "\n" +
-                    "📝 *Note:* " + (orderObj.note || "Aucune") + "\n\n" +
-                    cArd + " *PAIEMENT:* Je souhaite payer par *Zelle* ou *CashApp*.\n\n" +
-                    "Merci de me confirmer les informações pour finaliser le transfert.";
-
-                window.open("https://wa.me/" + adminPhone + "?text=" + encodeURIComponent(waMessage), "_blank");
-            } 
-            else if (paymentMethod === 'paypal') {
-                const paypalURL = "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=laprimavera951@gmail.com&item_name=Commande_" + orderIdShort + "&amount=" + rawAmount + "&currency_code=USD&no_shipping=1";
-                window.open(paypalURL, "_blank");
-            }
-
-            await sendEmails(newOrder || orderObj);
-            await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
-            localStorage.removeItem('cart');
-            
-            alert("Merci! Votre commande a été enregistrée. Veuillez finaliser le pagamento pour confirmer la livraison.");
-            window.location.href = "mon-compte.html"; 
-
-        } catch (err) {
-            alert("Erreur lors de la validation: " + err.message);
-            btn.disabled = false;
-            btn.innerText = "CONFIRMER MA COMMANDE";
-        }
-    });
 
     function renderSummary() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
         const summaryDiv = document.getElementById('summary-items');
         let subtotal = 0;
-        
-        if (cart.length === 0) {
-            summaryDiv.innerHTML = "<p class='text-muted p-3 text-center'>Votre panier est vide.</p>";
-            document.getElementById('sub-total').innerText = "$0.00";
-            document.getElementById('tax-amount').innerText = "$0.00";
-            document.getElementById('shipping-amount').innerText = "$0.00";
-            document.getElementById('grand-total').innerText = "$0.00";
-            document.getElementById('discount-area').style.display = 'none';
-            return;
-        }
 
         summaryDiv.innerHTML = cart.map((i, idx) => {
-            subtotal += (i.price * i.quantity);
-            let extraInfo = i.recipient_name ? `
-                <div style="font-size: 0.75rem; color: #666; background: #fdfaf8; padding: 8px; border-radius: 5px; margin-top: 5px; border-left: 3px solid var(--rose);">
-                    <i class="bi bi-person-fill"></i> Pour: <strong>${i.recipient_name}</strong><br>
-                    <i class="bi bi-clock"></i> Heure: <strong>${i.delivery_time}</strong>
-                </div>` : "";
-
+            const itemTotal = (i.price * i.quantity);
+            subtotal += itemTotal;
             return `
-                <div class="item-row mb-3 pb-3 border-bottom">
+                <div class="item-row">
                     <div class="d-flex justify-content-between align-items-center">
-                        <div style="flex: 1;">
-                            <span class="d-block fw-bold">${i.name}</span>
-                            <div class="qty-controls mt-2">
-                                <button type="button" class="btn-qty" onclick="changeQtyDB('${i.id}', -1, ${idx})">-</button>
-                                <span>${i.quantity}</span>
-                                <button type="button" class="btn-qty" onclick="changeQtyDB('${i.id}', 1, ${idx})">+</button>
-                                <button type="button" class="btn-del ms-2" onclick="removeItemDB('${i.id}', ${idx})"><i class="bi bi-trash"></i></button>
-                            </div>
-                        </div>
-                        <div class="text-end">
-                            <strong class="d-block">$${(i.price * i.quantity).toFixed(2)}</strong>
-                        </div>
+                        <div><strong>${i.name}</strong><br><small>$${i.price.toFixed(2)}</small></div>
+                        <strong>$${itemTotal.toFixed(2)}</strong>
                     </div>
-                    ${extraInfo}
+                    <div class="qty-controls mt-2">
+                        <button type="button" class="btn-qty" onclick="updateQty('${i.id}', -1, ${idx})">-</button>
+                        <span class="fw-bold">${i.quantity}</span>
+                        <button type="button" class="btn-qty" onclick="updateQty('${i.id}', 1, ${idx})">+</button>
+                        <button type="button" class="btn-del ms-2 border-0 bg-transparent text-danger" onclick="removeItem('${i.id}', ${idx})"><i class="bi bi-trash"></i></button>
+                    </div>
                 </div>`;
         }).join('');
 
-        // CÁLCULO DO DESCONTO
-        let discount = 0;
-        if (globalDiscountType === 'fixed') {
-            discount = globalDiscountValue;
-        } else if (globalDiscountType === 'percent') {
-            discount = subtotal * (globalDiscountValue / 100);
-        }
-
-        if (discount > 0) {
-            document.getElementById('discount-area').style.display = 'flex';
-            document.getElementById('discount-amount').innerText = `-$${discount.toFixed(2)}`;
-        } else {
-            document.getElementById('discount-area').style.display = 'none';
-        }
-
-        const baseAmount = Math.max(0, subtotal - discount);
-        const taxAmount = baseAmount * (globalTaxPercent / 100);
-        const finalTotal = baseAmount + taxAmount + globalShipping;
+        const tax = subtotal * 0.01;
+        const shipping = (selectedMethod === 'delivery') ? globalShipping : 0;
+        const total = subtotal + tax + shipping;
 
         document.getElementById('sub-total').innerText = `$${subtotal.toFixed(2)}`;
-        document.getElementById('tax-amount').innerText = `$${taxAmount.toFixed(2)}`;
-        document.getElementById('shipping-amount').innerText = `$${globalShipping.toFixed(2)}`;
-        document.getElementById('grand-total').innerText = `$${finalTotal.toFixed(2)}`;
+        document.getElementById('tax-amount').innerText = `$${tax.toFixed(2)}`;
+        document.getElementById('shipping-amount').innerText = `$${shipping.toFixed(2)}`;
+        document.getElementById('grand-total').innerText = `$${total.toFixed(2)}`;
     }
+
+    async function updateQty(id, delta, idx) {
+        let cart = JSON.parse(localStorage.getItem('cart'));
+        const nq = cart[idx].quantity + delta;
+        if (nq <= 0) return removeItem(id, idx);
+        cart[idx].quantity = nq;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderSummary();
+        validateCheckoutForm(); // Valida ao mudar quantidade
+        if (id) await _supabase.from('cart_items').update({ quantity: nq }).eq('id', id);
+    }
+
+    async function removeItem(id, idx) {
+        if (!confirm("Supprimer ?")) return;
+        let cart = JSON.parse(localStorage.getItem('cart'));
+        cart.splice(idx, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderSummary();
+        validateCheckoutForm(); // Valida ao remover item
+        if (id) await _supabase.from('cart_items').delete().eq('id', id);
+    }
+
+    document.getElementById('zip').addEventListener('keyup', async (e) => {
+        if (e.target.value.length === 5) {
+            const res = await fetch(`https://api.zippopotam.us/us/${e.target.value}`);
+            if (res.ok) {
+                const d = await res.json();
+                document.getElementById('city').value = d.places[0]['place name'];
+                document.getElementById('state').value = d.places[0]['state abbreviation'];
+                validateCheckoutForm();
+            }
+        }
+    });
+
+    document.getElementById('checkout-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        if (cart.length === 0) return alert("Votre panier est vide!");
+
+        btn.disabled = true; btn.innerText = "Traitement...";
+
+        try {
+            const meth = selectedMethod === 'pickup' ? "[PICK UP]" : "[LIVRAISON]";
+            const clientName = document.getElementById('full_name').value;
+            const addr = selectedMethod === 'pickup' ? "Retrait Boutique" : `${document.getElementById('street').value}, ${document.getElementById('city').value}`;
+            const itemsText = cart.map(i => `${i.quantity}x ${i.name}`).join(', ');
+            const finalTotalStr = document.getElementById('grand-total').innerText;
+            const surprise = document.getElementById('is_surprise').checked ? " (SURPRISE 🎁)" : "";
+
+            const { data: newOrder, error } = await _supabase.from('orders').insert([{
+                user_id: currentUser.id,
+                customer_name: clientName,
+                customer_email: currentUser.email,
+                items: itemsText + surprise,
+                total: parseFloat(finalTotalStr.replace('$','')),
+                address: `${meth} ${addr}`,
+                delivery_date: document.getElementById('order_date').value,
+                note: document.getElementById('order_message').value,
+                status: "En attente"
+            }]).select().single();
+
+            if (error) throw error;
+
+            const orderIdFormatted = newOrder.id.slice(0,8).toUpperCase();
+
+            const waMsg = `*COMMANDE LA PRIMAVERA*\n*ID:* #${orderIdFormatted}\n*Client:* ${clientName}\n*Items:* ${itemsText}${surprise}\n*Total:* ${finalTotalStr}\n*Date:* ${newOrder.delivery_date}\n*Adresse:* ${newOrder.address}`;
+            window.open(`https://wa.me/13522982578?text=${encodeURIComponent(waMsg)}`, "_blank");
+
+            await emailjs.send("service_g3y43ep", "template_m6v2njk", {
+                order_id: orderIdFormatted,
+                client_name: clientName,
+                client_email: currentUser.email,
+                items: itemsText,
+                total: finalTotalStr,
+                address: addr,
+                delivery_date: newOrder.delivery_date
+            });
+
+            await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
+            localStorage.removeItem('cart');
+            alert("Merci! Votre commande est enregistrée.");
+            window.location.href = "mon-compte.html";
+
+        } catch (err) { 
+            alert("Erreur: " + err.message); 
+            btn.disabled = false; 
+            btn.innerText = "CONFIRMER MA COMMANDE";
+        }
+    });
+
+    // --- FUNÇÃO DE VALIDAÇÃO COMPLETA ---
+    function validateCheckoutForm() {
+        const btn = document.getElementById('submit-btn');
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const payMethod = document.getElementById('payment-method').value;
+        
+        const hasProducts = cart.length > 0;
+        const name = document.getElementById('full_name').value.trim();
+        const date = document.getElementById('order_date').value;
+        
+        let isAddressValid = true;
+        if (selectedMethod === 'delivery') {
+            const zip = document.getElementById('zip').value.trim();
+            const street = document.getElementById('street').value.trim();
+            isAddressValid = zip !== "" && street !== "";
+        }
+
+        // Regra: Produtos + Campos Obrigatórios + Não ser cartão (pois está desabilitado)
+        if (hasProducts && name !== "" && date !== "" && isAddressValid && payMethod !== 'card') {
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+        } else {
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+        }
+    }
+
+    // --- MONITORAMENTO DOS CAMPOS ---
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGlobalSettings();
+        const inputIds = ['full_name', 'zip', 'street', 'order_date'];
+        inputIds.forEach(id => {
+            document.getElementById(id).addEventListener('input', validateCheckoutForm);
+        });
+        validateCheckoutForm(); // Inicialização
+    });
 </script>
 </body>
 </html>

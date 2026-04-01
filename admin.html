@@ -280,13 +280,48 @@
             <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Ordre</th><th>Horaire</th><th>Catégorie</th><th>Statut</th><th>Action</th></tr></thead><tbody id="lista-slots"></tbody></table></div>
         </div>
 
-        <div id="painel-clients" style="display:none;">
-            <h2 class="mb-4" style="font-family: 'Cinzel';">👥 Gestion des Clients</h2>
-            <div class="admin-card">
-                <input type="text" id="searchClient" class="form-control mb-3" placeholder="Rechercher por nom ou email..." onkeyup="filterClients()">
-                <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Nom complet</th><th>E-mail</th><th>Statut</th><th>Action</th></tr></thead><tbody id="lista-clients"></tbody></table></div>
+   <div id="painel-clients" style="display:none;">
+    <h2 class="mb-4" style="font-family: 'Cinzel';">👥 Gestion des Clients</h2>
+    <div class="admin-card table-responsive">
+        <table class="table align-middle">
+            <thead>
+    <tr>
+        <th>Nom complet</th>
+        <th>E-mail</th>
+        <th>Statut</th>
+        <th>Confidentialité</th>
+        <th>État</th> <th>Action</th> </tr>
+</thead>
+            <tbody id="lista-clients"></tbody>
+        </table>
+    </div>
+
+    <div class="modal fade" id="clientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-top: 5px solid var(--accent);">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-family: 'Cinzel';">Fiche Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div id="client-modal-body" class="modal-body"></div>
             </div>
         </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="clientModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-top: 5px solid var(--accent);">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-family: 'Cinzel';">Détails du Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div id="client-modal-body" class="modal-body">
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <div id="painel-orders" style="display:none;">
             <h2 class="mb-4" style="font-family: 'Cinzel';">📜 Analyse des Commandes</h2>
@@ -717,7 +752,105 @@
     async function deleteMoment(id){await _supabase.from('moments').delete().eq('id',id); loadMoments();}
     async function loadSlots(){const {data:s}=await _supabase.from('delivery_slots').select('*'); document.getElementById('lista-slots').innerHTML=s?.map(x=>`<tr><td>${x.display_order}</td><td>${x.slot_label}</td><td>${x.slot_category}</td><td>${x.is_active?'On':'Off'}</td><td><button onclick="toggleSlot('${x.id}',${x.is_active})">Toggle</button></td></tr>`).join('');}
     async function toggleSlot(id,st){await _supabase.from('delivery_slots').update({is_active:!st}).eq('id',id); loadSlots();}
-    async function loadClients(){const {data:p}=await _supabase.from('profiles').select('*'); document.getElementById('lista-clients').innerHTML=p?.map(c=>`<tr><td>${c.full_name}</td><td>${c.email}</td><td>Ativo</td><td>Ban</td></tr>`).join('');}
+  
+ // Carregar lista de clientes com status de anonimato e botões de ação
+async function loadClients() {
+    const { data: clients, error } = await _supabase
+        .from('profiles')
+        .select('*')
+        .order('full_name');
+
+    if (clients) {
+        document.getElementById('lista-clients').innerHTML = clients.map(c => {
+            // Selo de Privacidade (escondido para Admin)
+            const anonBadge = c.is_admin ? '' : 
+                `<small class="badge ${c.is_anonymous ? 'bg-warning text-dark' : 'bg-light text-dark'}">
+                    ${c.is_anonymous ? '👤 Anonyme' : '🔓 Public'}
+                </small>`;
+
+            // Coluna de ESTADO (Banni ou Actif)
+            const statusBadge = `<span class="badge ${c.is_banned ? 'bg-secondary' : 'bg-success'}" style="font-size: 0.7rem;">
+                ${c.is_banned ? 'Banni' : 'Actif'}
+            </span>`;
+
+            return `
+                <tr>
+                    <td onclick="showClientDetails('${c.id}')" style="cursor:pointer; font-weight:600;">
+                        ${c.full_name || 'N/A'}
+                    </td>
+                    <td>${c.email}</td>
+                    
+                    <td>
+                        <span class="badge ${c.is_admin ? 'bg-danger' : 'bg-primary'}" style="font-size: 0.7rem;">
+                            ${c.is_admin ? 'Admin' : 'Client'}
+                        </span>
+                    </td>
+
+                    <td>${anonBadge}</td>
+
+                    <td>${statusBadge}</td>
+
+                    <td>
+                        <button class="btn btn-sm ${c.is_banned ? 'btn-success' : 'btn-danger'}" 
+                            onclick="toggleBanClient('${c.id}', ${c.is_banned})">
+                            <i class="bi ${c.is_banned ? 'bi-person-check-fill' : 'bi-person-x-fill'} me-1"></i>
+                            ${c.is_banned ? 'Réactiver' : 'Bannir'}
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+}
+
+// Função para abrir a "Janelinha" (Modal) com detalhes
+async function showClientDetails(clientId) {
+    const { data: c } = await _supabase.from('profiles').select('*').eq('id', clientId).single();
+    
+    if (c) {
+        const body = document.getElementById('client-modal-body');
+        body.innerHTML = `
+            <p><strong>Nom Complet:</strong> ${c.full_name || 'Non renseigné'}</p>
+            <p><strong>Email:</strong> ${c.email}</p>
+            <p><strong>Téléphone:</strong> ${c.phone || 'N/A'}</p>
+            <p><strong>Adresse:</strong> ${c.address || 'N/A'}</p>
+            <p><strong>Anonymat:</strong> ${c.is_anonymous ? 'Activé (👤)' : 'Désactivé'}</p>
+            <p><strong>Date d'inscription:</strong> ${new Date(c.created_at).toLocaleDateString()}</p>
+            <hr>
+            <p class="small text-muted text-center">ID: ${c.id}</p>
+        `;
+        
+        const myModal = new bootstrap.Modal(document.getElementById('clientModal'));
+        myModal.show();
+    }
+}
+
+// Função para Banir ou Reativar Cliente
+async function toggleBanClient(id, currentlyBanned) {
+    const confirmMsg = currentlyBanned ? "Réactiver ce client ?" : "Voulez-vous vraiment bannir ce client ?";
+    if (!confirm(confirmMsg)) return;
+
+    if (typeof showLoading === 'function') showLoading(true);
+
+    // Tentativa de atualização
+    const { data, error } = await _supabase
+        .from('profiles')
+        .update({ is_banned: !currentlyBanned }) // Certifique-se que o nome da coluna é is_banned
+        .eq('id', id)
+        .select(); // Força o retorno dos dados para confirmar a mudança
+
+    if (error) {
+        console.error("Erro Supabase:", error);
+        alert("Erreur: " + error.message + "\nVerifique se a coluna 'is_banned' existe no seu banco.");
+    } else {
+        console.log("Sucesso! Novo estado:", data);
+        // Recarrega a lista imediatamente
+        await loadClients();
+    }
+    
+    if (typeof showLoading === 'function') showLoading(false);
+}
+
     async function checkNewChatMessages(){const {data}=await _supabase.from('messages').select('id').eq('is_read',false); if(data?.length>0){document.getElementById('msg-badge-admin').innerText=data.length; document.getElementById('msg-badge-admin').style.display='block';}}
     
     // FUNÇÃO PARA CONTAR NOVAS COMANDAS (PENDENTES)
