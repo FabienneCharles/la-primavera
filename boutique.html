@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boutique | La Primavera</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous-basic.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root { 
             --gold: #B8860B;
@@ -24,74 +27,149 @@
             margin: 0;
         }
 
+        /* --- NAVBAR DESIGN (PADRÃO PRESTIGE) --- */
         .navbar { 
-    background: white !important; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-    padding: 12px 50px; /* 12px de altura, 50px de cada lado */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 10000 !important;
-    border-bottom: 2px solid var(--gold);
-}
-
-        /* PROPAGANDA LATERAL */
-        .promo-sidebar {
-            background: white;
-            border: 2px dashed var(--gold);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            position: sticky;
-            top: 120px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            background: white !important; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            padding: 12px 50px !important; 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            z-index: 10000 !important; 
+            border-bottom: 2px solid var(--gold);
+            height: 85px;
         }
-        .promo-sidebar img, .promo-sidebar video { width: 100%; border-radius: 10px; margin-bottom: 15px; }
-
-        /* IDIOMA SELECTOR */
-        .lang-select {
-            border: 1px solid var(--gold);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.75rem;
-            font-family: 'Cinzel', serif;
-            color: var(--cafe);
-            background: white;
-            cursor: pointer;
-            margin-right: 15px;
-            outline: none;
-        }
-
-        .cart-container { position: relative; cursor: pointer; padding: 5px; color: var(--cafe); text-decoration: none; margin-left: 15px; }
-        .cart-badge { 
-            position: absolute; top: -5px; right: -5px; background: red; color: white; 
-            font-size: 0.7rem; border-radius: 50%; padding: 2px 6px; font-weight: bold; 
-        }
-
-        .user-dropdown .btn-user { 
-            border: none; background: none; color: var(--cafe); 
-            display: flex; align-items: center; gap: 10px; 
-            font-weight: 700; font-family: 'Cinzel', serif; font-size: 0.85rem; text-decoration: none; text-transform: uppercase;
-        }
-        .user-icon { font-size: 1.6rem; color: var(--cafe); }
 
         .navbar-brand { 
             font-family: 'Cinzel', serif; 
             font-weight: 700; 
-            color: var(--deep-coffee) !important; 
+            color: var(--cafe) !important; 
             letter-spacing: 2px;
             text-transform: uppercase;
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            font-size: 1.4rem;
+            display: flex; align-items: center; gap: 15px; 
+            font-size: 1.2rem !important;
             text-decoration: none;
         }
 
-        .brand-logo { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold); }
-        .nav-link { font-family: 'Cinzel', serif; font-size: 0.8rem; letter-spacing: 1.5px; color: var(--cafe) !important; font-weight: 600; text-transform: uppercase; }
+        .brand-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold); }
 
+        .nav-link { 
+            font-family: 'Cinzel', serif; 
+            font-size: 0.8rem !important; 
+            letter-spacing: 1px; 
+            color: var(--cafe) !important; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            padding: 0 10px !important;
+            transition: 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { color: var(--gold) !important; }
+
+        /* --- CENTRALIZAÇÃO NO DESKTOP --- */
+        @media (min-width: 992px) {
+            .collapse.navbar-collapse {
+                display: flex !important;
+                justify-content: center;
+                flex-grow: 1;
+            }
+        }
+
+        /* --- BUSCA E ÍCONES --- */
+        .search-input {
+            border-radius: 20px !important;
+            border: 1px solid var(--gold) !important;
+            width: 150px;
+            font-size: 0.75rem;
+            padding: 5px 15px !important;
+        }
+
+        .lang-select-custom {
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            background: white;
+            outline: none;
+        }
+
+        /* --- CARRINHO E BADGE (TRAVADO NO LUGAR) --- */
+        .cart-wrapper-custom {
+            position: relative !important;
+            display: inline-flex;
+            color: var(--cafe);
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+/* Reduz o espaço da seção para grudar na imagem de cima */
+.featured-section, .container.py-5, .container-fluid.py-5 { 
+    padding-top: 30px !important; 
+    padding-bottom: 30px !important;
+}
+
+/* Padroniza o título igual ao do Index */
+.section-title, h2.display-5 { 
+    font-family: 'Cinzel', serif !important; 
+    font-size: 1.8rem !important; /* Tamanho idêntico ao Index */
+    text-align: center; 
+    margin-top: 0px !important; 
+    margin-bottom: 25px !important; 
+    letter-spacing: 2px; 
+    color: var(--gold) !important; /* Ou var(--gold-title) */
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+
+/* Remove a cor azul e a linha do nome do cliente */
+.btn-user {
+    text-decoration: none !important;
+    color: var(--cafe) !important; /* Cor café da sua marca */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+}
+
+.btn-user:hover {
+    color: var(--gold) !important; /* Muda para dourado ao passar o mouse */
+}
+
+	/* Estilo para a descrição e momentos dentro do card */
+.product-description {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.product-moments {
+    font-size: 0.8rem;
+    color: var(--gold);
+    font-style: italic;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+        .cart-badge-custom {
+            position: absolute !important;
+            top: -8px !important;
+            right: -10px !important;
+            background-color: red !important;
+            color: white !important;
+            font-size: 0.65rem !important;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            z-index: 10;
+        }
+
+        /* --- CARDS DE PRODUTOS --- */
         .product-card { 
             background: white; border-radius: 20px; overflow: hidden; border: none; 
             box-shadow: 0 15px 35px rgba(44, 24, 16, 0.12); 
@@ -109,7 +187,7 @@
         .price-tag { font-size: 1.4rem; font-weight: 700; color: var(--gold); margin: 15px 0; }
         .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
         .new-price { color: #e63946; font-weight: 700; }
-        .promo-badge { background: #e63946; color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; margin-left: 8px; display: inline-block; vertical-align: middle; animation: pulse 2s infinite; }
+        .promo-badge { background: #e63946; color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; margin-left: 8px; display: inline-block; animation: pulse 2s infinite; }
 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
@@ -118,44 +196,80 @@
 
         .btn-unavailable { background: #dcdcdc; color: #888; border: none; padding: 12px; font-family: 'Cinzel', serif; letter-spacing: 2px; width: 100%; text-transform: uppercase; margin-top: auto; cursor: not-allowed; border-radius: 50px; }
 
+        /* --- PROPAGANDA LATERAL --- */
+        .promo-sidebar {
+            background: white; border: 2px dashed var(--gold);
+            border-radius: 15px; padding: 20px; text-align: center;
+            position: sticky; top: 120px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .promo-sidebar img, .promo-sidebar video { width: 100%; border-radius: 10px; margin-bottom: 15px; }
+
         footer { 
             background-color: var(--cafe); color: #fdfaf8; padding: 60px 20px 20px; font-family: 'Poppins', sans-serif; margin-top: 80px; border-top: 4px solid var(--gold); 
         }
         .footer-title { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; margin-bottom: 20px; }
-        @keyframes blinker { 50% { opacity: 0; } }
+        
         .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* --- MOBILE ADJUSTMENTS --- */
+        @media (max-width: 991px) {
+            .navbar { padding: 10px 20px !important; height: auto; }
+            .promo-sidebar { position: relative; top: 0; margin-bottom: 30px; }
+        }
+@media (max-width: 767px) {
+    .section-title, h2.display-5 { 
+        font-size: 1.3rem !important; 
+        margin-bottom: 15px !important;
+    }
+    .featured-section, .container.py-5, .container-fluid.py-5 {
+        padding-top: 15px !important;
+    }
+}
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        
         <a class="navbar-brand d-flex align-items-center" href="index.html">
             <img src="images/Logo1.png" alt="Logo" class="brand-logo">
-            <span style="font-family: 'Cinzel', serif; font-weight: 700; color: #2C1810; margin-left: 10px; letter-spacing: 2px;">LA PRIMAVERA</span>
+            <span class="d-none d-sm-inline">LA PRIMAVERA</span>
         </a>
-        
-        <div class="collapse navbar-collapse justify-content-center">
-            <ul class="navbar-nav gap-3">
+
+        <div class="collapse navbar-collapse justify-content-center" id="navRes">
+            <ul class="navbar-nav gap-2">
                 <li class="nav-item"><a class="nav-link" href="index.html" data-i18n="nav_home">ACCUEIL</a></li>
-                <li class="nav-item"><a class="nav-link active" href="boutique.html" style="border-bottom: 2px solid var(--gold);" data-i18n="nav_patis">PÂTISSERIE</a></li>
+                <li class="nav-item"><a class="nav-link active" href="boutique.html" data-i18n="nav_patis">PÂTISSERIE</a></li>
                 <li class="nav-item"><a class="nav-link" href="floristeria.html" data-i18n="nav_flor">FLORISTERIE</a></li>
                 <li class="nav-item"><a class="nav-link" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
                 <li class="nav-item"><a class="nav-link" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
-        
-        <div class="d-flex align-items-center">
-            <select class="lang-select" onchange="changeLanguage(this.value)">
-                <option value="fr">FR 🇫🇷</option>
-                <option value="en">EN 🇺🇸</option>
-                <option value="es">ES 🇪🇸</option>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="search-box d-none d-xl-flex align-items-center">
+                <i class="bi bi-search me-2"></i>
+                <input type="text" class="form-control form-control-sm search-input" placeholder="Rechercher..." id="patisSearch" onkeyup="filterProducts()">
+            </div>
+
+            <select class="lang-select-custom" onchange="changeLanguage(this.value)">
+                <option value="fr">FR FR</option>
+                <option value="en">EN EN</option>
+                <option value="es">ES ES</option>
             </select>
+            
             <div id="auth-area"></div> 
-            <a href="checkout.html" class="cart-container">
+
+            <a href="checkout.html" class="cart-wrapper-custom">
                 <i class="bi bi-cart3 fs-4"></i>
-                <span id="cartCount" class="cart-badge">0</span>
+                <span id="cartCount" class="cart-badge-custom">0</span>
             </a>
+
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navRes">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </div>
 </nav>
@@ -181,52 +295,54 @@
     </div>
 </div>
 
-<footer>
+<footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
     <div class="container">
-        <div class="row g-4 text-center">
+        <div class="row g-5 justify-content-center">
             <div class="col-md-4">
-                <h5 class="footer-title">LA PRIMAVERA</h5>
-                <p style="font-size: 0.85rem; color: #d1c7c2;" data-i18n="footer_brand">L'excellence haïtienne raffinée.</p>
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">
+                    <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
+                </h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
+                </p>
             </div>
+
             <div class="col-md-4">
-                <h5 class="footer-title" data-i18n="footer_contact">CONTACT</h5>
-                <p class="mb-1">+1 (352) 298-2578</p>
-                <p>laprimavera951@gmail.com</p>
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">CONTACT</h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    Mon-Fri: 9:00 AM - 6:00 PM EST<br>
+                    <strong>Email:</strong> laprimavera951@gmail.com<br>
+                    <strong>Phone:</strong> +1 (352) 298-2578
+                </p>
             </div>
+
             <div class="col-md-4">
-                <h5 class="footer-title" data-i18n="footer_follow">SUIVEZ-NOUS</h5>
-                <div class="d-flex justify-content-center gap-3 fs-4">
-                    <a href="#" style="color: #fdfaf8;"><i class="bi bi-instagram"></i></a>
-                    <a href="#" style="color: #fdfaf8;"><i class="bi bi-facebook"></i></a>
-                </div>
+                <h6 style="font-family: 'Cinzel', serif; color: #B8860B; font-size: 0.9rem; letter-spacing: 1px;">LOCAL DELIVERY 🚗</h6>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                    Serving the states of<br><strong>Massachusetts, New York & New Jersey</strong>
+                </p>
             </div>
         </div>
-        <hr style="border-top: 1px solid #4A2419; margin: 40px 0 20px;">
-        <p class="text-center" style="font-size: 0.65rem; color: #888; letter-spacing: 2px;">LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS</p>
+
+        <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; color: #ffffff; margin: 0;">
+                LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS
+            </p>
+        </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
+
 <script>
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
     const translations = {
-        fr: {
-            nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "À PROPOS",
-            page_title: "Douceurs Haïtiennes", loading: "Chargement...", footer_brand: "L'excellence haïtienne raffinée.",
-            footer_contact: "CONTACT", footer_follow: "SUIVEZ-NOUS", btn_add: "AJOUTER AU PANIER", btn_out: "Indisponible"
-        },
-        en: {
-            nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
-            page_title: "Haitian Delights", loading: "Loading...", footer_brand: "Refined Haitian excellence.",
-            footer_contact: "CONTACT", footer_follow: "FOLLOW US", btn_add: "ADD TO CART", btn_out: "Out of Stock"
-        },
-        es: {
-            nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS",
-            page_title: "Dulces Haitianos", loading: "Cargando...", footer_brand: "Excelencia haitiana refinada.",
-            footer_contact: "CONTACTO", footer_follow: "SÍGUENOS", btn_add: "AÑADIR AO CARRITO", btn_out: "Agotado"
-        }
+        fr: { nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "À PROPOS", page_title: "Douceurs Haïtiennes", loading: "Chargement...", btn_add: "AJOUTER AU PANIER", btn_out: "Indisponible" },
+        en: { nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US", page_title: "Haitian Delights", loading: "Loading...", btn_add: "ADD TO CART", btn_out: "Out of Stock" },
+        es: { nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS", page_title: "Dulces Haitianos", loading: "Cargando...", btn_add: "AÑADIR AL CARRITO", btn_out: "Agotado" }
     };
 
     function changeLanguage(lang) {
@@ -237,7 +353,6 @@
         localStorage.setItem('laprimavera_lang', lang);
     }
 
-    // NOVA FUNÇÃO PARA ATUALIZAR O NÚMERO DO CARRINHO
     async function updateCartBadge() {
         const { data: { user } } = await _supabase.auth.getUser();
         if (user) {
@@ -254,31 +369,62 @@
         const grid = document.getElementById('products');
         const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-        if(products) {
-            grid.innerHTML = products.map(p => {
-                const inStock = (p.stock > 0);
-                const now = new Date();
-                const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
-                const isPromoValid = p.promo_discount_percent > 0 && (!expiry || expiry >= now);
-                let finalPrice = isPromoValid ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) : p.price;
+       if(products) {
+    grid.innerHTML = products.map(p => {
+        const inStock = (p.stock > 0);
+        const now = new Date();
+        
+        // 1. Criamos a data de expiração (se existir no banco)
+        const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+        
+        // 2. CORREÇÃO: A promoção só é válida se:
+        // - Tiver um desconto maior que 0
+        // - E tiver uma data de expiração definida
+        // - E a data de expiração for hoje ou no futuro (maior ou igual a agora)
+        const isPromoValid = p.promo_discount_percent > 0 && expiry && expiry >= now;
+        
+        // 3. Define o preço final baseado na validade da promoção
+        let finalPrice = isPromoValid 
+            ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) 
+            : parseFloat(p.price).toFixed(2);
 
-                return `
-                <div class="col-md-6 col-xl-4">
-                    <div class="product-card">
-                        <div class="img-zoom-container">
-                            <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
-                        </div>
-                        <div class="product-body">
-                            <h4>${p.name}</h4>
-                            <div class="price-tag">${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${p.price}`}</div>
-                            ${inStock 
-                                ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">${translations[lang].btn_add}</button>` 
-                                : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
-                        </div>
-                    </div>
-                </div>`;
+               return `
+<div class="col-md-6 col-xl-4 product-item">
+    <div class="product-card">
+        <div class="img-zoom-container">
+            <a href="${p.image_url}" class="zoom-trigger">
+                <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
+            </a>
+        </div>
+        <div class="product-body">
+            <h4>${p.name}</h4>
+            <div class="price-tag">
+                ${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${p.price}`}
+            </div>
+            
+            <p class="product-description">${p.description || ''}</p>
+            <p class="product-moments">${p.moments ? 'Ideal para: ' + p.moments : ''}</p>
+            
+            ${inStock 
+                ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">${translations[lang].btn_add}</button>` 
+                : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
+        </div>
+    </div>
+</div>`;
             }).join('');
+            
+            if (window.Luminous) {
+                document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
+            }
         }
+    }
+
+    function filterProducts() {
+        const term = document.getElementById('patisSearch').value.toLowerCase();
+        document.querySelectorAll('.product-item').forEach(item => {
+            const name = item.querySelector('h4').innerText.toLowerCase();
+            item.style.display = name.includes(term) ? "block" : "none";
+        });
     }
 
     async function quickAdd(id, name, price) {
@@ -286,38 +432,45 @@
         if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
 
         const { error } = await _supabase.from('cart_items').insert([{
-            user_id: user.id, 
-            product_name: name, 
-            price: price, 
-            quantity: 1
+            user_id: user.id, product_name: name, price: price, quantity: 1
         }]);
 
-        if (!error) { 
-            alert(name + " ajouté au panier !"); 
-            updateCartBadge(); // Atualiza o número assim que adiciona
-        } else {
-            alert("Erreur: " + error.message);
-        }
+        if (!error) { alert(name + " ajouté !"); updateCartBadge(); }
     }
+
+   async function updateNavbarAuth() {
+    const area = document.getElementById('auth-area');
+    const { data: { user } } = await _supabase.auth.getUser();
+
+    if (user) {
+        const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+        const firstName = profile?.full_name?.split(' ')[0] || 'Client';
+        
+        area.innerHTML = `
+            <div class="dropdown user-dropdown">
+                <a class="btn-user dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" aria-expanded="false" 
+                   style="text-decoration: none !important; color: var(--cafe) !important; display: flex; align-items: center; gap: 5px;">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    <span>${firstName}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                    <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
+                </ul>
+            </div>`;
+        updateCartBadge();
+    } else {
+        area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill">Connexion</a>`;
+    }
+}
 
     async function loadPromoSidebar() {
         const { data } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
         if (data) {
             const box = document.getElementById('promo-sidebar-content');
-            let media = data.image_url.includes('video') ? `<video src="${data.image_url}" autoplay loop muted></video>` : `<img src="${data.image_url}">`;
-            box.innerHTML = `${media}<h4 class="blink-text" style="font-family:'Cinzel'; margin-top:10px;">${data.title}</h4><p class="small">${data.description}</p>`;
-        }
-    }
-
-    async function updateNavbarAuth() {
-        const area = document.getElementById('auth-area');
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (user) {
-            const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-            area.innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle user-icon"></i><span>${profile?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
-            updateCartBadge(); // Chama a contagem se o usuário estiver logado
-        } else {
-            area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark">Connexion</a>`;
+            let media = data.image_url.includes('video') ? `<video src="${data.image_url}" autoplay loop muted style="width:100%; border-radius:10px;"></video>` : `<img src="${data.image_url}" style="width:100%; border-radius:10px;">`;
+            box.innerHTML = `${media}<h4 class="blink-text mt-3" style="font-family:'Cinzel';">${data.title}</h4><p class="small">${data.description}</p>`;
         }
     }
 

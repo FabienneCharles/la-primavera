@@ -76,6 +76,28 @@
     }
 
     document.addEventListener('DOMContentLoaded', personalizeSuccess);
+
+/* --- AJUSTE PARA CELULARES --- */
+@media (max-width: 576px) {
+    body {
+        padding: 15px; /* Evita que o card encoste nas bordas da tela */
+        height: auto; /* Permite scroll se o conteúdo for longo */
+        min-height: 100vh;
+    }
+    .success-card {
+        padding: 30px 20px; /* Reduz o espaço interno para o texto respirar */
+        border-radius: 20px;
+    }
+    h1 {
+        font-size: 1.8rem; /* Diminui um pouco o título */
+    }
+    p {
+        font-size: 1rem;
+    }
+    .success-icon {
+        font-size: 3.5rem; /* Ícone um pouco menor no celular */
+    }
+}
 </script>
 
 </body>

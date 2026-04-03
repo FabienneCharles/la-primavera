@@ -62,6 +62,66 @@
             #printableReceipt { display: block !important; position: absolute; left: 0; top: 0; width: 100%; border: none; }
             .btn-print-hidden { display: none !important; }
         }
+
+/* --- AJUSTES DE RESPONSIVIDADE --- */
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 80px; /* Reduz a largura no tablet */
+        padding: 15px 10px;
+    }
+    .sidebar h4, .sidebar-logo {
+        display: none; /* Esconde logo e nome em telas pequenas */
+    }
+    .nav-link-custom span, .nav-link-custom i {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+    .content {
+        margin-left: 80px;
+        width: calc(100% - 80px);
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .wrapper {
+        flex-direction: column; /* Empilha no celular */
+    }
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 10px;
+        border-right: none;
+        border-bottom: 4px solid var(--accent);
+    }
+    .sidebar h4, .sidebar-logo {
+        display: none;
+    }
+    .nav-link-custom {
+        margin-bottom: 0;
+        margin-right: 5px;
+        padding: 10px;
+        white-space: nowrap; /* Mantém os botões em linha rolável */
+    }
+    .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 15px;
+    }
+    .admin-header-bar {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+    }
+    .stat-badge {
+        font-size: 1.2rem;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -135,22 +195,60 @@
             <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Plateau</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-deje"></tbody></table></div>
         </div>
 
-        <div id="painel-patis" style="display:none;">
-            <h2 class="mb-4" style="font-family: 'Cinzel';">🍰 Inventaire Pâtisserie</h2>
-            <div class="admin-card">
-                <form id="formPatis" class="row g-3">
-                    <div class="col-md-4"><label class="fw-bold small">Nom</label><input type="text" id="p_name" class="form-control" required></div>
-                    <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="p_price" class="form-control" step="0.01" required></div>
-                    <div class="col-md-2"><label class="fw-bold small">Stock</label><input type="number" id="p_stock" class="form-control" value="10"></div>
-                    <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="p_init_disc" class="form-control" placeholder="0"></div>
-                    <div class="col-md-2"><label class="fw-bold small text-danger">Expire le</label><input type="date" id="p_init_expiry" class="form-control promo-date-input"></div>
-                    <div class="col-md-12"><label class="fw-bold small">Image</label><input type="file" id="p_file" class="form-control" accept="image/*" required></div>
-                    <div class="col-12"><label class="fw-bold small">Description</label><textarea id="p_desc" class="form-control" rows="2" placeholder="Détails du délice..."></textarea></div>
-                    <div class="col-12 text-end"><button type="submit" class="btn btn-success px-5">ENREGISTRER</button></div>
-                </form>
+       <div id="painel-patis" style="display:none;">
+    <h2 class="mb-4" style="font-family: 'Cinzel';">🍰 Inventaire Pâtisserie</h2>
+    <div class="admin-card">
+        <form id="formPatis" class="row g-3">
+            <div class="col-md-4">
+                <label class="fw-bold small">Nom</label>
+                <input type="text" id="p_name" class="form-control" required>
             </div>
-            <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Nom</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-patis"></tbody></table></div>
-        </div>
+            <div class="col-md-3">
+                <label class="fw-bold small">Moment</label>
+                <select id="p_moments_select" class="form-select patis-moment-dropdown">
+                    <option value="">Choisir...</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="fw-bold small">Prix ($)</label>
+                <input type="number" id="p_price" class="form-control" step="0.01" required>
+            </div>
+            <div class="col-md-3">
+                <label class="fw-bold small">Stock</label>
+                <input type="number" id="p_stock" class="form-control" value="10">
+            </div>
+            <div class="col-md-2">
+                <label class="fw-bold small text-danger">Remise %</label>
+                <input type="number" id="p_init_disc" class="form-control" placeholder="0">
+            </div>
+            <div class="col-md-3">
+                <label class="fw-bold small text-danger">Expire le</label>
+                <input type="date" id="p_init_expiry" class="form-control promo-date-input">
+            </div>
+            <div class="col-md-7">
+                <label class="fw-bold small">Image</label>
+                <input type="file" id="p_file" class="form-control" accept="image/*" required>
+            </div>
+            <div class="col-12">
+                <label class="fw-bold small">Description</label>
+                <textarea id="p_desc" class="form-control" rows="2" placeholder="Détails du délice..."></textarea>
+            </div>
+            <div class="col-12 text-end">
+                <button type="submit" class="btn btn-success px-5">ENREGISTRER</button>
+            </div>
+        </form>
+    </div>
+    <div class="admin-card table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Visuel</th><th>Nom</th><th>Moment</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="lista-patis"></tbody>
+        </table>
+    </div>
+</div>
 
         <div id="painel-home" style="display:none;">
             <h2 class="mb-4" style="font-family: 'Cinzel';">🖼️ Gérer l'Accueil & Pages</h2>
@@ -610,15 +708,80 @@
     }
 
     function renderRow(p, table, isFleur, viewCount = 0) {
-        const today = new Date().toISOString().split('T')[0];
-        const isPromoValid = p.promo_discount_percent > 0 && (!p.promo_expiry_date || p.promo_expiry_date >= today);
-        let priceHTML = `<b>$${p.price.toFixed(2)}</b>`;
-        if (isPromoValid) {
-            const final = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
-            priceHTML = `<span class="text-danger"><b>$${final}</b></span> <small class="old-price-admin">$${p.price}</small>`;
-        }
-        return `<tr><td><img src="${p.image_url}" class="img-mini"></td><td>${p.name}</td>${isFleur?`<td>${p.moments||'-'}</td>`:''}<td><input type="number" class="table-input-small" value="${p.promo_discount_percent||0}" onchange="updatePromoField('${table}','${p.id}','promo_discount_percent',this.value)"></td><td><input type="date" class="table-date-small" min="${today}" value="${p.promo_expiry_date||''}" onchange="updatePromoField('${table}','${p.id}','promo_expiry_date',this.value)"></td><td>${p.stock||0}</td><td><span class="badge bg-info text-dark">${viewCount}</span></td><td>${priceHTML}</td><td><button onclick="toggleStatus('${table}','${p.id}',${p.is_active!==false})" class="btn btn-sm btn-outline-secondary"><i class="bi bi-eye"></i></button></td></tr>`;
+    const today = new Date().toISOString().split('T')[0];
+    const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
+    
+    // Lógica do ícone do Olho (Verde se Ativo, Vermelho se Inativo)
+    const isActive = p.is_active !== false;
+    const eyeIcon = isActive ? 'bi-eye-fill text-success' : 'bi-eye-slash text-danger';
+    const rowOpacity = isActive ? '1' : '0.5'; 
+
+    let priceHTML = `<b>$${parseFloat(p.price).toFixed(2)}</b>`;
+    if (isPromoValid) {
+        const final = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
+        priceHTML = `<span class="text-danger"><b>$${final}</b></span> <br><small class="old-price-admin">$${parseFloat(p.price).toFixed(2)}</small>`;
     }
+
+    return `
+    <tr style="opacity: ${rowOpacity}; vertical-align: middle;">
+        <td><img src="${p.image_url}" class="img-mini" style="border: 1px solid #ddd;"></td>
+        <td>
+            <input type="text" class="form-control form-control-sm" value="${p.name.replace(/"/g, '&quot;')}" 
+            onchange="updatePromoField('${table}','${p.id}','name',this.value)">
+        </td>
+        <td>
+            <input type="text" class="form-control form-control-sm" value="${p.moments || ''}" 
+            onchange="updatePromoField('${table}','${p.id}','moments',this.value)" placeholder="-">
+        </td>
+        <td>
+            <input type="number" class="table-input-small" value="${p.promo_discount_percent || 0}" 
+            onchange="updatePromoField('${table}','${p.id}','promo_discount_percent',this.value)">
+        </td>
+        <td>
+            <input type="date" class="table-date-small" min="${today}" value="${p.promo_expiry_date || ''}" 
+            onchange="updatePromoField('${table}','${p.id}','promo_expiry_date',this.value)">
+        </td>
+        <td>
+            <input type="number" class="table-input-small" value="${p.stock || 0}" 
+            onchange="updatePromoField('${table}','${p.id}','stock',this.value)">
+        </td>
+        <td><span class="badge bg-info text-dark">${viewCount}</span></td>
+        <td>
+            <div class="d-flex flex-column">
+                <input type="number" class="table-input-small mb-1" step="0.01" value="${p.price}" 
+                onchange="updatePromoField('${table}','${p.id}','price',this.value)">
+                <div>${priceHTML}</div>
+            </div>
+        </td>
+        <td>
+            <div class="d-flex gap-2">
+                <button onclick="toggleStatus('${table}','${p.id}',${isActive})" class="btn btn-sm btn-light border" title="Ativer/Désactiver">
+                    <i class="bi ${eyeIcon}"></i>
+                </button>
+                <button onclick="deleteProduct('${table}','${p.id}','${p.name.replace(/'/g, "\\'")}')" class="btn btn-sm btn-outline-danger" title="Supprimer">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        </td>
+    </tr>`;
+}
+
+
+async function deleteProduct(table, id, name) {
+    if (confirm(`Voulez-vous vraiment SUPPRIMER o produto "${name}"?`)) {
+        showLoading(true);
+        const { error } = await _supabase.from(table).delete().eq('id', id);
+        showLoading(false);
+        
+        if (error) {
+            alert("Erreur lors de la suppression: " + error.message);
+        } else {
+            loadData(); // Recarrega as tabelas para o item sumir
+        }
+    }
+}
+
+
 
     async function updatePromoField(table, id, field, value) {
         const updateData = {}; updateData[field] = value || null;
@@ -652,14 +815,18 @@
     };
 
     document.getElementById('formPatis').onsubmit = async (e) => {
-        e.preventDefault(); showLoading(true);
-        const img = await compressImage(document.getElementById('p_file').files[0]);
-        await _supabase.from('patisserie').insert([{
-            name: document.getElementById('p_name').value, price: parseFloat(document.getElementById('p_price').value), 
-            stock: parseInt(document.getElementById('p_stock').value), description: document.getElementById('p_desc').value, image_url: img
-        }]);
-        location.reload();
-    };
+    e.preventDefault(); showLoading(true);
+    const img = await compressImage(document.getElementById('p_file').files[0]);
+    await _supabase.from('patisserie').insert([{
+        name: document.getElementById('p_name').value,
+        moments: document.getElementById('p_moments_select').value, // ADICIONADO AQUI
+        price: parseFloat(document.getElementById('p_price').value), 
+        stock: parseInt(document.getElementById('p_stock').value), 
+        description: document.getElementById('p_desc').value, 
+        image_url: img
+    }]);
+    location.reload();
+};
 
     async function loadOrders() { 
         const {data:o}=await _supabase.from('orders').select('*'); 
@@ -747,7 +914,35 @@
     }
 
     function updateSalesChart(orders) { const ctx = document.getElementById('salesChart').getContext('2d'); if (salesChart) salesChart.destroy(); salesChart = new Chart(ctx, { type: 'line', data: { labels: ['7d','6d','5d','4d','3d','2d','Hoje'], datasets: [{ label: 'Ventes ($)', data: [0,0,0,0,0,0,orders.length*10], borderColor: '#B8860B' }] }, options: { maintainAspectRatio: false } }); }
-    async function loadMoments() { const {data:m}=await _supabase.from('moments').select('*'); document.getElementById('f_moments_select').innerHTML = '<option value="">Choisir...</option>'+m.map(i=>`<option value="${i.name}">${i.name}</option>`).join(''); document.getElementById('moments-list-edit').innerHTML = m.map(i=>`<div class="col-md-4 mb-2"><div class="input-group"><input type="text" class="form-control form-control-sm" value="${i.name}"><button class="btn btn-sm btn-danger" onclick="deleteMoment('${i.id}')">✕</button></div></div>`).join(''); }
+    async function loadMoments() { 
+    // Busca os momentos no banco de dados
+    const { data: m } = await _supabase.from('moments').select('*'); 
+
+    // 1. Preenche o seletor de Flores (que já existia)
+    const florSelect = document.getElementById('f_moments_select');
+    if(florSelect) {
+        florSelect.innerHTML = '<option value="">Choisir...</option>' + m.map(i=>`<option value="${i.name}">${i.name}</option>`).join('');
+    }
+
+    // 2. ACRESCENTE ESTA PARTE AQUI PARA A PÂTISSERIE:
+    const patisSelect = document.getElementById('p_moments_select');
+    if(patisSelect) {
+        patisSelect.innerHTML = '<option value="">Choisir...</option>' + m.map(i=>`<option value="${i.name}">${i.name}</option>`).join('');
+    }
+
+    // 3. Preenche a lista de edição de momentos (que já existia)
+    document.getElementById('moments-list-edit').innerHTML = m.map(i=>`
+        <div class="col-md-4 mb-2">
+            <div class="input-group">
+                <input type="text" class="form-control form-control-sm" value="${i.name}">
+                <button class="btn btn-sm btn-danger" onclick="deleteMoment('${i.id}')">✕</button>
+            </div>
+        </div>`).join(''); 
+}
+
+
+
+
     async function addMoment() { const n=document.getElementById('new_moment_name').value; if(n){await _supabase.from('moments').insert([{name:n}]); loadMoments();}}
     async function deleteMoment(id){await _supabase.from('moments').delete().eq('id',id); loadMoments();}
     async function loadSlots(){const {data:s}=await _supabase.from('delivery_slots').select('*'); document.getElementById('lista-slots').innerHTML=s?.map(x=>`<tr><td>${x.display_order}</td><td>${x.slot_label}</td><td>${x.slot_category}</td><td>${x.is_active?'On':'Off'}</td><td><button onclick="toggleSlot('${x.id}',${x.is_active})">Toggle</button></td></tr>`).join('');}
@@ -873,6 +1068,26 @@ async function toggleBanClient(id, currentlyBanned) {
     function filterClients(){let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
     function trocarPainel(p){['flor','patis','moments','deje','clients','orders','slots','home','chat'].forEach(id=>{document.getElementById('painel-'+id).style.display='none'; document.getElementById('btn-'+id).classList.remove('active');}); document.getElementById('painel-'+p).style.display='block'; document.getElementById('btn-'+p).classList.add('active'); if(p==='chat') loadChatList();}
     async function toggleStatus(t,id,st){await _supabase.from(t).update({is_active:!st}).eq('id',id); loadData();}
+
+
+// --- LÓGICA DE LOGOUT AUTOMÁTICO POR INATIVIDADE ---
+    let tempoInatividade;
+
+    function resetarCronometro() {
+        clearTimeout(tempoInatividade);
+        // Define o tempo: 15 minutos (15 * 60 * 1000 milissegundos)
+        // Se quiser testar rápido, mude para 10000 (10 segundos)
+        tempoInatividade = setTimeout(handleLogout, 15 * 60 * 1000); 
+    }
+
+    // Monitora movimentos e cliques para saber se o admin está ativo
+    window.onload = resetarCronometro;
+    window.onmousemove = resetarCronometro;
+    window.onmousedown = resetarCronometro; // cliques
+    window.ontouchstart = resetarCronometro; // toques no celular
+    window.onclick = resetarCronometro;     
+    window.onkeydown = resetarCronometro;   // teclado
+    window.addEventListener('scroll', resetarCronometro, true); // rolagem
 
     checkAdmin();
 </script>

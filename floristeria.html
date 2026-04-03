@@ -9,158 +9,211 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous-basic.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-   <style>
-    :root { 
-        --dark: #4A2419; 
-        --deep-coffee: #2C1810; 
-        --rose: #C98986; 
-        --bg: #E8D5C4; 
-        --gold: #B8860B; 
-        --accent: #B8860B; 
-    }
-    
-    body { 
-        font-family: 'Poppins', sans-serif; 
-        background-color: var(--bg); 
-        color: var(--dark); 
-        margin: 0; 
-        padding-top: 100px; 
-    }
-    
-    .navbar { 
-        background: white !important; 
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
-        padding: 0 50px !important; 
-        height: 85px !important;    
-        display: flex !important;
-        align-items: center !important;
-        position: fixed !important;
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 10000 !important;
-        border-bottom: 2px solid var(--gold) !important;
-    }
 
-    .navbar-brand { 
-        font-family: 'Cinzel', serif; 
-        font-weight: 700; 
-        color: var(--deep-coffee) !important; 
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        display: flex !important; 
-        align-items: center !important; 
-        gap: 15px; 
-        font-size: 1.4rem !important;
-        text-decoration: none;
-        height: 85px !important;
-    }
+    <style>
+        :root { 
+            --dark: #4A2419; 
+            --deep-coffee: #2C1810; 
+            --rose: #C98986; 
+            --bg: #E8D5C4; 
+            --gold: #B8860B; 
+            --accent: #B8860B; 
+        }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--dark); 
+            margin: 0; 
+            padding-top: 100px; 
+        }
 
-    .nav-link { 
-        font-family: 'Cinzel', serif; 
-        font-size: 0.85rem !important; 
-        font-weight: 600; 
-        text-transform: uppercase; 
-        color: var(--deep-coffee) !important; 
-        letter-spacing: 1.5px; 
-        padding: 0 15px !important;
-        line-height: 85px !important;
-    }
+        /* --- NAVBAR DESIGN (PADRÃO PRESTIGE) --- */
+        .navbar { 
+            background: white !important; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            padding: 12px 50px !important; 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            z-index: 10000 !important; 
+            border-bottom: 2px solid var(--gold) !important;
+            height: 85px;
+        }
 
-    .flower-moments {
-        font-size: 0.8rem;
-        color: #B8860B; 
-        font-family: 'Poppins', sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        line-height: 1.4;
-    }
-    .flower-moments strong {
-        color: #2C1810; 
-        font-weight: 700;
-    }
+        .navbar-brand { 
+            font-family: 'Cinzel', serif; 
+            font-weight: 700; 
+            color: var(--deep-coffee) !important; 
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; align-items: center; gap: 15px; 
+            font-size: 1.2rem !important;
+            text-decoration: none;
+        }
 
-    .nav-link:hover { color: var(--gold) !important; }
+        .brand-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold); }
 
-    .lang-select {
-        border: 1px solid var(--gold); border-radius: 20px; padding: 4px 12px;
-        font-size: 0.75rem; font-family: 'Cinzel', serif; color: var(--dark);
-        background: white; cursor: pointer; margin-right: 15px; outline: none;
-    }
+        .nav-link { 
+            font-family: 'Cinzel', serif; 
+            font-size: 0.8rem !important; 
+            letter-spacing: 1px; 
+            color: var(--deep-coffee) !important; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            padding: 0 10px !important;
+            transition: 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { color: var(--gold) !important; }
 
-    /* Estilos da Busca */
-    .search-box input:focus {
-        box-shadow: 0 0 5px rgba(184, 134, 11, 0.5);
-        border-color: var(--gold);
-        outline: none;
-    }
-    .search-box input::placeholder {
-        font-size: 0.75rem;
-        font-style: italic;
-    }
+        /* --- CENTRALIZAÇÃO NO DESKTOP --- */
+        @media (min-width: 992px) {
+            .collapse.navbar-collapse {
+                display: flex !important;
+                justify-content: center;
+                flex-grow: 1;
+            }
+        }
 
-    .user-dropdown .btn-user { 
-        border: none; background: none; color: var(--dark); 
-        display: flex; align-items: center; gap: 8px; 
-        font-weight: 700; font-family: 'Cinzel', serif; font-size: 0.85rem; text-decoration: none;
-        text-transform: uppercase;
-    }
+        /* --- BUSCA E ÍCONES --- */
+        .search-input {
+            border-radius: 20px !important;
+            border: 1px solid var(--gold) !important;
+            width: 150px;
+            font-size: 0.75rem;
+            padding: 5px 15px !important;
+        }
 
-    .cart-container { position: relative; cursor: pointer; padding: 5px; margin-left: 15px; color: var(--dark); text-decoration: none; }
-    .cart-badge { position: absolute; top: -5px; right: -5px; background: red; color: white; font-size: 0.7rem; border-radius: 50%; padding: 2px 6px; font-weight: bold; }
-    
+        .lang-select-custom {
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            background: white;
+            outline: none;
+        }
+
+        /* --- CARRINHO E BADGE (POSIÇÃO FIXA) --- */
+        .cart-wrapper-custom {
+            position: relative !important;
+            display: inline-flex;
+            color: var(--deep-coffee);
+            text-decoration: none;
+            margin-left: 10px;
+        }
+
+        .cart-badge-custom {
+            position: absolute !important;
+            top: -8px !important;
+            right: -10px !important;
+            background-color: red !important;
+            color: white !important;
+            font-size: 0.65rem !important;
+            font-weight: bold;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            z-index: 10;
+        }
+
+        /* --- ESTILOS FLORISTERIA --- */
+        .section-title { 
+            font-family: 'Cinzel', serif; text-align: center; margin: 50px 0; 
+            letter-spacing: 4px; color: var(--accent); font-size: 2.5rem; font-weight: 700;
+        }
+
+/* Padroniza o título igual ao do Index e reduz o espaço */
+.section-title { 
+    font-family: 'Cinzel', serif !important; 
+    font-size: 1.8rem !important; 
+    text-align: center; 
+    margin-top: 10px !important; 
+    margin-bottom: 25px !important; 
+    letter-spacing: 2px; 
+    color: var(--gold) !important; 
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Reduz o recuo da página para o título subir */
+.container.py-5 {
+    padding-top: 20px !important;
+}
+
+/* Remove o azul e a linha do nome do cliente */
+.btn-user {
+    text-decoration: none !important;
+    color: var(--deep-coffee) !important;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Ajuste para Celular */
+@media (max-width: 767px) {
     .section-title { 
-        font-family: 'Cinzel', serif; text-align: center; margin: 50px 0; 
-        letter-spacing: 4px; color: var(--accent); font-size: 2.5rem; font-weight: 700;
+        font-size: 1.3rem !important; 
+        margin-bottom: 15px !important;
+        margin-top: 0px !important;
     }
+    body { padding-top: 75px; } /* Aproxima mais do topo no mobile */
+}
 
-    .flower-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #eee; transition: 0.4s; height: 100%; display: flex; flex-direction: column; }
-    .flower-card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(44, 24, 16, 0.15); border-color: var(--gold); }
-    
-    .flower-img-link { display: block; overflow: hidden; height: 400px; cursor: zoom-in; }
-    .flower-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-    .flower-card:hover .flower-img { transform: scale(1.05); }
+        .flower-card { 
+            background: white; border-radius: 20px; overflow: hidden; border: 1px solid #eee; 
+            transition: 0.4s; height: 100%; display: flex; flex-direction: column; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        .flower-card:hover { transform: translateY(-8px); box-shadow: 0 12px 40px rgba(44, 24, 16, 0.15); border-color: var(--gold); }
+        
+        .flower-img-link { display: block; overflow: hidden; height: 400px; cursor: zoom-in; }
+        .flower-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .flower-card:hover .flower-img { transform: scale(1.05); }
 
-    .flower-body { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; text-align: center; }
-    
-    .flower-text-wrapper {
-        min-height: 100px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
+        .flower-body { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; text-align: center; }
+        
+        .flower-text-wrapper { min-height: 100px; display: flex; flex-direction: column; justify-content: center; }
 
-    .flower-description {
-        font-size: 0.95rem; 
-        color: #4A2419;    
-        font-style: italic;
-        font-family: 'Playfair Display', serif; 
-        line-height: 1.4;
-        margin-bottom: 8px !important;
-        display: block;    
-    }
-    .flower-price { font-weight: 700; color: var(--dark); font-size: 1.5rem; margin-top: auto; display: block; font-family: 'Poppins', sans-serif; }
-    
-    .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
+        .flower-description {
+            font-size: 0.95rem; color: #4A2419; font-style: italic;
+            font-family: 'Playfair Display', serif; line-height: 1.4; margin-bottom: 8px !important;
+        }
+        .flower-moments { font-size: 0.8rem; color: #B8860B; text-transform: uppercase; letter-spacing: 0.5px; }
+        .flower-price { font-weight: 700; color: var(--deep-coffee); font-size: 1.5rem; margin-top: auto; display: block; }
+        .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
 
-    footer { 
-        background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 20px; 
-        font-family: 'Poppins', sans-serif; margin-top: 80px; border-top: 4px solid var(--gold); 
-    }
-    .footer-title { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; margin-bottom: 20px; }
-</style>
+        /* --- FOOTER --- */
+        footer { 
+            background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 20px; 
+            font-family: 'Poppins', sans-serif; margin-top: 80px; border-top: 4px solid var(--gold); 
+        }
+        .footer-title { font-family: 'Cinzel', serif; color: var(--gold); letter-spacing: 2px; margin-bottom: 20px; }
+
+        /* --- AJUSTES MOBILE --- */
+        @media (max-width: 991px) {
+            .navbar { padding: 10px 20px !important; height: auto; }
+            .flower-img-link { height: 300px; }
+            .section-title { font-size: 1.8rem; margin: 30px 0; }
+        }
+    </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        
         <a class="navbar-brand d-flex align-items-center" href="index.html">
-            <img src="images/Logo1.png" alt="Logo" style="width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--gold);">
-            <span style="font-family: 'Cinzel', serif; font-weight: 700; color: #2C1810; margin-left: 10px; letter-spacing: 2px;">LA PRIMAVERA</span>
+            <img src="images/Logo1.png" alt="Logo" class="brand-logo">
+            <span class="d-none d-sm-inline">LA PRIMAVERA</span>
         </a>
-        <div class="collapse navbar-collapse justify-content-center">
-            <ul class="navbar-nav gap-3">
+
+        <div class="collapse navbar-collapse justify-content-center" id="navRes">
+            <ul class="navbar-nav gap-2">
                 <li class="nav-item"><a class="nav-link" href="index.html">ACCUEIL</a></li>
                 <li class="nav-item"><a class="nav-link" href="boutique.html">PÂTISSERIE</a></li>
                 <li class="nav-item"><a class="nav-link active" href="floristeria.html">FLORISTERIE</a></li>
@@ -168,24 +221,29 @@
                 <li class="nav-item"><a class="nav-link" href="about.html">ABOUT US</a></li>
             </ul>
         </div>
-        <div class="d-flex align-items-center">
-            <div class="search-box d-none d-lg-flex align-items-center me-3">
-                <i class="bi bi-search me-2" style="color: var(--dark);"></i>
-                <input type="text" id="flowerSearch" class="form-control form-control-sm" 
-                       placeholder="Rechercher..." onkeyup="filterFlowers()" 
-                       style="border-radius: 20px; border: 1px solid var(--gold); width: 180px;">
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="search-box d-none d-xl-flex align-items-center">
+                <i class="bi bi-search me-2"></i>
+                <input type="text" id="flowerSearch" class="form-control form-control-sm search-input" placeholder="Rechercher..." onkeyup="filterFlowers()">
             </div>
 
-            <select class="lang-select" onchange="changeLanguage(this.value)">
-                <option value="fr">FR 🇫🇷</option>
-                <option value="en">EN 🇺🇸</option>
-                <option value="es">ES 🇪🇸</option>
+            <select class="lang-select-custom" onchange="changeLanguage(this.value)">
+                <option value="fr">FR FR</option>
+                <option value="en">EN EN</option>
+                <option value="es">ES ES</option>
             </select>
+            
             <div id="auth-area"></div> 
-            <a href="checkout.html" class="cart-container">
+
+            <a href="checkout.html" class="cart-wrapper-custom">
                 <i class="bi bi-cart3 fs-4"></i>
-                <span class="cart-badge" id="cartCount">0</span>
+                <span id="cartCount" class="cart-badge-custom">0</span>
             </a>
+
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navRes">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </div>
 </nav>
@@ -195,28 +253,41 @@
     <div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid"></div>
 </section>
 
-<footer>
+<footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
     <div class="container">
-        <div class="row g-4 text-center">
+        <div class="row g-5 justify-content-center">
             <div class="col-md-4">
-                <h5 class="footer-title">LA PRIMAVERA</h5>
-                <p style="font-size: 0.85rem; color: #d1c7c2;">L'excellence haïtienne raffinée. Miami . Haiti</p>
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">
+                    <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
+                </h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
+                </p>
             </div>
+
             <div class="col-md-4">
-                <h5 class="footer-title">CONTACT</h5>
-                <p class="mb-1">+1 (352) 298-2578</p>
-                <p>laprimavera951@gmail.com</p>
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">CONTACT</h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    Mon-Fri: 9:00 AM - 6:00 PM EST<br>
+                    <strong>Email:</strong> laprimavera951@gmail.com<br>
+                    <strong>Phone:</strong> +1 (352) 298-2578
+                </p>
             </div>
+
             <div class="col-md-4">
-                <h5 class="footer-title">SUIVEZ-NOUS</h5>
-                <div class="d-flex justify-content-center gap-3 fs-4">
-                    <a href="#" style="color: #fdfaf8;"><i class="bi bi-instagram"></i></a>
-                    <a href="#" style="color: #fdfaf8;"><i class="bi bi-facebook"></i></a>
-                </div>
+                <h6 style="font-family: 'Cinzel', serif; color: #B8860B; font-size: 0.9rem; letter-spacing: 1px;">LOCAL DELIVERY 🚗</h6>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                    Serving the states of<br><strong>Massachusetts, New York & New Jersey</strong>
+                </p>
             </div>
         </div>
-        <hr style="border-top: 1px solid #4A2419; margin: 40px 0 20px;">
-        <p class="text-center" style="font-size: 0.65rem; color: #888; letter-spacing: 2px;">LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS</p>
+
+        <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; color: #ffffff; margin: 0;">
+                LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS
+            </p>
+        </div>
     </div>
 </footer>
 
@@ -233,86 +304,73 @@
     }
 
     async function loadFlowers() {
-        const grid = document.getElementById('flower-grid');
-        const { data: flowers, error } = await _supabase.from('products')
-            .select('id, name, description, price, image_url, stock, promo_discount_percent')
-            .eq('category', 'fleur')
-            .neq('is_active', false)
-            .order('name');
+    const grid = document.getElementById('flower-grid');
+    
+    // 1. ACRESCENTADO: 'promo_expiry_date' no select para que o JS possa verificar a data
+    const { data: flowers, error } = await _supabase.from('products')
+        .select('id, name, description, price, image_url, stock, promo_discount_percent, promo_expiry_date')
+        .eq('category', 'fleur')
+        .neq('is_active', false)
+        .order('name');
 
-        if (flowers) {
-            grid.innerHTML = flowers.map(f => {
-                const inStock = (f.stock > 0);
-                let finalPrice = f.price;
-                let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
+    if (flowers) {
+        // 2. DEFINIDO: Pega a data de hoje no formato YYYY-MM-DD para comparação rápida
+        const today = new Date().toISOString().split('T')[0];
 
-                if (f.promo_discount_percent > 0) {
-                    finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
-                    priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
-                }
+        grid.innerHTML = flowers.map(f => {
+            const inStock = (f.stock > 0);
+            
+            // 3. RESOLVIDO: A promoção só é válida se tiver desconto E (não tiver data OU a data for hoje/futura)
+            const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
 
-                let pureDescription = "";
-                let idealMoments = "";
-                
-                if (f.description) {
-                    const parts = f.description.split("Idéal pour :");
-                    pureDescription = parts[0] ? parts[0].trim() : "";
-                    idealMoments = parts[1] ? `<strong>Idéal pour :</strong> ${parts[1].trim()}` : "";
-                } else {
-                    pureDescription = "Parfait pour toute occasion.";
-                }
+            let finalPrice = f.price;
+            let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
 
-                return `
-                <div class="col">
-                    <div class="flower-card shadow-sm">
-                        <a href="${f.image_url}" class="flower-img-link zoom-trigger">
-                            <img src="${f.image_url}" class="flower-img" alt="${f.name}">
-                        </a>
-                        <div class="flower-body">
-                            <h3 class="fw-bold mb-2" style="font-family:'Cinzel';">${f.name}</h3>
-                            
-                            <div class="flower-text-wrapper mb-3">
-                                <p class="flower-description mb-1">${pureDescription}</p>
-                                <p class="flower-moments">${idealMoments}</p>
-                            </div>
+            // Se a promoção for válida, calcula o desconto e muda o visual do preço
+            if (isPromoValid) {
+                finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
+                priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
+            }
 
-                            <div class="mt-auto">
-                                ${priceDisplay}
-                                <button class="btn btn-dark mt-3 w-100 rounded-pill" 
-                                    onclick="quickAdd('${f.id}', '${f.name.replace(/'/g, "\\'")}', ${finalPrice})" 
-                                    ${!inStock ? 'disabled' : ''}>
-                                    ${inStock ? 'AJOUTER AU PANIER' : 'RUPTURE DE STOCK'}
-                                </button>
-                            </div>
+            let pureDescription = "Parfait pour toute occasion.";
+            let idealMoments = "";
+            
+            if (f.description) {
+                const parts = f.description.split("Idéal pour :");
+                pureDescription = parts[0] ? parts[0].trim() : pureDescription;
+                idealMoments = parts[1] ? `<strong>Idéal pour :</strong> ${parts[1].trim()}` : "";
+            }
+
+            return `
+            <div class="col product-item">
+                <div class="flower-card">
+                    <a href="${f.image_url}" class="flower-img-link zoom-trigger">
+                        <img src="${f.image_url}" class="flower-img" alt="${f.name}">
+                    </a>
+                    <div class="flower-body">
+                        <h3 class="fw-bold mb-2" style="font-family:'Cinzel';">${f.name}</h3>
+                        <div class="flower-text-wrapper mb-3">
+                            <p class="flower-description mb-1">${pureDescription}</p>
+                            <p class="flower-moments">${idealMoments}</p>
+                        </div>
+                        <div class="mt-auto">
+                            ${priceDisplay}
+                            <button class="btn btn-dark mt-3 w-100 rounded-pill" 
+                                onclick="quickAdd('${f.id}', '${f.name.replace(/'/g, "\\'")}', ${finalPrice})" 
+                                ${!inStock ? 'disabled' : ''}>
+                                ${inStock ? 'AJOUTER AU PANIER' : 'RUPTURE DE STOCK'}
+                            </button>
                         </div>
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            </div>`;
+        }).join('');
 
-            if (typeof Luminous !== 'undefined') {
-                document.querySelectorAll('.zoom-trigger').forEach(el => {
-                    new Luminous(el);
-                });
-            }
+        if (window.Luminous) {
+            document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
         }
     }
-
-    function filterFlowers() {
-        const searchTerm = document.getElementById('flowerSearch').value.toLowerCase();
-        const flowerCards = document.querySelectorAll('#flower-grid > .col');
-
-        flowerCards.forEach(card => {
-            const name = card.querySelector('h3').innerText.toLowerCase();
-            const text = card.querySelector('.flower-text-wrapper').innerText.toLowerCase();
-            const price = card.querySelector('.flower-price').innerText.toLowerCase();
-            
-            if (name.includes(searchTerm) || text.includes(searchTerm) || price.includes(searchTerm)) {
-                card.style.display = "";
-            } else {
-                card.style.display = "none";
-            }
-        });
-    }
+}
 
     async function quickAdd(id, name, price) {
         const { data: { user } } = await _supabase.auth.getUser();
@@ -322,10 +380,7 @@
             user_id: user.id, product_id: id, product_name: name, price: price, quantity: 1
         }]);
 
-        if (!error) { 
-            alert(name + " ajouté au panier !"); 
-            updateCartBadge();
-        }
+        if (!error) { alert(name + " ajouté !"); updateCartBadge(); }
     }
 
     async function updateCartBadge() {
@@ -342,11 +397,24 @@
     async function updateNavbarAuth() {
         const area = document.getElementById('auth-area');
         const { data: { user } } = await _supabase.auth.getUser();
+
         if (user) {
             const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-            area.innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i><span>${profile?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu"><li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
+            const firstName = profile?.full_name?.split(' ')[0] || 'Client';
+            area.innerHTML = `
+                <div class="dropdown user-dropdown">
+                    <a class="btn-user dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" style="text-decoration:none; color:var(--deep-coffee); font-family:'Cinzel';">
+                        <i class="bi bi-person-circle fs-5 me-1"></i>
+                        <span>${firstName}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
+                    </ul>
+                </div>`;
         } else {
-            area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill px-3">Connexion</a>`;
+            area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill">Connexion</a>`;
         }
     }
 

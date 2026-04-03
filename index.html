@@ -11,244 +11,267 @@
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <style>
-        :root {
-            --gold-title: #B8860B;
-            --deep-coffee: #2C1810;
-            --creme-luxo: #E8D5C4; 
-            --pure-white: #ffffff;
-        }
+<style>
+    :root {
+        --gold-title: #B8860B;
+        --deep-coffee: #2C1810;
+        --creme-luxo: #E8D5C4; 
+        --pure-white: #ffffff;
+    }
 
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            background-color: var(--creme-luxo) !important; 
-            color: var(--deep-coffee); 
-            margin: 0; 
-            overflow-x: hidden;
-        }
+    body { 
+        font-family: 'Poppins', sans-serif; 
+        background-color: var(--creme-luxo) !important; 
+        color: var(--deep-coffee); 
+        margin: 0; 
+        overflow-x: hidden;
+        padding-top: 85px; /* Ajuste para não cobrir o conteúdo sob a navbar fixa */
+    }
 
-        /* NAVBAR */
-        .navbar { 
-            background: white !important; 
-            padding: 12px 50px; 
-            border-bottom: 2px solid var(--gold-title); 
-            position: sticky; top: 0; z-index: 1000;
-        }
-        
-        .navbar-brand { 
-            font-family: 'Cinzel', serif; 
-            font-weight: 700; 
-            color: var(--deep-coffee) !important; 
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            font-size: 1.4rem;
-            text-decoration: none;
-        }
-        
-        .brand-logo {
-            width: 45px; height: 45px; 
-            border-radius: 50%; 
-            object-fit: cover; 
-            border: 1px solid var(--gold-title); 
-        }
+    /* --- NAVBAR --- */
+    .navbar { 
+        background: white !important; 
+        padding: 0 50px !important; 
+        border-bottom: 2px solid var(--gold-title); 
+        position: fixed !important; 
+        top: 0; 
+        width: 100%;
+        height: 85px;
+        z-index: 10000 !important;
+        display: flex;
+        align-items: center;
+    }
+    
+    .navbar-brand { 
+        font-family: 'Cinzel', serif; 
+        font-weight: 700; 
+        color: var(--deep-coffee) !important; 
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        display: flex; 
+        align-items: center; 
+        gap: 15px; 
+        font-size: 1.2rem !important;
+        text-decoration: none;
+    }
+    
+    .brand-logo {
+        width: 45px; height: 45px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        border: 1px solid var(--gold-title); 
+    }
 
-        /* BARRA DE BUSCA */
-        .search-box input:focus {
-            box-shadow: 0 0 5px rgba(184, 134, 11, 0.5);
-            border-color: var(--gold-title);
-            outline: none;
+    /* CENTRALIZAÇÃO DESKTOP */
+    @media (min-width: 992px) {
+        .collapse.navbar-collapse {
+            display: flex !important;
+            justify-content: center; /* Centraliza os links no meio */
+            flex-grow: 1;
         }
+    }
 
-        #promo-sidebar-content {
-            overflow: hidden; 
-            border-radius: 15px;
-        }
+    .nav-link { 
+        font-family: 'Cinzel', serif; 
+        font-size: 0.8rem; 
+        letter-spacing: 1px; 
+        color: var(--deep-coffee) !important; 
+        font-weight: 600; 
+        text-transform: uppercase;
+        white-space: nowrap;
+        transition: 0.3s;
+        padding: 0 15px !important;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--gold-title) !important; }
 
-        #promo-sidebar-content img, 
-        #promo-sidebar-content video {
-            transition: transform 0.5s ease; 
-        }
+    /* BARRA DE BUSCA */
+    .search-box input {
+        border-radius: 20px !important;
+        border: 1px solid var(--gold-title) !important;
+        padding: 5px 15px !important;
+        font-size: 0.75rem;
+    }
+    .search-box input:focus {
+        box-shadow: 0 0 5px rgba(184, 134, 11, 0.5);
+        outline: none;
+    }
 
-        #promo-sidebar-content:hover img, 
-        #promo-sidebar-content:hover video {
-            transform: scale(1.1); 
-        }
+    .lang-select {
+        border: 1px solid var(--gold-title);
+        border-radius: 20px;
+        padding: 4px 12px;
+        font-size: 0.7rem;
+        font-family: 'Cinzel', serif;
+        color: var(--deep-coffee);
+        background: white;
+        cursor: pointer;
+        margin-right: 10px;
+        outline: none;
+    }
 
-   .nav-link { 
-    font-family: 'Cinzel', serif; 
-    font-size: 0.75rem; /* Reduzi um pouco para ajudar a caber tudo */
-    letter-spacing: 1px; /* Diminuir o espaço entre letras também ajuda muito */
-    color: var(--deep-coffee) !important; 
-    font-weight: 600; 
-    text-transform: uppercase;
-    white-space: nowrap; /* ESTA LINHA IMPEDE A QUEBRA */
+    /* CARRINHO E BADGE */
+    .cart-wrapper { 
+        position: relative !important; 
+        margin-left: 15px; 
+        color: var(--deep-coffee); 
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+    .cart-badge { 
+    position: absolute !important; 
+    top: -8px; 
+    right: -10px; 
+    background: red !important; 
+    color: white !important; 
+    font-size: 0.65rem !important; 
+    border-radius: 50%; 
+    width: 18px;
+    height: 18px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold; 
+    border: 2px solid white; /* Mantém o acabamento de luxo */
+    z-index: 10;
 }
 
-        .lang-select {
-            border: 1px solid var(--gold-title);
-            border-radius: 20px;
-            padding: 4px 12px;
-            font-size: 0.75rem;
-            font-family: 'Cinzel', serif;
-            color: var(--deep-coffee);
-            background: white;
-            cursor: pointer;
-            margin-right: 15px;
-            outline: none;
-        }
+    /* USER DROPDOWN */
+    .user-dropdown .btn-user { 
+        border: none; background: none; color: var(--deep-coffee); 
+        display: flex; align-items: center; gap: 8px; 
+        font-weight: 700; font-family: 'Cinzel', serif; font-size: 0.85rem; 
+        text-decoration: none; text-transform: uppercase;
+    }
+    .user-icon { font-size: 1.5rem; color: var(--deep-coffee); }
+    .dropdown-menu { border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; }
 
-        .cart-wrapper { position: relative; margin-left: 20px; color: var(--deep-coffee); text-decoration: none; }
-        .cart-badge { 
-            position: absolute; top: -8px; right: -12px; background: red; color: white; 
-            font-size: 0.7rem; border-radius: 50%; padding: 2px 6px; font-weight: bold; 
-        }
+    /* HERO SECTION */
+    .hero-section {
+        height: 45vh;
+        background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), 
+                    url("images/ecrin-amour.JPEG") no-repeat center center;
+        background-size: cover;
+        display: flex; align-items: center; justify-content: center;
+        position: relative;
+    }
 
-        .user-dropdown .btn-user { 
-            border: none; background: none; color: var(--deep-coffee); 
-            display: flex; align-items: center; gap: 8px; 
-            font-weight: 700; font-family: 'Cinzel', serif; font-size: 0.85rem; 
-            text-decoration: none; text-transform: uppercase;
-        }
-        .user-icon { font-size: 1.7rem; color: var(--deep-coffee); }
+    .hero-overlay {
+        background: rgba(255, 255, 255, 0.4) !important; 
+        backdrop-filter: blur(8px);
+        padding: 30px 60px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        max-width: 650px;
+        z-index: 2;
+    }
 
-        .hero-section {
-            height: 45vh;
-            background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), 
-                        url("images/ecrin-amour.JPEG") no-repeat center center;
-            background-size: cover;
-            display: flex; align-items: center; justify-content: center;
-            position: relative;
-        }
+    .hero-overlay h1 {
+        font-family: 'Cinzel', serif;
+        font-size: 2.2rem;
+        color: var(--deep-coffee);
+        letter-spacing: 3px;
+    }
 
-        .hero-overlay {
-            background: rgba(255, 255, 255, 0.4) !important; 
-            backdrop-filter: blur(8px);
-            padding: 30px 60px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            max-width: 650px;
-        }
+   /* Reduz o espaço geral da seção */
+.featured-section { 
+    padding: 40px 0; /* Antes era 100px */
+    background-color: var(--creme-luxo) !important; 
+}
+    
+   /* Ajusta o título da coleção */
+.section-title { 
+    font-family: 'Cinzel', serif; 
+    font-size: 2rem; /* Reduzi um pouco o tamanho */
+    text-align: center; 
+    margin-bottom: 30px; /* Antes era 70px */
+    letter-spacing: 2px; 
+    color: var(--gold-title) !important; 
+    font-weight: 700;
+}
 
-        .hero-overlay h1 {
-            font-family: 'Cinzel', serif;
-            font-size: 2.2rem;
-            color: var(--deep-coffee);
-            letter-spacing: 3px;
-        }
+    /* SIDEBAR PROMO */
+    .promo-sidebar {
+        background: white;
+        border: 2px dashed var(--gold-title);
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+        position: sticky;
+        top: 120px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .promo-sidebar img, .promo-sidebar video { width: 100%; border-radius: 10px; margin-bottom: 15px; }
 
-        .featured-section { padding: 100px 0; background-color: var(--creme-luxo) !important; }
-        
-        .section-title { 
-            font-family: 'Cinzel', serif; 
-            font-size: 2.5rem; 
-            text-align: center; 
-            margin-bottom: 70px; 
-            letter-spacing: 4px; 
-            color: var(--gold-title) !important; 
-            font-weight: 700;
-        }
+    /* LUXURY CARDS */
+    .luxury-card { height: 100%; display: flex; flex-direction: column; background: transparent; }
+    .img-container { height: 480px; overflow: hidden; box-shadow: 0 25px 60px rgba(44, 24, 16, 0.25); position: relative; border-radius: 10px; }
+    .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.5s ease; }
+    .luxury-card:hover img { transform: scale(1.08); }
 
-        .promo-sidebar {
-            background: white;
-            border: 2px dashed var(--gold-title);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            position: sticky;
-            top: 120px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
+    .card-label { padding: 35px 0; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .card-label h3 { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--deep-coffee); }
 
-        .promo-sidebar img, .promo-sidebar video {
-            width: 100%;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
+    .btn-luxury {
+        display: inline-block;
+        padding: 12px 40px;
+        border: 2px solid var(--deep-coffee);
+        background: white;
+        color: var(--deep-coffee);
+        font-family: 'Cinzel', serif;
+        font-size: 0.85rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: 0.4s;
+        align-self: center;
+        margin-top: 15px;
+        border-radius: 0;
+    }
+    .btn-luxury:hover { background: var(--deep-coffee); color: white; transform: translateY(-4px); }
 
-        .luxury-card {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: transparent;
-        }
+    /* FOOTER */
+    footer { 
+        background-color: #1a0f0a; 
+        color: #fdfaf8; 
+        padding: 80px 20px 40px; 
+        border-top: 4px solid var(--gold-title); 
+    }
+    footer h5, footer h6 { color: var(--gold-title) !important; font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+    footer p { font-size: 0.9rem; color: rgba(255,255,255,0.8); line-height: 1.6; }
 
-        .img-container { height: 480px; overflow: hidden; box-shadow: 0 25px 60px rgba(44, 24, 16, 0.25); position: relative; }
-        .img-container img { width: 115%; height: 115%; margin-left: -7.5%; margin-top: -7.5%; object-fit: cover; transition: 1.5s ease; }
-        .luxury-card:hover img { transform: scale(1.05); }
+    /* EFEITOS */
+    @keyframes blinker { 50% { opacity: 0; } }
+    .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
 
-        .card-label { 
-            padding: 35px 0; 
-            text-align: center; 
-            flex-grow: 1; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; 
-        }
+    /* RESPONSIVIDADE */
+    @media (max-width: 991px) {
+        .navbar { padding: 10px 20px !important; height: auto; }
+        .navbar-collapse { background: white; padding: 20px; border-radius: 10px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .nav-link { padding: 10px 0; border-bottom: 1px solid #eee; text-align: center; }
+        .hero-section { height: 35vh; }
+        .img-container { height: 350px; }
+/* Ajuste específico para celulares (telas menores que 768px) */
+@media (max-width: 767px) {
+    .featured-section { 
+        padding: 20px 0; /* Espaço bem pequeno no topo/fundo */
+    }
+    .section-title { 
+        font-size: 1.4rem; 
+        margin-bottom: 20px; 
+        margin-top: 10px;
+    }
+}
+        .promo-sidebar { position: relative; top: 0; margin-bottom: 50px; }
+    }
 
-        .btn-luxury {
-            display: inline-block;
-            padding: 12px 40px;
-            border: 2px solid var(--deep-coffee);
-            background: white;
-            color: var(--deep-coffee);
-            font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-decoration: none;
-            transition: 0.4s;
-            align-self: center;
-            margin-top: 15px;
-        }
-        .btn-luxury:hover { background: var(--deep-coffee); color: white; transform: translateY(-4px); }
-
-        footer { 
-            background-color: #1a0f0a; 
-            color: #fdfaf8; 
-            padding: 80px 20px 40px; 
-            border-top: 4px solid var(--gold-title); 
-        }
-        footer h5, footer h6 {
-            color: var(--gold-title) !important;
-            font-family: 'Cinzel', serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-        footer p {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.8);
-            line-height: 1.6;
-        }
-
-        @keyframes blinker { 50% { opacity: 0; } }
-        .blink-text { animation: blinker 1s linear infinite; color: #e63946; font-weight: bold; }
-
-        @media (max-width: 991px) {
-            .navbar { padding: 12px 20px; }
-            .navbar-collapse { background: white; padding: 20px; border-radius: 10px; margin-top: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-            .nav-link { padding: 10px 0; border-bottom: 1px solid #eee; }
-            .hero-section { height: 35vh; }
-            .hero-overlay { padding: 20px; margin: 0 20px; }
-            .hero-overlay h1 { font-size: 1.6rem; }
-            .section-title { font-size: 1.8rem; margin-bottom: 40px; }
-            .featured-section { padding: 50px 0; }
-            .promo-sidebar { position: relative; top: 0; margin-bottom: 50px; }
-            .img-container { height: 350px; }
-            .luxury-card { margin-bottom: 40px; }
-        }
-
-        @media (max-width: 576px) {
-            .navbar-brand { font-size: 1rem; gap: 8px; }
-            .brand-logo { width: 35px; height: 35px; }
-            .lang-select { margin-right: 5px; padding: 2px 6px; font-size: 0.65rem; }
-            .btn-luxury { padding: 10px 25px; font-size: 0.75rem; }
-            .hero-overlay h1 { font-size: 1.4rem; }
-        }
-    </style>
+    @media (max-width: 576px) {
+        .navbar-brand { font-size: 1rem !important; gap: 8px; }
+        .brand-logo { width: 35px; height: 35px; }
+        .hero-overlay h1 { font-size: 1.4rem; }
+        .img-container { height: 300px; }
+    }
+</style>
 </head>
 <body>
 
@@ -353,30 +376,43 @@
     </div>
 </section>
 
-<footer class="text-center">
+<footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
     <div class="container">
         <div class="row g-5 justify-content-center">
             <div class="col-md-4">
-                <h5><a href="" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a></h5>
-                <p>Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA.</p>
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">
+                    <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
+                </h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
+                </p>
             </div>
+
             <div class="col-md-4">
-                <h5>CUSTOMER SUPPORT</h5>
-                <p>Mon-Fri: 9:00 AM - 6:00 PM EST<br>
-                <strong>Email:</strong> laprimavera951@gmail.com<br>
-                <strong>Phone:</strong> +1 (352) 298-2578</p>
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">CONTACT</h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    Mon-Fri: 9:00 AM - 6:00 PM EST<br>
+                    <strong>Email:</strong> laprimavera951@gmail.com<br>
+                    <strong>Phone:</strong> +1 (352) 298-2578
+                </p>
             </div>
+
             <div class="col-md-4">
-                <h5>LOCAL DELIVERY 🚗</h5>
-                <p>Serving the state of<br><strong>Massachusetts (MA)</strong></p>
+                <h6 style="font-family: 'Cinzel', serif; color: #B8860B; font-size: 0.9rem; letter-spacing: 1px;">LOCAL DELIVERY 🚗</h6>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                    Serving the states of<br><strong>Massachusetts, New York & New Jersey</strong>
+                </p>
             </div>
         </div>
-        <div class="mt-5 pt-4 border-top border-secondary">
-            <p style="font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5;">LA PRIMAVERA &copy; 2026 | ALL RIGHTS RESERVED</p>
+
+        <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; color: #ffffff; margin: 0;">
+                LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS
+            </p>
         </div>
     </div>
 </footer>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const translations = {
@@ -418,17 +454,18 @@
         
         if (user) {
             const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-            area.innerHTML = `
-                <div class="dropdown user-dropdown">
-                    <a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle user-icon"></i>
-                        <span>${profile?.full_name?.split(' ')[0] || 'Client'}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-                        <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
-                        <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
-                    </ul>
-                </div>`;
+           area.innerHTML = `
+    <div class="dropdown user-dropdown">
+        <a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle user-icon"></i>
+            <span>${profile?.full_name?.split(' ')[0] || 'Client'}</span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+            <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
+        </ul>
+    </div>`;
             updateCartBadge(); // Atualiza o badge se logado
         } else {
             area.innerHTML = `<a href="login.html" class="btn-luxury" style="padding: 8px 18px; font-size: 0.75rem; border-width: 1px;">CONNEXION</a>`;
@@ -496,5 +533,6 @@
         updateNavbarAuth();
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

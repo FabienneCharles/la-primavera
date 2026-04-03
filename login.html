@@ -73,6 +73,21 @@
         .error-msg { font-size: 0.75rem; margin-top: -10px; margin-bottom: 10px; display: none; color: #dc3545; }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 25px 20px; /* Reduz o espaço interno no celular */
+        border-radius: 20px; /* Bordas menos arredondadas para ganhar espaço */
+    }
+    .auth-header h2 {
+        font-size: 1.6rem; /* Diminui um pouco o título no celular */
+    }
+    .lang-container {
+        top: 10px;
+        right: 15px; /* Ajusta a posição do idioma */
+    }
+}
+
     </style>
 </head>
 <body>

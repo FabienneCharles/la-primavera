@@ -14,6 +14,16 @@
         .btn-save { background-color: #B8860B; color: white; border: none; padding: 12px 30px; font-weight: 600; width: 100%; transition: 0.3s; }
         .btn-save:hover { background-color: #2C1810; transform: translateY(-2px); }
         label { font-weight: 600; color: #2C1810; margin-top: 15px; }
+
+@media (max-width: 576px) {
+    body { padding: 20px 0; } /* Diminui o recuo no topo em celulares */
+    .admin-card { 
+        padding: 20px; /* Ganha mais espaço para o texto dentro do card */
+        border-radius: 0; /* Opcional: remove arredondamento nas bordas para parecer um app nativo */
+    }
+    h1 { font-size: 1.5rem; } /* Título menor para não quebrar muitas linhas */
+}
+
     </style>
 </head>
 <body>

@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us | La Primavera Prestige</title>
+    <title>Notre Essence | La Primavera Prestige</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,44 +23,76 @@
             background-color: var(--creme-luxo) !important; 
             color: var(--deep-coffee); 
             margin: 0; 
+            padding-top: 100px;
         }
 
+        /* --- NAVBAR DESIGN (PADRÃO UNIFICADO) --- */
         .navbar { 
             background: white !important; 
-            padding: 12px 50px; 
-            border-bottom: 2px solid var(--gold-title); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            padding: 12px 50px !important; 
+            position: fixed; top: 0; left: 0; width: 100%; 
+            z-index: 10000 !important; 
+            border-bottom: 2px solid var(--gold-title);
+            height: 85px;
         }
 
         .navbar-brand { 
             font-family: 'Cinzel', serif; 
             font-weight: 700; 
             color: var(--deep-coffee) !important; 
-            text-decoration: none;
             letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; align-items: center; gap: 15px; 
+            font-size: 1.2rem !important;
+            text-decoration: none;
         }
+
+        .brand-logo { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid var(--gold-title); }
 
         .nav-link { 
             font-family: 'Cinzel', serif; 
-            font-size: 0.85rem; 
+            font-size: 0.8rem !important; 
+            letter-spacing: 1px; 
             color: var(--deep-coffee) !important; 
-            font-weight: 600;
+            font-weight: 600; 
+            text-transform: uppercase; 
+            padding: 0 10px !important;
+            transition: 0.3s;
+        }
+        .nav-link:hover, .nav-link.active { color: var(--gold-title) !important; }
+
+        /* --- CENTRALIZAÇÃO NO DESKTOP --- */
+        @media (min-width: 992px) {
+            .collapse.navbar-collapse {
+                display: flex !important;
+                justify-content: center;
+                flex-grow: 1;
+            }
         }
 
-        /* IDIOMA SELECTOR */
-        .lang-select {
+        /* --- BUSCA E ÍCONES --- */
+        .search-input {
+            border-radius: 20px !important;
+            border: 1px solid var(--gold-title) !important;
+            width: 150px;
+            font-size: 0.75rem;
+            padding: 5px 15px !important;
+        }
+
+        .lang-select-custom {
             border: 1px solid var(--gold-title);
             border-radius: 20px;
             padding: 4px 12px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-family: 'Cinzel', serif;
-            color: var(--deep-coffee);
             background: white;
-            cursor: pointer;
             outline: none;
         }
 
+        /* --- CONTEÚDO ABOUT --- */
         .about-header {
-            padding: 80px 0 40px;
+            padding: 40px 0 60px;
             text-align: center;
         }
 
@@ -114,31 +146,51 @@
         }
         
         footer h5 { color: var(--gold-title); font-family: 'Cinzel'; }
+
+        /* --- MOBILE ADJUSTMENTS --- */
+        @media (max-width: 991px) {
+            .navbar { padding: 10px 20px !important; height: auto; }
+            .about-header h1 { font-size: 2.2rem; }
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="index.html">LA PRIMAVERA</a>
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
         
-        <div class="collapse navbar-collapse justify-content-center">
-            <ul class="navbar-nav gap-3">
+        <a class="navbar-brand d-flex align-items-center" href="index.html">
+            <img src="images/Logo1.png" alt="Logo" class="brand-logo">
+            <span class="d-none d-sm-inline">LA PRIMAVERA</span>
+        </a>
+
+        <div class="collapse navbar-collapse justify-content-center" id="navAbout">
+            <ul class="navbar-nav gap-2">
                 <li class="nav-item"><a class="nav-link" href="index.html" data-i18n="nav_home">HOME</a></li>
-                <li class="nav-item"><a class="nav-link active" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
+                <li class="nav-item"><a class="nav-link" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
                 <li class="nav-item"><a class="nav-link" href="boutique.html" data-i18n="nav_patis">PASTRY</a></li>
                 <li class="nav-item"><a class="nav-link" href="floristeria.html" data-i18n="nav_flor">FLORISTRY</a></li>
-                <li class="nav-item"><a class="nav-link active" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
                 <li class="nav-item"><a class="nav-link active" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
 
-        <div class="d-flex align-items-center">
-            <select class="lang-select" onchange="changeLanguage(this.value)">
-                <option value="fr">FR 🇫🇷</option>
-                <option value="en">EN 🇺🇸</option>
-                <option value="es">ES 🇪🇸</option>
+        <div class="d-flex align-items-center gap-3">
+            <div class="search-box d-none d-xl-flex align-items-center">
+                <i class="bi bi-search me-2"></i>
+                <input type="text" class="form-control form-control-sm search-input" placeholder="Rechercher...">
+            </div>
+
+            <select class="lang-select-custom" onchange="changeLanguage(this.value)">
+                <option value="fr">FR FR</option>
+                <option value="en">EN EN</option>
+                <option value="es">ES ES</option>
             </select>
+            
+            <div id="auth-area"></div> 
+
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navAbout">
+                <span class="navbar-toggler-icon"></span>
+            </button>
         </div>
     </div>
 </nav>
@@ -149,7 +201,7 @@
         <p class="lead" id="main-subtitle" data-i18n="main_subtitle">L'élégance haïtienne au cœur du Massachusetts</p>
     </div>
 
-    <div class="row g-4 justify-content-center">
+    <div class="row g-5 justify-content-center">
         <div class="col-md-4">
             <div class="info-card">
                 <i class="bi bi-book"></i>
@@ -176,31 +228,50 @@
     </div>
 </div>
 
-<footer class="text-center">
+<footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
     <div class="container">
-        <h5>LA PRIMAVERA</h5>
-        <p class="small opacity-75">Luxury Haitian Desserts & Floral Art</p>
-        <p class="small mt-3">+1 (352) 298-2578 | laprimavera951@gmail.com</p>
+        <div class="row g-5 justify-content-center">
+            <div class="col-md-4">
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">
+                    <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
+                </h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <h5 style="font-family: 'Cinzel', serif; color: #B8860B; letter-spacing: 2px; margin-bottom: 20px;">CONTACT</h5>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
+                    Mon-Fri: 9:00 AM - 6:00 PM EST<br>
+                    <strong>Email:</strong> laprimavera951@gmail.com<br>
+                    <strong>Phone:</strong> +1 (352) 298-2578
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <h6 style="font-family: 'Cinzel', serif; color: #B8860B; font-size: 0.9rem; letter-spacing: 1px;">LOCAL DELIVERY 🚗</h6>
+                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">
+                    Serving the states of<br><strong>Massachusetts, New York & New Jersey</strong>
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-5 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; color: #ffffff; margin: 0;">
+                LA PRIMAVERA &copy; 2026 | TOUS DROITS RÉSERVÉS
+            </p>
+        </div>
     </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     const translations = {
-        fr: {
-            nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE",
-            main_title: "Notre Essence", main_subtitle: "L'élégance haïtienne au cœur du Massachusetts",
-            title_apropos: "À Propos", title_philosophie: "Philosophie", title_normes: "Nos Normes"
-        },
-        en: {
-            nav_home: "HOME", nav_about: "ABOUT US", nav_patis: "PASTRY", nav_flor: "FLORISTRY",
-            main_title: "Our Essence", main_subtitle: "Haitian elegance in the heart of Massachusetts",
-            title_apropos: "About Us", title_philosophie: "Philosophy", title_normes: "Our Standards"
-        },
-        es: {
-            nav_home: "INICIO", nav_about: "SOBRE NOSOTROS", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA",
-            main_title: "Nuestra Esencia", main_subtitle: "Elegancia haitiana en el corazón de Massachusetts",
-            title_apropos: "Sobre Nosotros", title_philosophie: "Filosofía", title_normes: "Nuestras Normas"
-        }
+        fr: { nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", main_title: "Notre Essence", main_subtitle: "L'élégance haïtienne au cœur du Massachusetts", title_apropos: "À Propos", title_philosophie: "Philosophie", title_normes: "Nos Normes" },
+        en: { nav_home: "HOME", nav_about: "ABOUT US", nav_patis: "PASTRY", nav_flor: "FLORISTRY", main_title: "Our Essence", main_subtitle: "Haitian elegance in the heart of Massachusetts", title_apropos: "About Us", title_philosophie: "Philosophy", title_normes: "Our Standards" },
+        es: { nav_home: "INICIO", nav_about: "SOBRE NOSOTROS", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", main_title: "Nuestra Esencia", main_subtitle: "Elegancia haitiana en el corazón de Massachusetts", title_apropos: "Sobre Nosotros", title_philosophie: "Filosofía", title_normes: "Nuestras Normas" }
     };
 
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
@@ -214,23 +285,56 @@
     }
 
     async function loadAboutContent() {
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        const { data } = await _supabase.from('site_settings').select('*');
-        
-        if (data) {
-            data.forEach(item => {
-                if (item.id === 'about_apropos') document.getElementById('desc-apropos').innerText = item.description;
-                if (item.id === 'about_philosophie') document.getElementById('desc-philosophie').innerText = item.description;
-                if (item.id === 'about_normes') document.getElementById('desc-normes').innerText = item.description;
-            });
+        try {
+            const { data, error } = await _supabase.from('site_settings').select('*');
+            if (error) throw error;
+            if (data) {
+                data.forEach(item => {
+                    let elementId = "";
+                    if (item.id === 'about_apropos') elementId = 'desc-apropos';
+                    else if (item.id === 'about_philosophie') elementId = 'desc-philosophie';
+                    else if (item.id === 'about_normes') elementId = 'desc-normes';
+
+                    if (elementId) {
+                        const el = document.getElementById(elementId);
+                        if (el && item.description) {
+                            el.innerHTML = item.description.replace(/\n/g, '<br>');
+                        }
+                    }
+                });
+            }
+        } catch (err) { console.error("Erro Supabase:", err); }
+    }
+
+    async function updateNavbarAuth() {
+        const area = document.getElementById('auth-area');
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+            const firstName = profile?.full_name?.split(' ')[0] || 'Client';
+            area.innerHTML = `
+                <div class="dropdown user-dropdown">
+                    <a class="btn-user dropdown-toggle fw-bold" href="#" data-bs-toggle="dropdown" style="text-decoration:none; color:var(--deep-coffee); font-family:'Cinzel'; font-size:0.85rem;">
+                        <i class="bi bi-person-circle fs-5 me-1"></i> ${firstName}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
+                    </ul>
+                </div>`;
+        } else {
+            area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill">Connexion</a>`;
         }
     }
 
+    async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
+
     document.addEventListener('DOMContentLoaded', () => {
         const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
-        document.querySelector('.lang-select').value = savedLang;
         changeLanguage(savedLang);
         loadAboutContent();
+        updateNavbarAuth();
     });
 </script>
 </body>
