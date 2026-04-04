@@ -182,15 +182,17 @@
             <h2 class="mb-4" style="font-family: 'Cinzel';">🍱 Inventaire Déjeuners</h2>
             <div class="admin-card">
                 <form id="formDeje" class="row g-3">
-                    <div class="col-md-4"><label class="fw-bold small">Nom du Plateau</label><input type="text" id="d_name" class="form-control" required></div>
-                    <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="d_price" class="form-control" step="0.01" required></div>
-                    <div class="col-md-2"><label class="fw-bold small">Stock</label><input type="number" id="d_stock" class="form-control" value="5"></div>
-                    <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="d_init_disc" class="form-control" placeholder="0"></div>
-                    <div class="col-md-2"><label class="fw-bold small text-danger">Expire le</label><input type="date" id="d_init_expiry" class="form-control promo-date-input"></div>
-                    <div class="col-md-12"><label class="fw-bold small">Image</label><input type="file" id="d_file" class="form-control" accept="image/*" required></div>
-                    <div class="col-12"><label class="fw-bold small">Description</label><textarea id="d_desc" class="form-control" rows="2"></textarea></div>
-                    <div class="col-12 text-end"><button type="submit" class="btn btn-primary px-5" style="background: var(--sidebar-color); border:none;">ENREGISTRER</button></div>
-                </form>
+    <div class="col-md-4"><label class="fw-bold small">Nom du Plateau</label><input type="text" id="d_name" class="form-control" required></div>
+    <div class="col-md-3"><label class="fw-bold small">Moment</label><select id="d_moments_select" class="form-select" required><option value="">Choisir...</option></select></div>
+    
+    <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="d_price" class="form-control" step="0.01" required></div>
+    <div class="col-md-3"><label class="fw-bold small">Stock</label><input type="number" id="d_stock" class="form-control" value="5"></div>
+    <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="d_init_disc" class="form-control" placeholder="0"></div>
+    <div class="col-md-2"><label class="fw-bold small text-danger">Expire le</label><input type="date" id="d_init_expiry" class="form-control promo-date-input"></div>
+    <div class="col-md-12"><label class="fw-bold small">Image</label><input type="file" id="d_file" class="form-control" accept="image/*" required></div>
+    <div class="col-12"><label class="fw-bold small">Description</label><textarea id="d_desc" class="form-control" rows="2"></textarea></div>
+    <div class="col-12 text-end"><button type="submit" class="btn btn-primary px-5" style="background: var(--sidebar-color); border:none;">ENREGISTRER</button></div>
+</form>
             </div>
             <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Plateau</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-deje"></tbody></table></div>
         </div>
@@ -361,6 +363,32 @@
                         <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_floristeria')">Sauvegarder</button>
                         <div id="preview-card_floristeria" class="preview-container-media mt-2"></div>
                     </div>
+<div class="col-md-4">
+    <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Spaghetti</label>
+    <input type="text" id="title-card_spaghetti" class="form-control form-control-sm mb-2" placeholder="Titre">
+    <textarea id="desc-card_spaghetti" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
+    <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_spaghetti', this)">
+    <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_spaghetti')">Sauvegarder</button>
+    <div id="preview-card_spaghetti" class="preview-container-media mt-2"></div>
+</div>
+
+<div class="col-md-4">
+    <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Detox</label>
+    <input type="text" id="title-card_detox" class="form-control form-control-sm mb-2" placeholder="Titre">
+    <textarea id="desc-card_detox" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
+    <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_detox', this)">
+    <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_detox')">Sauvegarder</button>
+    <div id="preview-card_detox" class="preview-container-media mt-2"></div>
+</div>
+
+<div class="col-md-4">
+    <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Combo Detox</label>
+    <input type="text" id="title-card_combo" class="form-control form-control-sm mb-2" placeholder="Titre">
+    <textarea id="desc-card_combo" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
+    <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_combo', this)">
+    <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_combo')">Sauvegarder</button>
+    <div id="preview-card_combo" class="preview-container-media mt-2"></div>
+</div>
                 </div>
             </div>
         </div>
@@ -512,25 +540,26 @@
 
     async function handleLogout() { await _supabase.auth.signOut(); window.location.href = "admin-login.html"; }
 
-    const compressImage = (file, maxWidth = 450) => {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = (event) => {
-                const img = new Image();
-                img.src = event.target.result;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    const scale = maxWidth / img.width;
-                    canvas.width = maxWidth;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.4)); 
-                };
+    const compressImage = (file, maxWidth = 1000) => { // Aumentamos de 450 para 1000px
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scale = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                // Mudamos de 0.4 para 0.8 (80% de qualidade)
+                resolve(canvas.toDataURL('image/jpeg', 0.8)); 
             };
-        });
-    };
+        };
+    });
+};
 
     const toBase64 = file => new Promise((resolve, reject) => {
         const reader = new FileReader(); reader.readAsDataURL(file);
@@ -802,17 +831,21 @@ async function deleteProduct(table, id, name) {
     };
 
     document.getElementById('formDeje').onsubmit = async (e) => {
-        e.preventDefault(); showLoading(true);
-        const img = await compressImage(document.getElementById('d_file').files[0]);
-        await _supabase.from('products').insert([{
-            name: document.getElementById('d_name').value, category: 'dejeuner',
-            price: parseFloat(document.getElementById('d_price').value), stock: parseInt(document.getElementById('d_stock').value),
-            promo_discount_percent: parseInt(document.getElementById('d_init_disc').value) || null,
-            promo_expiry_date: document.getElementById('f_init_expiry').value || null,
-            description: document.getElementById('d_desc').value, image_url: img
-        }]);
-        location.reload();
-    };
+    e.preventDefault(); showLoading(true);
+    const img = await compressImage(document.getElementById('d_file').files[0]);
+    await _supabase.from('products').insert([{
+        name: document.getElementById('d_name').value, 
+        category: 'dejeuner',
+        moments: document.getElementById('d_moments_select').value, // LINHA ADICIONADA AQUI
+        price: parseFloat(document.getElementById('d_price').value), 
+        stock: parseInt(document.getElementById('d_stock').value),
+        promo_discount_percent: parseInt(document.getElementById('d_init_disc').value) || null,
+        promo_expiry_date: document.getElementById('d_init_expiry').value || null,
+        description: document.getElementById('d_desc').value, 
+        image_url: img
+    }]);
+    location.reload();
+};
 
     document.getElementById('formPatis').onsubmit = async (e) => {
     e.preventDefault(); showLoading(true);
@@ -929,6 +962,12 @@ async function deleteProduct(table, id, name) {
     if(patisSelect) {
         patisSelect.innerHTML = '<option value="">Choisir...</option>' + m.map(i=>`<option value="${i.name}">${i.name}</option>`).join('');
     }
+
+// ADICIONE ESTA LINHA PARA DÉJEUNERS
+    if(document.getElementById('d_moments_select')) {
+        document.getElementById('d_moments_select').innerHTML = '<option value="">Choisir...</option>' + m.map(i=>`<option value="${i.name}">${i.name}</option>`).join('');
+    }
+
 
     // 3. Preenche a lista de edição de momentos (que já existia)
     document.getElementById('moments-list-edit').innerHTML = m.map(i=>`

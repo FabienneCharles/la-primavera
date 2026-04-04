@@ -252,7 +252,33 @@
         .footer-title { font-family: 'Cinzel', serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 20px; }
 
 
+@keyframes blinker { 
+    50% { opacity: 0; } 
+}
+.blink-text { 
+    animation: blinker 1s linear infinite; 
+    color: #e63946 !important; /* Vermelho para chamar atenção */
+    font-weight: bold; 
+}
 
+/* Estilo para o Modal de Sugestão */
+.suggestion-card {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px;
+    transition: 0.3s;
+    cursor: pointer;
+    background: #fff;
+}
+.suggestion-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+.suggestion-img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; }
+.suggestion-title { font-size: 0.8rem; font-weight: 600; margin-top: 5px; color: var(--primary); }
+
+#suggestion-container {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+    margin-top: 20px;
+}
 
 
     </style>
@@ -384,7 +410,7 @@
     
     // 1. Busca os dados incluindo a data de expiração da promo
     const { data: prods } = await _supabase.from('products')
-        .select('id, name, description, price, image_url, stock, promo_discount_percent, promo_expiry_date')
+        .select('id, name, description, moments, price, image_url, stock, promo_discount_percent, promo_expiry_date')
         .eq('category', 'dejeuner')
         .neq('is_active', false)
         .order('name');
@@ -393,10 +419,13 @@
         const today = new Date().toISOString().split('T')[0];
 
         grid.innerHTML = prods.map(p => {
-            const inStock = (p.stock || 0) > 0; // Ajustada a lógica de estoque
+            const inStock = (p.stock || 0) > 0;
+            
+            // Trata a descrição como lista de componentes (estilo antigo)
             const components = p.description ? p.description.split('\n').map(line => `<li><i class="bi bi-check2-circle"></i> ${line}</li>`).join('') : '';
             
-            // 2. Lógica de validade da promoção
+            // Lógica de validade da promoção
+            const today = new Date().toISOString().split('T')[0];
             const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
 
             let finalPrice = p.price;
@@ -407,16 +436,23 @@
                 priceDisplay = `<div><span class="old-price">$${parseFloat(p.price).toFixed(2)}</span><span class="new-price text-danger">$${finalPrice}</span></div>`;
             }
 
+            // NOVA LÓGICA DE MOMENTOS PARA DEJEUNER
+            let momentsDisplay = "";
+            if (p.moments) {
+                momentsDisplay = `<p style="font-size: 0.75rem; color: #B8860B; text-transform: uppercase; margin-bottom: 10px;"><strong>Idéal pour :</strong> ${p.moments}</p>`;
+            }
+
             return `
             <div class="col-md-6 col-xl-4">
                 <div class="product-card">
                     <a href="${p.image_url}" class="zoom-trigger">
-                        <img src="${p.image_url}" class="product-img">
+                        <img src="${p.image_url}" class="product-img" style="cursor:pointer" onclick="openProductDetail('${p.id}')">
                     </a>
                     <div class="card-body-custom">
                         <h3 class="product-name">${p.name}</h3>
-                        ${priceDisplay}
                         <ul class="component-list">${components}</ul>
+                        ${momentsDisplay} 
+			${priceDisplay}
                         <button class="btn btn-dark w-100 rounded-pill" 
                             onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})" 
                             ${!inStock ? 'disabled' : ''}>
@@ -475,13 +511,102 @@
     }
 
     async function loadPromoSidebar() {
-        const { data: promo } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
-        if (promo) {
-            const sidebar = document.getElementById('sidebar-promo-content');
-            let media = promo.image_url.includes('video') ? `<video src="${promo.image_url}" autoplay loop muted></video>` : `<img src="${promo.image_url}">`;
-            sidebar.innerHTML = `${media}<h4 class="mt-2" style="font-family:'Cinzel';">${promo.title}</h4><p class="small text-muted">${promo.description}</p>`;
-        }
+    const { data: promo } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
+    if (promo) {
+        const sidebar = document.getElementById('sidebar-promo-content');
+        
+        // Verifica se é vídeo ou imagem
+        let media = promo.image_url.includes('video') 
+            ? `<video src="${promo.image_url}" autoplay loop muted style="width:100%; border-radius:10px;"></video>` 
+            : `<img src="${promo.image_url}" style="width:100%; border-radius:10px;">`;
+        
+        // Adiciona a classe blink-text ao h4
+        sidebar.innerHTML = `
+            ${media}
+            <h4 class="mt-2 blink-text" style="font-family:'Cinzel';">${promo.title}</h4>
+            <p class="small text-muted">${promo.description}</p>
+        `;
     }
+}
+
+
+
+async function openProductDetail(id) {
+    const { data: p } = await _supabase.from('products').select('*').eq('id', id).single();
+    if (!p) return;
+
+    // Preenche o detalhe principal
+    const detailArea = document.getElementById('product-main-detail');
+    detailArea.innerHTML = `
+        <div class="col-md-5"><img src="${p.image_url}" class="img-fluid rounded shadow-sm"></div>
+        <div class="col-md-7">
+            <h4 style="font-family:'Cinzel';">${p.name}</h4>
+            <p class="text-muted small">${p.description || ''}</p>
+            <h5 class="text-accent">$${parseFloat(p.price).toFixed(2)}</h5>
+            <button class="btn btn-dark w-100 mt-3 rounded-pill" onclick="quickAdd('${p.id}', '${p.name}', ${p.price})">AJOUTER AU PANIER</button>
+        </div>
+    `;
+
+    // Chama a "IA" de sugestão baseada em Momentos
+    loadAIRecommendations(p.id, p.moments);
+
+    const modal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+    modal.show();
+}
+
+async function loadAIRecommendations(currentId, moments) {
+    if (!moments) {
+        document.getElementById('suggestion-container').style.display = 'none';
+        return;
+    }
+
+    // Pega o primeiro momento como tag principal
+    const firstMoment = moments.split(',')[0].trim();
+
+    const { data: suggestions } = await _supabase
+        .from('products')
+        .select('id, name, price, image_url, moments')
+        .eq('category', 'dejeuner')
+        .ilike('moments', `%${firstMoment}%`) // Busca similaridade
+        .neq('id', currentId) // Não sugere ele mesmo
+        .limit(3);
+
+    const list = document.getElementById('suggestion-list');
+    if (suggestions && suggestions.length > 0) {
+        document.getElementById('suggestion-container').style.display = 'block';
+        list.innerHTML = suggestions.map(s => `
+            <div class="col-4" onclick="openProductDetail('${s.id}')">
+                <div class="suggestion-card">
+                    <img src="${s.image_url}" class="suggestion-img">
+                    <div class="suggestion-title text-truncate">${s.name}</div>
+                    <div class="small text-accent">$${parseFloat(s.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        document.getElementById('suggestion-container').style.display = 'none';
+    }
+}
+
+
+async function suggestSimilar(currentProductId, currentMoments) {
+    // Busca produtos da mesma categoria que compartilham o mesmo "Momento Ideal"
+    const { data: suggestions } = await _supabase
+        .from('products')
+        .select('*')
+        .eq('category', 'dejeuner')
+        .ilike('moments', `%${currentMoments}%`) // Busca palavras parecidas nos momentos
+        .neq('id', currentProductId) // Não sugere o próprio produto que ele já abriu
+        .limit(3);
+
+    if (suggestions && suggestions.length > 0) {
+        renderSuggestionsUI(suggestions);
+    }
+}
+
+
+
+
 
     async function logout() { localStorage.removeItem('cart'); await _supabase.auth.signOut(); window.location.reload(); }
     function toggleCart() { document.getElementById('cartSidePanel').classList.toggle('open'); }
@@ -540,5 +665,26 @@
 
 <script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--accent);">
+            <div class="modal-body p-4">
+                <div class="row" id="product-main-detail">
+                    </div>
+                
+                <div id="suggestion-container" style="display:none;">
+                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; color: var(--accent); letter-spacing: 1px;">Vous aimerez aussi...</h6>
+                    <div class="row g-3" id="suggestion-list">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

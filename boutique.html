@@ -275,6 +275,25 @@
     }
 }
 
+
+.suggestion-card-patis {
+    border: none;
+    border-radius: 12px;
+    padding: 10px;
+    background: #fff;
+    transition: 0.3s;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.suggestion-card-patis:hover { transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+.suggestion-img-patis { 
+    width: 100%; 
+    height: 110px; 
+    object-fit: cover; 
+    border-radius: 10px; 
+}
+
+
     </style>
 </head>
 <body>
@@ -414,59 +433,97 @@
     }
 
     async function load() {
-        const { data: products } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
-        const grid = document.getElementById('products');
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+    const { data: products } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
+    const grid = document.getElementById('products');
+    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-       if(products) {
-    grid.innerHTML = products.map(p => {
-        const inStock = (p.stock > 0);
+    if(products) {
         const now = new Date();
-        
-        // 1. Criamos a data de expiração (se existir no banco)
-        const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
-        
-        // 2. CORREÇÃO: A promoção só é válida se:
-        // - Tiver um desconto maior que 0
-        // - E tiver uma data de expiração definida
-        // - E a data de expiração for hoje ou no futuro (maior ou igual a agora)
-        const isPromoValid = p.promo_discount_percent > 0 && expiry && expiry >= now;
-        
-        // 3. Define o preço final baseado na validade da promoção
-        let finalPrice = isPromoValid 
-            ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) 
-            : parseFloat(p.price).toFixed(2);
+        grid.innerHTML = products.map(p => {
+            const inStock = (p.stock > 0);
+            const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+            const isPromoValid = p.promo_discount_percent > 0 && expiry && expiry >= now;
+            
+            let finalPrice = isPromoValid 
+                ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) 
+                : parseFloat(p.price).toFixed(2);
 
-               return `
-<div class="col-md-6 col-xl-4 product-item">
-    <div class="product-card">
-        <div class="img-zoom-container">
-            <a href="${p.image_url}" class="zoom-trigger">
-                <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
-            </a>
-        </div>
-        <div class="product-body">
-            <h4>${p.name}</h4>
-            <div class="price-tag">
-                ${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${p.price}`}
-            </div>
-            
-            <p class="product-description">${p.description || ''}</p>
-            <p class="product-moments">${p.moments ? 'Ideal para: ' + p.moments : ''}</p>
-            
-            ${inStock 
-                ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">${translations[lang].btn_add}</button>` 
-                : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
-        </div>
-    </div>
-</div>`;
-            }).join('');
-            
-            if (window.Luminous) {
-                document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
-            }
-        }
+            return `
+            <div class="col-md-6 col-xl-4 product-item">
+                <div class="product-card">
+                    <div class="img-zoom-container" onclick="openProductDetail('${p.id}')">
+                        <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
+                    </div>
+                    <div class="product-body">
+                        <h4 style="cursor:pointer" onclick="openProductDetail('${p.id}')">${p.name}</h4>
+                        <div class="price-tag">
+                            ${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${p.price}`}
+                        </div>
+                        <p class="product-moments" style="font-size:0.7rem">${p.moments ? p.moments : ''}</p>
+                        ${inStock 
+                            ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">${translations[lang].btn_add}</button>` 
+                            : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
     }
+}
+
+// FUNÇÃO PARA ABRIR DETALHES E CARREGAR SUGESTÕES
+async function openProductDetail(id) {
+    const { data: p } = await _supabase.from('patisserie').select('*').eq('id', id).single();
+    if (!p) return;
+
+    const detailArea = document.getElementById('product-main-detail');
+    detailArea.innerHTML = `
+        <div class="col-md-5"><img src="${p.image_url}" class="img-fluid rounded-4 shadow-sm"></div>
+        <div class="col-md-7">
+            <h3 style="font-family:'Cinzel';">${p.name}</h3>
+            <p class="text-muted small">${p.description || 'Une délicatesse artisanale de La Primavera.'}</p>
+            <h4 class="text-gold">$${parseFloat(p.price).toFixed(2)}</h4>
+            <button class="btn btn-dark w-100 mt-3 rounded-pill py-2" onclick="quickAdd('${p.id}', '${p.name}', ${p.price})">AJOUTER AU PANIER</button>
+        </div>
+    `;
+
+    // IA busca sugestões baseadas nos momentos (ex: "Petit-déjeuner")
+    loadPatisAIRecommendations(p.id, p.moments);
+
+    const modal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+    modal.show();
+}
+
+async function loadPatisAIRecommendations(currentId, moments) {
+    if (!moments) {
+        document.getElementById('product-suggestion-container').style.display = 'none';
+        return;
+    }
+    
+    const tag = moments.split(',')[0].trim();
+
+    const { data: suggestions } = await _supabase
+        .from('patisserie')
+        .select('id, name, price, image_url')
+        .ilike('moments', `%${tag}%`)
+        .neq('id', currentId)
+        .limit(6);
+
+    const list = document.getElementById('product-suggestion-list');
+    if (suggestions && suggestions.length > 0) {
+        document.getElementById('product-suggestion-container').style.display = 'block';
+        list.innerHTML = suggestions.map(s => `
+            <div class="col-6 col-md-4" onclick="openProductDetail('${s.id}')" style="cursor:pointer">
+                <div class="suggestion-card-patis">
+                    <img src="${s.image_url}" class="suggestion-img-patis">
+                    <div class="small fw-bold mt-2 text-truncate" style="font-family:'Cinzel'; font-size:0.7rem;">${s.name}</div>
+                    <div class="small text-gold" style="font-size:0.8rem;">$${parseFloat(s.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        document.getElementById('product-suggestion-container').style.display = 'none';
+    }
+}
 
     function filterProducts() {
         const term = document.getElementById('patisSearch').value.toLowerCase();
@@ -533,5 +590,29 @@
         updateNavbarAuth();
     });
 </script>
+
+<div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--gold);">
+            <div class="modal-body p-4">
+                <div class="row" id="product-main-detail">
+                    </div>
+                
+                <div id="product-suggestion-container" class="mt-5" style="display:none;">
+                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; color: var(--gold); letter-spacing: 2px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        Vous aimerez aussi...
+                    </h6>
+                    <div class="row g-3" id="product-suggestion-list">
+                        </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </body>
 </html>

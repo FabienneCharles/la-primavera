@@ -204,31 +204,84 @@
     .promo-sidebar img, .promo-sidebar video { width: 100%; border-radius: 10px; margin-bottom: 15px; }
 
     /* LUXURY CARDS */
-    .luxury-card { height: 100%; display: flex; flex-direction: column; background: transparent; }
-    .img-container { height: 480px; overflow: hidden; box-shadow: 0 25px 60px rgba(44, 24, 16, 0.25); position: relative; border-radius: 10px; }
-    .img-container img { width: 100%; height: 100%; object-fit: cover; transition: 1.5s ease; }
+.luxury-card { 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    background: white; /* Adicionei fundo branco para parecer um card real */
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+.img-container { 
+    height: 250px; /* Reduzi de 480px para 250px para não esticar tanto */
+    overflow: hidden; 
+    position: relative; 
+}
+
+.img-container img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* ISSO IMPEDE DE ESTICAR: A foto se adapta ao espaço */
+    object-position: center;
+    transition: 1.5s ease; 
+}
     .luxury-card:hover img { transform: scale(1.08); }
 
-    .card-label { padding: 35px 0; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-    .card-label h3 { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--deep-coffee); }
+    .card-label { 
+    padding: 25px 20px; /* Espaço interno para o texto não bater na borda */
+    text-align: center; 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    background: #fff;
+}
+
+.card-label p {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    min-height: 40px; /* Alinha o início dos botões */
+}
+
+    .card-label h3 { 
+    font-family: 'Cinzel', serif; 
+    font-size: 1.1rem; /* Tamanho elegante */
+    color: var(--deep-coffee); 
+    margin-bottom: 15px;
+    min-height: 50px; /* Garante que títulos de 2 linhas não desalinhem o card */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
     .btn-luxury {
-        display: inline-block;
-        padding: 12px 40px;
-        border: 2px solid var(--deep-coffee);
-        background: white;
-        color: var(--deep-coffee);
-        font-family: 'Cinzel', serif;
-        font-size: 0.85rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        text-decoration: none;
-        transition: 0.4s;
-        align-self: center;
-        margin-top: 15px;
-        border-radius: 0;
-    }
-    .btn-luxury:hover { background: var(--deep-coffee); color: white; transform: translateY(-4px); }
+    display: inline-block;
+    padding: 10px 25px;
+    border: 1px solid var(--deep-coffee); /* Linha mais fina */
+    background: transparent;
+    color: var(--deep-coffee);
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: 0.3s;
+    align-self: center;
+    border-radius: 0;
+}
+
+
+    .btn-luxury:hover { 
+    background: var(--deep-coffee); 
+    color: #fff !important; 
+    transform: translateY(-2px); 
+}
 
     /* FOOTER */
     footer { 
@@ -325,57 +378,87 @@
     </div>
 </section>
 
-<section class="featured-section">
-    <div class="container-fluid px-lg-5 text-center">
-        <h2 class="section-title" data-i18n="section_title">La Collection de Saison</h2>
+<section class="featured-section" style="padding: 40px 0;">
+    <div class="container-fluid px-lg-5">
+        <h2 class="section-title text-center" data-i18n="section_title">La Collection de Saison</h2>
         
-        <div class="row">
-            <div class="col-lg-3 mb-5 mb-lg-0">
+        <div class="row g-4">
+            <div class="col-lg-3">
                 <div class="promo-sidebar" id="promo-sidebar-content">
-                    <i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>
-                    <h4 data-i18n="promo_title">Offres Spéciales</h4>
-                    <p data-i18n="promo_desc">Découvrez nos promotions exclusives aqui.</p>
-                </div>
+                    </div>
             </div>
 
             <div class="col-lg-9">
-                <div class="row g-5">
-                    <div class="col-md-6 col-lg-4">
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    
+                    <div class="col">
                         <div class="luxury-card">
-                            <div class="img-container"><img id="img-patisserie" src="images/Coquillole_caixa.png" alt="Pâtisserie"></div>
+                            <div class="img-container"><img id="img-patisserie" src="" alt="Pâtisserie"></div>
                             <div class="card-label">
                                 <h3 id="title-patisserie">Douceurs Authentiques</h3>
-                                <p id="desc-patisserie">Le goût vrai d'Haïti dans un écrin de luxe.</p>
-                                <a href="boutique.html" class="btn-luxury" data-i18n="btn_discover">Découvrir</a>
+                                <p id="desc-patisserie" class="small text-muted px-2"></p>
+                                <a href="boutique.html" class="btn-luxury">Découvrir</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-4">
+
+                    <div class="col">
                         <div class="luxury-card">
-                            <div class="img-container"><img id="img-dejeuner" src="images/L'Écrin Impérial Créole.png" alt="Déjeuners"></div>
+                            <div class="img-container"><img id="img-dejeuner" src="" alt="Déjeuners"></div>
                             <div class="card-label">
                                 <h3 id="title-dejeuner">L'Écrin Impérial</h3>
-                                <p id="desc-dejeuner">Des déjeuners gastronomiques personalizados.</p>
-                                <a href="dejeuner.html" class="btn-luxury" data-i18n="btn_order">Commander</a>
+                                <p id="desc-dejeuner" class="small text-muted px-2"></p>
+                                <a href="dejeuner.html" class="btn-luxury">Commander</a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-4">
+
+                    <div class="col">
                         <div class="luxury-card">
-                            <div class="img-container"><img id="img-floristeria" src="images/coracao-roses-passion.JPEG" alt="Floristerie"></div>
+                            <div class="img-container"><img id="img-floristeria" src="" alt="Floristerie"></div>
                             <div class="card-label">
                                 <h3 id="title-floristeria">Art Floral</h3>
-                                <p id="desc-floristeria">Arrangements signatures créés pour élever vos espaços.</p>
-                                <a href="floristeria.html" class="btn-luxury" data-i18n="btn_explore">Explorer</a>
+                                <p id="desc-floristeria" class="small text-muted px-2"></p>
+                                <a href="floristeria.html" class="btn-luxury">Explorer</a>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
 
+                    <div class="col">
+                        <div class="luxury-card">
+                            <div class="img-container"><img id="img-spaghetti" src="" alt="Spaghetti"></div>
+                            <div class="card-label">
+                                <h3 id="title-spaghetti"></h3>
+                                <p id="desc-spaghetti" class="small text-muted px-2"></p>
+                                <a href="dejeuner.html" class="btn-luxury">Découvrir</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="luxury-card">
+                            <div class="img-container"><img id="img-detox" src="" alt="Detox"></div>
+                            <div class="card-label">
+                                <h3 id="title-detox"></h3>
+                                <p id="desc-detox" class="small text-muted px-2"></p>
+                                <a href="dejeuner.html" class="btn-luxury">Découvrir</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="luxury-card">
+                            <div class="img-container"><img id="img-combo" src="" alt="Combo"></div>
+                            <div class="card-label">
+                                <h3 id="title-combo"></h3>
+                                <p id="desc-combo" class="small text-muted px-2"></p>
+                                <a href="dejeuner.html" class="btn-luxury">Découvrir</a>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> </div> </div> </div>
+</section>
 <footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
     <div class="container">
         <div class="row g-5 justify-content-center">
@@ -486,44 +569,73 @@
     }
 
     async function loadDynamicContent() {
-        const { data } = await _supabase.from('site_settings').select('*');
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        if (data) {
-            data.forEach(s => {
-                if (s.id === 'hero_bg') {
-                    if (s.image_url && s.image_url.includes('video')) {
-                        document.getElementById('hero-bg').style.backgroundImage = 'none';
-                        document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1; top: 0; left: 0;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
-                    } else if (s.image_url) {
-                        document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
-                    }
+    const { data } = await _supabase.from('site_settings').select('*');
+    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+    if (data) {
+        data.forEach(s => {
+            // --- BANNER HERO ---
+            if (s.id === 'hero_bg') {
+                if (s.image_url && s.image_url.includes('video')) {
+                    document.getElementById('hero-bg').style.backgroundImage = 'none';
+                    document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1; top: 0; left: 0;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
+                } else if (s.image_url) {
+                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
                 }
-                else if (s.id === 'card_patisserie') document.getElementById('img-patisserie').src = s.image_url;
-                else if (s.id === 'card_dejeuner') document.getElementById('img-dejeuner').src = s.image_url;
-                else if (s.id === 'card_floristeria') document.getElementById('img-floristeria').src = s.image_url;
-                
-                else if (s.id === 'promo_sidebar') {
-                    const promoBox = document.getElementById('promo-sidebar-content');
+            }
+            
+            // --- CARDS ORIGINAIS ---
+            else if (s.id === 'card_patisserie') {
+                if (document.getElementById('img-patisserie')) document.getElementById('img-patisserie').src = s.image_url;
+            }
+            else if (s.id === 'card_dejeuner') {
+                if (document.getElementById('img-dejeuner')) document.getElementById('img-dejeuner').src = s.image_url;
+            }
+            else if (s.id === 'card_floristeria') {
+                if (document.getElementById('img-floristeria')) document.getElementById('img-floristeria').src = s.image_url;
+            }
+
+            // --- NOVOS CARDS (SPAGHETTI, DETOX, COMBO) ---
+            else if (s.id === 'card_spaghetti') {
+                if (document.getElementById('img-spaghetti')) document.getElementById('img-spaghetti').src = s.image_url;
+                if (document.getElementById('title-spaghetti')) document.getElementById('title-spaghetti').innerText = s.title || '';
+                if (document.getElementById('desc-spaghetti')) document.getElementById('desc-spaghetti').innerText = s.description || '';
+            }
+            else if (s.id === 'card_detox') {
+                if (document.getElementById('img-detox')) document.getElementById('img-detox').src = s.image_url;
+                if (document.getElementById('title-detox')) document.getElementById('title-detox').innerText = s.title || '';
+                if (document.getElementById('desc-detox')) document.getElementById('desc-detox').innerText = s.description || '';
+            }
+            else if (s.id === 'card_combo') {
+                if (document.getElementById('img-combo')) document.getElementById('img-combo').src = s.image_url;
+                if (document.getElementById('title-combo')) document.getElementById('title-combo').innerText = s.title || '';
+                if (document.getElementById('desc-combo')) document.getElementById('desc-combo').innerText = s.description || '';
+            }
+            
+            // --- PROPAGANDA LATERAL ---
+            else if (s.id === 'promo_sidebar') {
+                const promoBox = document.getElementById('promo-sidebar-content');
+                if (promoBox) {
                     let mediaHtml = "";
                     if (s.image_url) {
                         if (s.image_url.includes('video') || s.image_url.includes('mp4')) {
-                            mediaHtml = `<video src="${s.image_url}" autoplay loop muted></video>`;
+                            mediaHtml = `<video src="${s.image_url}" autoplay loop muted style="width:100%; border-radius:10px;"></video>`;
                         } else {
-                            mediaHtml = `<img src="${s.image_url}" alt="Promo">`;
+                            mediaHtml = `<img src="${s.image_url}" alt="Promo" style="width:100%; border-radius:10px;">`;
                         }
                     } else {
                         mediaHtml = `<i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>`;
                     }
                     promoBox.innerHTML = `
                         ${mediaHtml}
-                        <h4 class="blink-text">${s.title || "Offres"}</h4>
-                        <p>${s.description || ""}</p>
-                        <a href="floristeria.html" class="btn btn-sm btn-outline-dark mt-2">Voir plus</a>
+                        <h4 class="blink-text mt-2">${s.title || "Offres"}</h4>
+                        <p class="small">${s.description || ""}</p>
+                        <a href="dejeuner.html" class="btn btn-sm btn-outline-dark mt-2">Voir plus</a>
                     `;
                 }
-            });
-        }
+            }
+        });
     }
+}
 
     document.addEventListener('DOMContentLoaded', () => {
         const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
