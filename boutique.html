@@ -226,6 +226,55 @@
         padding-top: 15px !important;
     }
 }
+
+/* Ajuste FORÇADO para Pâtisserie: 2 itens por linha no celular */
+@media (max-width: 767px) {
+    /* 1. Força a largura de 50% em cada item da vitrine */
+    #products > .col-md-6.col-xl-4, 
+    .product-item {
+        width: 50% !important;
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        padding: 5px !important;
+    }
+
+    /* 2. Ajusta a altura da imagem e do container */
+    .img-zoom-container {
+        height: 140px !important; /* Um pouco menor para garantir alinhamento */
+    }
+
+    /* 3. Limpa os textos para não empurrar o card */
+    .product-body {
+        padding: 10px !important;
+    }
+
+    .product-body h4 {
+        font-size: 0.8rem !important;
+        min-height: 40px !important; /* Alinha os botões horizontalmente */
+        margin-bottom: 5px !important;
+    }
+
+    .price-tag {
+        font-size: 0.9rem !important;
+        margin: 5px 0 !important;
+    }
+
+    /* 4. ESCONDE o que sobra para manter o card pequeno */
+    .product-description, 
+    .product-moments,
+    .promo-badge {
+        display: none !important;
+    }
+
+    /* 5. Botão compacto */
+    .btn-add, .btn-unavailable {
+        padding: 6px !important;
+        font-size: 0.6rem !important;
+        border-radius: 50px !important;
+        margin-top: 5px !important;
+    }
+}
+
     </style>
 </head>
 <body>

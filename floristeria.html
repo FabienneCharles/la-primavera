@@ -200,6 +200,33 @@
             .flower-img-link { height: 300px; }
             .section-title { font-size: 1.8rem; margin: 30px 0; }
         }
+
+/* Ajuste de imagens para celulares e telas pequenas */
+@media (max-width: 767px) {
+    /* 1. Ajusta a altura da imagem para não ficar alongada demais */
+    .flower-img-link { 
+        height: 220px !important; /* Diminuído de 300px para 220px */
+    }
+
+    /* 2. Faz o card ocupar menos espaço vertical */
+    .flower-card {
+        margin-bottom: 10px;
+    }
+
+    /* 3. Reduz o padding interno do corpo do card para ganhar espaço */
+    .flower-body {
+        padding: 15px !important;
+    }
+
+    /* 4. Opcional: Mostrar 2 itens por linha em vez de 1 */
+    /* Se quiser que apareçam dois arranjos lado a lado, use o código abaixo: */
+    
+    .product-item {
+        width: 50% !important;
+        padding: 5px !important;
+    }
+    
+}
     </style>
 </head>
 <body>

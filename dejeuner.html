@@ -205,6 +205,49 @@
     }
 }
 
+
+/* Ajuste para 2 itens por linha e imagens menores no celular */
+@media (max-width: 767px) {
+    /* 1. Faz cada produto ocupar metade da tela (50%) */
+    #dejeuner-grid > div {
+        width: 50% !important;
+        padding: 5px !important; /* Espaçamento entre os cards */
+    }
+
+    /* 2. Ajusta a altura da imagem para não ficar gigante */
+    .product-img {
+        height: 160px !important; /* Altura ideal para 2 colunas */
+        object-fit: cover;
+    }
+
+    /* 3. Reduz o tamanho dos textos para caber no card pequeno */
+    .product-name {
+        font-size: 0.85rem !important;
+        min-height: 40px !important;
+        line-height: 1.2;
+    }
+
+    .price-tag, .new-price {
+        font-size: 1rem !important;
+    }
+
+    .card-body-custom {
+        padding: 10px !important;
+    }
+
+    /* 4. Esconde a lista de componentes no celular para não alongar demais o card */
+    .component-list {
+        display: none;
+    }
+
+    /* 5. Ajusta o botão para o novo tamanho */
+    .btn-order {
+        padding: 8px !important;
+        font-size: 0.7rem !important;
+    }
+}
+
+
         footer { background-color: var(--primary); color: #fdfaf8; padding: 60px 20px 20px; font-family: 'Poppins', sans-serif; margin-top: 50px; border-top: 4px solid var(--accent); }
         .footer-title { font-family: 'Cinzel', serif; color: var(--accent); letter-spacing: 2px; margin-bottom: 20px; }
 
