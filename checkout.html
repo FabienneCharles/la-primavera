@@ -363,6 +363,66 @@ input[type="checkbox"].form-check-input:checked {
         font-size: 1.5rem !important;
     }
 }
+#order_message {
+    transition: all 0.5s ease; /* Para a mudança de cor ser suave e elegante */
+}
+
+/* --- SELETOR DE CARTÃO DE VOTOS --- */
+.card-style-container {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.card-option {
+    border: 1px solid #eee !important;
+    border-radius: 12px !important;
+    padding: 15px !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    transition: 0.3s !important;
+    background: #fff !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+.card-option:hover { border-color: var(--gold); }
+
+/* Isso garante que o clique mude a cor mesmo se houver outros estilos */
+.card-option.active {
+    border: 2px solid #d1bfa7 !important;
+    background: #fffaf5 !important;
+    box-shadow: 0 4px 10px rgba(209, 191, 167, 0.2) !important;
+}
+
+.card-preview-icon {
+    height: 40px !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+/* Estilos Específicos dos Previews */
+.bg-minimalist { background: linear-gradient(135deg, #fff, #f8f9fa); border: 1px solid #eee; color: #B8860B; }
+.bg-romantic { background: linear-gradient(135deg, #fff0f0, #ffe4e1); color: #C98986; }
+.bg-classic { background: linear-gradient(135deg, #e3d5ca, #d5bdaf); color: #4A2419; }
+
+.card-option span {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: block;
+    text-transform: uppercase;
+}
+
+/* Área de Texto Estilizada */
+#order_message {
+    border: 1px solid #d1bfa7;
+    background-image: radial-gradient(#d1bfa7 0.5px, transparent 0.5px);
+    background-size: 20px 20px; /* Efeito de papel de carta */
+    padding: 20px;
+    font-style: italic;
+}
 
 
 </style>
@@ -491,13 +551,41 @@ input[type="checkbox"].form-check-input:checked {
     <i class="bi bi-info-circle"></i> Le paiement par PayPal est en cours de maintenance.
 </div>
 
-                    <label class="form-label">Note / Message carte</label>
+                   <h2 class="section-header" style="font-family: 'Cinzel', serif; color: var(--gold-title); font-size: 1.1rem; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-top: 30px;">
+    4. Style de la Carte de Vœux
+</h2>
+<p class="small text-muted mb-3" style="font-size: 0.8rem; font-style: italic;">
+    Sélectionnez l'écrin visuel pour votre message personnel :
+</p>
+
+<div class="card-style-container d-flex gap-2 mb-4">
+    <div class="card-option active" id="card-min" onclick="selectCardStyle('Minimaliste', this)">
+        <div class="card-preview-icon bg-minimalist"><i class="bi bi-stars"></i></div>
+        <span>Minimaliste</span>
+    </div>
+    <div class="card-option" id="card-rom" onclick="selectCardStyle('Romantique', this)">
+        <div class="card-preview-icon bg-romantic"><i class="bi bi-heart-fill"></i></div>
+        <span>Romantique</span>
+    </div>
+    <div class="card-option" id="card-cla" onclick="selectCardStyle('Classique', this)">
+        <div class="card-preview-icon bg-classic"><i class="bi bi-feather"></i></div>
+        <span>Classique</span>
+    </div>
+</div>
+
+<input type="hidden" id="selected_card_style" value="Minimaliste">
+
+<label class="form-label" style="font-weight: 600; color: var(--dark);">Votre Message / Note de livraison</label>
 <textarea id="order_message" class="form-control" rows="4" 
-    placeholder="Ex: Message pour la petite carte (Joyeux Anniversaire !), code d'accès à l'immeuble, précisions sur la livraison ou présence d'animaux..."></textarea>
-                    
+    style="border: 1px solid #d1bfa7; background-image: radial-gradient(#d1bfa7 0.5px, transparent 0.5px); background-size: 20px 20px; padding: 15px; font-style: italic; font-size: 0.9rem;"
+    placeholder="Ex: Joyeux Anniversaire ! (Le message sera écrit sur la carte choisie). Ajoutez aussi ici vos instructions..."></textarea>
 
 
-                    <button type="submit" id="submit-btn" class="btn-submit">CONFIRMER MA COMMANDE</button>
+<div style="background: #fff3cd; color: #856404; padding: 20px; border-radius: 10px; text-align: center; font-weight: bold; border: 1px solid #ffeeba; margin-top: 20px;">
+   ⚠️ COMMANDES TEMPORAIREMENT INDISPONIBLES <br>
+   <span style="font-size: 0.8rem; font-weight: normal;">Nous finalisons notre logistique. À très bientôt !</span>
+</div>
+
                 </form>
             </div>
         </div>
@@ -691,60 +779,77 @@ input[type="checkbox"].form-check-input:checked {
     });
 
     document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const btn = document.getElementById('submit-btn');
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        if (cart.length === 0) return alert("Votre panier est vide!");
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    if (cart.length === 0) return alert("Votre panier est vide!");
 
-        btn.disabled = true; btn.innerText = "Traitement...";
+    btn.disabled = true; 
+    btn.innerText = "Traitement...";
 
-        try {
-            const meth = selectedMethod === 'pickup' ? "[PICK UP]" : "[LIVRAISON]";
-            const clientName = document.getElementById('full_name').value;
-            const addr = selectedMethod === 'pickup' ? "Retrait Boutique" : `${document.getElementById('street').value}, ${document.getElementById('city').value}`;
-            const itemsText = cart.map(i => `${i.quantity}x ${i.name}`).join(', ');
-            const finalTotalStr = document.getElementById('grand-total').innerText;
-            const surprise = document.getElementById('is_surprise').checked ? " (SURPRISE 🎁)" : "";
+    try {
+        // 1. Captura de dados extras (Estilo do cartão e Método de Pagamento)
+        const cardStyle = document.getElementById('selected_card_style')?.value || "Standard";
+        const userMessage = document.getElementById('order_message').value;
+        const paymentMethod = document.getElementById('payment-method').value;
+        
+        // Formatação da nota final para o banco e WhatsApp
+        const noteFinal = `[Style: ${cardStyle}] ${userMessage}`;
+        
+        const meth = selectedMethod === 'pickup' ? "[PICK UP]" : "[LIVRAISON]";
+        const clientName = document.getElementById('full_name').value;
+        const addr = selectedMethod === 'pickup' ? "Retrait Boutique" : `${document.getElementById('street').value}, ${document.getElementById('city').value}`;
+        const itemsText = cart.map(i => `${i.quantity}x ${i.name}`).join(', ');
+        const finalTotalStr = document.getElementById('grand-total').innerText;
+        const surprise = document.getElementById('is_surprise').checked ? " (SURPRISE 🎁)" : "";
 
-            const { data: newOrder, error } = await _supabase.from('orders').insert([{
-                user_id: currentUser.id,
-                customer_name: clientName,
-                customer_email: currentUser.email,
-                items: itemsText + surprise,
-                total: parseFloat(finalTotalStr.replace('$','')),
-                address: `${meth} ${addr}`,
-                delivery_date: document.getElementById('order_date').value,
-                note: document.getElementById('order_message').value,
-                status: "En attente"
-            }]).select().single();
+        // 2. Inserção no Supabase
+        const { data: newOrder, error } = await _supabase.from('orders').insert([{
+            user_id: currentUser.id,
+            customer_name: clientName,
+            customer_email: currentUser.email,
+            items: itemsText + surprise,
+            total: parseFloat(finalTotalStr.replace('$','')),
+            address: `${meth} ${addr}`,
+            delivery_date: document.getElementById('order_date').value,
+            note: noteFinal, // Agora inclui o estilo do cartão
+            status: "En attente"
+        }]).select().single();
 
-            if (error) throw error;
+        if (error) throw error;
 
-            const orderIdFormatted = newOrder.id.toString().slice(0,8).toUpperCase();
-            const waMsg = `*COMMANDE LA PRIMAVERA*\n*ID:* #${orderIdFormatted}\n*Client:* ${clientName}\n*Items:* ${itemsText}${surprise}\n*Total:* ${finalTotalStr}\n*Date:* ${newOrder.delivery_date}\n*Adresse:* ${newOrder.address}`;
-            window.open(`https://wa.me/13522982578?text=${encodeURIComponent(waMsg)}`, "_blank");
+        // 3. Formatação do ID e Mensagem para WhatsApp
+        const orderIdFormatted = newOrder.id.toString().slice(0,8).toUpperCase();
+        const waMsg = `*COMMANDE LA PRIMAVERA*\n*ID:* #${orderIdFormatted}\n*Client:* ${clientName}\n*Style Carte:* ${cardStyle}\n*Paiement:* ${paymentMethod.toUpperCase()}\n*Items:* ${itemsText}${surprise}\n*Total:* ${finalTotalStr}\n*Date:* ${newOrder.delivery_date}\n*Adresse:* ${newOrder.address}\n*Message:* ${userMessage}`;
+        
+        window.open(`https://wa.me/13522982578?text=${encodeURIComponent(waMsg)}`, "_blank");
 
-            await emailjs.send("service_g3y43ep", "template_m6v2njk", {
-                order_id: orderIdFormatted,
-                client_name: clientName,
-                client_email: currentUser.email,
-                items: itemsText,
-                total: finalTotalStr,
-                address: addr,
-                delivery_date: newOrder.delivery_date
-            });
+        // 4. Envio de E-mail via EmailJS
+        await emailjs.send("service_g3y43ep", "template_m6v2njk", {
+            order_id: orderIdFormatted,
+            client_name: clientName,
+            client_email: currentUser.email,
+            items: itemsText,
+            total: finalTotalStr,
+            address: addr,
+            delivery_date: newOrder.delivery_date,
+            card_style: cardStyle,
+            message: userMessage
+        });
 
-            await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
-            localStorage.removeItem('cart');
-            alert("Merci! Votre commande est enregistrée.");
-            window.location.href = "mon-compte.html";
+        // 5. Limpeza e Redirecionamento
+        await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
+        localStorage.removeItem('cart');
+        alert("Merci! Votre commande est enregistrée.");
+        window.location.href = "mon-compte.html";
 
-        } catch (err) { 
-            alert("Erreur: " + err.message); 
-            btn.disabled = false; 
-            btn.innerText = "CONFIRMER MA COMMANDE";
-        }
-    });
+    } catch (err) { 
+        alert("Erreur: " + err.message); 
+        btn.disabled = false; 
+        btn.innerText = "CONFIRMER MA COMMANDE";
+    }
+});
 
     function validateCheckoutForm() {
     const btn = document.getElementById('submit-btn');
@@ -778,6 +883,45 @@ input[type="checkbox"].form-check-input:checked {
         btn.style.cursor = "not-allowed";
     }
 }
+
+
+function selectCardStyle(style, element) {
+    const textarea = document.getElementById('order_message');
+    
+    // 1. Limpa o visual de todos os botões seletores
+    document.querySelectorAll('.card-option').forEach(opt => {
+        opt.style.setProperty('border', '1px solid #eee', 'important');
+        opt.style.setProperty('background', '#ffffff', 'important');
+        opt.classList.remove('active');
+    });
+
+    // 2. Ativa o visual do botão clicado
+    element.style.setProperty('border', '2px solid #d1bfa7', 'important');
+    element.style.setProperty('background', '#fffaf5', 'important');
+    element.classList.add('active');
+
+    // 3. Grava a escolha no campo oculto
+    document.getElementById('selected_card_style').value = style;
+
+    // 4. MUDANÇA VISUAL DO CAMPO DE TEXTO (A PRÉVIA)
+    if (style === 'Minimaliste') {
+        textarea.style.background = "#ffffff";
+        textarea.style.color = "#4A2419";
+        textarea.style.borderColor = "#d1bfa7";
+        textarea.style.fontFamily = "'Poppins', sans-serif";
+    } else if (style === 'Romantique') {
+        textarea.style.background = "#fff0f0"; // Tom rosado suave
+        textarea.style.color = "#C98986";       // Rosa escuro
+        textarea.style.borderColor = "#C98986";
+        textarea.style.fontFamily = "'Playfair Display', serif"; // Fonte elegante
+    } else if (style === 'Classique') {
+        textarea.style.background = "#f4ece4"; // Tom de papel envelhecido/kraft
+        textarea.style.color = "#2C1810";       // Marrom profundo
+        textarea.style.borderColor = "#4A2419";
+        textarea.style.fontFamily = "serif";      // Fonte clássica com serifa
+    }
+}
+
 
   async function validateMAZip(zip) {
     const errorDiv = document.getElementById('address-error');

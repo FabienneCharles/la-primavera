@@ -281,6 +281,90 @@
 }
 
 
+/* --- DESIGN DOS FILTROS DE EXPERIÊNCIA (DEJEUNER) --- */
+#experience-filters {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+    padding: 10px 0;
+}
+
+.filter-badge {
+    background: white;
+    border: 1px solid #d1bfa7; /* Cor bege suave */
+    color: var(--primary);
+    padding: 10px 22px;
+    border-radius: 50px; /* Deixa arredondado */
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+/* Ícones dentro dos botões */
+.filter-badge i {
+    color: #B8860B; /* Dourado */
+    font-size: 0.9rem;
+}
+
+/* Efeito ao passar o mouse */
+.filter-badge:hover {
+    border-color: #B8860B;
+    background-color: #fffaf5;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(184, 134, 11, 0.1);
+}
+
+/* Estado Ativado (Quando o cliente clica) */
+.filter-badge.active {
+    background: #2C1810 !important; /* Marrom escuro */
+    color: #fff !important;
+    border-color: #2C1810 !important;
+    box-shadow: 0 4px 12px rgba(44, 24, 16, 0.2);
+}
+
+.filter-badge.active i {
+    color: #D4AF37 !important; /* Dourado brilhante */
+}
+
+
+
+/* Isso vai transformar os botões na versão de luxo */
+.filter-badge {
+    background: white !important;
+    border: 1px solid #d1bfa7 !important; /* Bordas bege, não pretas */
+    color: #2C1810 !important;
+    padding: 8px 20px !important;
+    border-radius: 50px !important; /* Deixa arredondado */
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 1.5px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+    text-transform: uppercase !important;
+}
+
+/* Quando o botão é clicado */
+.filter-badge.active {
+    background: #2C1810 !important;
+    color: white !important;
+    border-color: #2C1810 !important;
+}
+
+.filter-badge.active i {
+    color: #B8860B !important;
+}
+
     </style>
 </head>
 <body>
@@ -327,6 +411,12 @@
                 <option value="es">ES ES</option>
             </select>
             
+<select class="lang-select" onchange="changeLanguage(this.value)">
+    <option value="fr">FR 🇫🇷</option>
+    <option value="en">EN 🇺🇸</option>
+    <option value="es">ES 🇪🇸</option>
+</select>
+
             <div id="auth-area"></div> 
 
             <a href="javascript:void(0)" class="cart-wrapper-custom" onclick="toggleCart()">
@@ -341,21 +431,32 @@
     </div>
 </nav> 
 
-<div class="container-fluid px-lg-5">
-    <h2 class="section-title">Collection Petit-Déjeuner Signature</h2>
+<section class="container py-5">
+    <h2 class="section-title">Collection Gastronomique Signature</h2>
 
-    <div class="row">
-        <div class="col-lg-3 mb-5">
-            <div class="promo-sidebar" id="sidebar-promo-content">
-                <div class="spinner-border spinner-border-sm text-accent"></div>
-            </div>
-        </div>
-
-        <div class="col-lg-9">
-            <div class="row g-4" id="dejeuner-grid"></div>
-        </div>
+    <div class="container mb-5">
+    <div class="d-flex justify-content-center flex-wrap gap-3" id="experience-filters">
+        <button class="filter-badge active" onclick="filterByMoment('all', this)">
+            <i class="bi bi-stars"></i> TOUT
+        </button>
+        <button class="filter-badge" onclick="filterByMoment('Vitalité', this)">
+            <i class="bi bi-leaf-fill"></i> VITALITÉ (DETOX)
+        </button>
+        <button class="filter-badge" onclick="filterByMoment('Gourmet', this)">
+            <i class="bi bi-fire"></i> GOURMET (CHAUD)
+        </button> <button class="filter-badge" onclick="filterByMoment('Brunch', this)">
+            <i class="bi bi-sun-fill"></i> BRUNCH & PANIER
+        </button>
+        <button class="filter-badge" onclick="filterByMoment('Surprise', this)">
+            <i class="bi bi-gift-fill"></i> SURPRISE
+        </button>
     </div>
 </div>
+
+
+    <div class="row g-4" id="dejeuner-grid">
+        </div>
+</section>
 
 <footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
     <div class="container">
@@ -446,13 +547,13 @@
             <div class="col-md-6 col-xl-4">
                 <div class="product-card">
                     <a href="${p.image_url}" class="zoom-trigger">
-                        <img src="${p.image_url}" class="product-img" style="cursor:pointer" onclick="openProductDetail('${p.id}')">
+                        <img src="${p.image_url}" class="product-img" style="cursor:pointer" onclick="openDejeunerDetail('${p.id}')">
                     </a>
                     <div class="card-body-custom">
-                        <h3 class="product-name">${p.name}</h3>
+                        <h3 class="product-name" style="cursor:pointer" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
                         <ul class="component-list">${components}</ul>
                         ${momentsDisplay} 
-			${priceDisplay}
+			            ${priceDisplay}
                         <button class="btn btn-dark w-100 rounded-pill" 
                             onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})" 
                             ${!inStock ? 'disabled' : ''}>
@@ -463,7 +564,6 @@
             </div>`;
         }).join('');
 
-        // 3. Inicializa o efeito de Zoom após carregar os elementos
         if (window.Luminous) {
             document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
         }
@@ -471,18 +571,18 @@
 }
 
     async function quickAdd(id, name, price) {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
 
-        const { error } = await _supabase.from('cart_items').insert([{
-            user_id: user.id, product_name: name, price: price, quantity: 1
-        }]);
+    const { error } = await _supabase.from('cart_items').insert([{
+        user_id: user.id, product_name: name, price: price, quantity: 1
+    }]);
 
-        if (!error) {
-            await syncCartFromDB(user.id);
-            toggleCart();
-        }
+    if (!error) {
+        await syncCartFromDB(user.id);
+        toggleCart();
     }
+}
 
     async function updateNavbarAuth() {
         const area = document.getElementById('auth-area');
@@ -661,26 +761,142 @@ async function suggestSimilar(currentProductId, currentMoments) {
         if (user) await syncCartFromDB(user.id);
         else updateCartUI();
     }
+
+
+
+function filterByMoment(moment, btn) {
+    // 1. Estilo dos botões
+    document.querySelectorAll('.filter-badge').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 2. Pega todos os cards (funciona tanto na Floristeria quanto no Dejeuner)
+    const items = document.querySelectorAll('#dejeuner-grid > div, #flower-grid > div, .product-item');
+
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const target = moment.toLowerCase();
+
+        if (moment === 'all') {
+            item.style.display = 'block';
+            item.style.opacity = '1';
+        } else {
+            // Se o texto do card contiver a palavra do filtro
+            if (text.includes(target)) {
+                item.style.display = 'block';
+                item.style.opacity = '1';
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+}
+
+
+async function openDejeunerDetail(id) {
+    const { data: item } = await _supabase.from('products').select('*').eq('id', id).single();
+    if (!item) return;
+
+    const detailArea = document.getElementById('dejeuner-main-detail');
+    detailArea.innerHTML = `
+        <div class="col-md-6"><img src="${item.image_url}" class="img-fluid rounded-4 shadow"></div>
+        <div class="col-md-6">
+            <h3 style="font-family:'Cinzel'; color:var(--primary);">${item.name}</h3>
+            <p style="color:var(--accent); font-weight:600; font-size:0.8rem;">EXPÉRIENCE GASTRONOMIQUE</p>
+            <p class="text-muted" style="font-size:0.85rem;">${item.description || ''}</p>
+            <h4 class="mb-4">$${parseFloat(item.price).toFixed(2)}</h4>
+            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" onclick="quickAdd('${item.id}', '${item.name.replace(/'/g, "\\'")}', ${item.price})">
+                AJOUTER AU PANIER
+            </button>
+        </div>
+    `;
+
+    loadDejeunerAddons(); 
+    loadDejeunerRecommendations(item.id, item.moments);
+
+    const modal = new bootstrap.Modal(document.getElementById('dejeunerDetailModal'));
+    modal.show();
+}
+
+async function loadDejeunerAddons() {
+    // Buscamos agora 4 doces e 2 flores (Total 6 itens)
+    const { data: patis } = await _supabase.from('patisserie').select('id, name, price, image_url').limit(4);
+    const { data: fleurs } = await _supabase.from('products').select('id, name, price, image_url').eq('category', 'fleur').limit(2);
+
+    const addons = [...(patis || []), ...(fleurs || [])];
+    const container = document.getElementById('dejeuner-addons-container');
+    const list = document.getElementById('dejeuner-addons-list');
+
+    if (addons.length > 0) {
+        container.style.display = 'block';
+        // Mudamos a classe para col-4 (3 por linha) ou col-2 (6 por linha no desktop)
+        list.innerHTML = addons.map(a => `
+            <div class="col-4 col-md-2"> 
+                <div class="addon-card" onclick="quickAdd('${a.id}', '${a.name.replace(/'/g, "\\'")}', ${a.price})" style="cursor:pointer; border:1px solid #f0e6d2; border-radius:10px; padding:5px; background:white; text-align:center; height: 100%;">
+                    <img src="${a.image_url}" style="width:100%; height:50px; object-fit:cover; border-radius:5px;">
+                    <div style="font-size:0.55rem; font-weight:bold; margin-top:5px; height:20px; overflow:hidden; line-height:1;">${a.name}</div>
+                    <div style="font-size:0.65rem; color:var(--accent);">+$${parseFloat(a.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+async function loadDejeunerRecommendations(currentId, moments) {
+    if (!moments) {
+        document.getElementById('dejeuner-suggestion-container').style.display = 'none';
+        return;
+    }
+    const tag = moments.split(',')[0].trim();
+    const { data: suggestions } = await _supabase.from('products')
+        .select('id, name, price, image_url')
+        .eq('category', 'dejeuner')
+        .ilike('moments', `%${tag}%`)
+        .neq('id', currentId).limit(3);
+
+    const container = document.getElementById('dejeuner-suggestion-container');
+    const list = document.getElementById('dejeuner-suggestion-list');
+
+    if (suggestions && suggestions.length > 0) {
+        container.style.display = 'block';
+        list.innerHTML = suggestions.map(s => `
+            <div class="col-4" onclick="openDejeunerDetail('${s.id}')" style="cursor:pointer">
+                <div class="suggestion-card">
+                    <img src="${s.image_url}" class="suggestion-img">
+                    <div class="suggestion-title text-truncate">${s.name}</div>
+                    <div class="small text-accent">$${parseFloat(s.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        container.style.display = 'none';
+    }
+}
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="dejeunerDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--accent);">
             <div class="modal-body p-4">
-                <div class="row" id="product-main-detail">
-                    </div>
-                
-                <div id="suggestion-container" style="display:none;">
-                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; color: var(--accent); letter-spacing: 1px;">Vous aimerez aussi...</h6>
-                    <div class="row g-3" id="suggestion-list">
-                        </div>
+                <div class="row" id="dejeuner-main-detail"></div>
+                <div id="dejeuner-addons-container" class="mt-4 mb-4" style="display:none; background: #fffaf5; padding: 15px; border-radius: 15px; border: 1px dashed var(--accent);">
+                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; font-size: 0.75rem; color: var(--primary); letter-spacing: 1px; font-weight: 700;">
+                        <i class="bi bi-plus-circle me-1"></i> Sublimer votre déjeuner
+                    </h6>
+                    <div class="row g-2" id="dejeuner-addons-list"></div>
+                </div>
+                <div id="dejeuner-suggestion-container" class="mt-5" style="display:none;">
+                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; color: var(--accent); letter-spacing: 2px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                        Découvrez aussi...
+                    </h6>
+                    <div class="row g-3" id="dejeuner-suggestion-list"></div>
                 </div>
             </div>
             <div class="modal-footer border-0">
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>

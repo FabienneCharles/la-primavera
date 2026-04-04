@@ -145,6 +145,28 @@
     padding-top: 20px !important;
 }
 
+
+/* Estilo de Luxo para o Seletor de Idiomas */
+.lang-select {
+    border: 1px solid var(--gold-title) !important;
+    border-radius: 20px !important;
+    padding: 4px 12px !important;
+    font-size: 0.7rem !important;
+    font-family: 'Cinzel', serif !important;
+    color: var(--deep-coffee) !important;
+    background: white !important;
+    cursor: pointer !important;
+    outline: none !important;
+    margin-right: 10px;
+    appearance: none; /* Remove a seta padrão do navegador em alguns casos */
+    -webkit-appearance: none;
+}
+
+.lang-select:hover {
+    background-color: #fffaf5 !important;
+    box-shadow: 0 0 5px rgba(184, 134, 11, 0.3);
+}
+
 /* Remove o azul e a linha do nome do cliente */
 .btn-user {
     text-decoration: none !important;
@@ -248,6 +270,72 @@
 
 
 
+/* Estilo para os Add-ons (Venda Cruzada) */
+.addon-card {
+    border: 1px solid #f0e6d2;
+    border-radius: 12px;
+    padding: 10px;
+    background: #fffaf5;
+    transition: 0.3s;
+    text-align: center;
+    cursor: pointer;
+}
+.addon-card:hover { border-color: var(--gold); transform: translateY(-2px); }
+.addon-img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; }
+.addon-name { font-size: 0.7rem; font-weight: 700; margin-top: 5px; color: var(--dark); text-transform: uppercase; }
+.addon-price { font-size: 0.75rem; color: var(--gold); font-weight: bold; }
+
+
+/* DESIGN DOS FILTROS DE EXPERIÊNCIA */
+#experience-filters {
+    position: sticky;
+    top: 90px; /* Logo abaixo da sua Navbar fixa */
+    z-index: 900;
+    background: rgba(232, 213, 196, 0.95); /* Cor do seu fundo com leve transparência */
+    padding: 15px 0;
+    backdrop-filter: blur(5px);
+}
+
+.filter-badge {
+    background: transparent;
+    border: 1px solid #d1bfa7;
+    color: var(--dark);
+    padding: 8px 22px;
+    border-radius: 50px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.filter-badge i {
+    color: var(--gold);
+    font-size: 0.85rem;
+}
+
+.filter-badge:hover {
+    border-color: var(--gold);
+    background-color: #fffaf5;
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(184, 134, 11, 0.1);
+}
+
+.filter-badge.active {
+    background: var(--dark) !important;
+    color: #fff !important;
+    border-color: var(--dark) !important;
+}
+
+.filter-badge.active i {
+    color: var(--gold) !important;
+}
+
     </style>
 </head>
 <body>
@@ -273,14 +361,15 @@
         <div class="d-flex align-items-center gap-3">
             <div class="search-box d-none d-xl-flex align-items-center">
                 <i class="bi bi-search me-2"></i>
-                <input type="text" id="flowerSearch" class="form-control form-control-sm search-input" placeholder="Rechercher..." onkeyup="filterFlowers()">
-            </div>
+	<input type="text" id="flowerSearch" class="form-control" data-i18n-placeholder="search_placeholder" placeholder="Rechercher...">            </div>
 
-            <select class="lang-select-custom" onchange="changeLanguage(this.value)">
-                <option value="fr">FR FR</option>
-                <option value="en">EN EN</option>
-                <option value="es">ES ES</option>
-            </select>
+     <select class="lang-select" onchange="changeLanguage(this.value)">
+    <option value="fr">FR 🇫🇷</option>
+    <option value="en">EN 🇺🇸</option>
+    <option value="es">ES 🇪🇸</option>
+</select>
+
+
             
             <div id="auth-area"></div> 
 
@@ -297,23 +386,50 @@
 </nav>
 
 <section class="container py-5">
-    <h2 class="section-title">Éclats Floraux Signature</h2>
-    <div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid"></div>
+<h2 class="section-title" data-i18n="section_title">Éclats Floraux Signature</h2>
+
+    <div class="container mb-5">
+        <div class="d-flex justify-content-center flex-wrap gap-3" id="experience-filters">
+            <button class="filter-badge active" onclick="filterByMoment('all', this)">
+                <i class="bi bi-stars"></i> TOUT
+            </button>
+            <button class="filter-badge" onclick="filterByMoment('Romantisme', this)">
+                <i class="bi bi-heart-fill"></i> ROMANTISME
+            </button>
+            <button class="filter-badge" onclick="filterByMoment('Anniversaire', this)">
+                <i class="bi bi-cake2-fill"></i> ANNIVERSAIRE
+            </button> <button class="filter-badge" onclick="filterByMoment('Énergie', this)">
+                <i class="bi bi-lightning-charge-fill"></i> ÉNERGIE
+            </button>
+            <button class="filter-badge" onclick="filterByMoment('Surprise', this)">
+                <i class="bi bi-gift-fill"></i> SURPRISE
+            </button>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid">
+        </div>
 </section>
 
 <div class="modal fade" id="flowerDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--gold);">
             <div class="modal-body p-4">
-                <div class="row" id="flower-main-detail">
-                    </div>
+                <div class="row" id="flower-main-detail"></div>
+                
+                <div id="flower-addons-container" class="mt-4 mb-4" style="display:none; background: #fffaf5; padding: 15px; border-radius: 15px; border: 1px dashed var(--gold);">
+                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; font-size: 0.75rem; color: var(--deep-coffee); letter-spacing: 1px; font-weight: 700;">
+                        <i class="bi bi-plus-circle me-1"></i> Complétez votre cadeau (Pâtisserie)
+                    </h6>
+                    <div class="row g-2" id="flower-addons-list">
+                        </div>
+                </div>
                 
                 <div id="flower-suggestion-container" class="mt-5" style="display:none;">
                     <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; color: var(--gold); letter-spacing: 2px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
                         Vous aimerez aussi...
                     </h6>
-                    <div class="row g-3" id="flower-suggestion-list">
-                        </div>
+                    <div class="row g-3" id="flower-suggestion-list"></div>
                 </div>
             </div>
             <div class="modal-footer border-0">
@@ -368,11 +484,31 @@
 <script>
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
-    async function init() {
-        updateNavbarAuth();
-        loadFlowers();
-        updateCartBadge();
+const translations = {
+    fr: {
+        nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "ABOUT US",
+        section_title: "Éclats Floraux Signature", btn_cart: "AJOUTER AU PANIER", search_placeholder: "Rechercher..."
+    },
+    en: {
+        nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
+        section_title: "Signature Floral Glow", btn_cart: "ADD TO CART", search_placeholder: "Search..."
+    },
+    es: {
+        nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "ABOUT US",
+        section_title: "Destellos Florales Signature", btn_cart: "AÑADIR AO CARRITO", search_placeholder: "Buscar..."
     }
+};
+
+
+    async function init() {
+    const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
+    changeLanguage(savedLang); // Aplica o idioma salvo
+    updateNavbarAuth();
+    loadFlowers();
+    updateCartBadge();
+}
+
+
 
     async function loadFlowers() {
     const grid = document.getElementById('flower-grid');
@@ -440,44 +576,73 @@ async function openFlowerDetail(id) {
     if (!flower) return;
 
     const detailArea = document.getElementById('flower-main-detail');
+    if (!detailArea) return;
+
     detailArea.innerHTML = `
         <div class="col-md-6">
             <img src="${flower.image_url}" class="img-fluid rounded-4 shadow">
         </div>
         <div class="col-md-6">
-            <h3 style="font-family:'Cinzel'; color:var(--primary);">${flower.name}</h3>
-            <p style="color:var(--accent); font-weight:600;">Collection Signature</p>
-            <p class="text-muted" style="font-size:0.9rem;">${flower.description}</p>
-            <h4 class="mb-4">$${parseFloat(flower.price).toFixed(2)}</h4>
-            <button class="btn btn-dark w-100 py-3 rounded-pill" onclick="quickAdd('${flower.id}', '${flower.name}', ${flower.price})">
-                COMMANDER CETTE CRÉATION
+            <h3 style="font-family:'Cinzel'; color:var(--deep-coffee);">${flower.name}</h3>
+            <p style="color:var(--gold); font-weight:600; font-size:0.8rem; letter-spacing:1px;">COLLECTION SIGNATURE</p>
+            <p class="text-muted" style="font-size:0.85rem; line-height:1.5;">${flower.description || 'Une création florale exclusive.'}</p>
+            <h4 class="mb-4" style="font-weight:700;">$${parseFloat(flower.price).toFixed(2)}</h4>
+            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" onclick="quickAdd('${flower.id}', '${flower.name.replace(/'/g, "\\'")}', ${flower.price})">
+                AJOUTER AU PANIER
             </button>
         </div>
     `;
 
-    // A IA busca flores para a MESMA OCASIÃO
+    loadAddonsPatis(); 
     loadFlowerAIRecommendations(flower.id, flower.moments);
 
-    const modal = new bootstrap.Modal(document.getElementById('flowerDetailModal'));
+    const modalElement = document.getElementById('flowerDetailModal');
+    const modal = new bootstrap.Modal(modalElement);
     modal.show();
 }
 
+async function loadAddonsPatis() {
+    const { data: addons, error } = await _supabase
+        .from('patisserie')
+        .select('id, name, price, image_url')
+        .neq('is_active', false)
+        .gt('stock', 0)
+        .limit(3);
+
+    const container = document.getElementById('flower-addons-container');
+    const list = document.getElementById('flower-addons-list');
+
+    if (addons && addons.length > 0) {
+        if(container) container.style.display = 'block';
+        list.innerHTML = addons.map(a => `
+            <div class="col-4">
+                <div class="addon-card" onclick="quickAdd('${a.id}', '${a.name.replace(/'/g, "\\'")}', ${a.price})">
+                    <img src="${a.image_url}" class="addon-img">
+                    <div class="addon-name text-truncate">${a.name}</div>
+                    <div class="addon-price">+$${parseFloat(a.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        if(container) container.style.display = 'none';
+    }
+}
+
+// FUNÇÃO SEPARADA CORRETAMENTE ABAIXO
 async function loadFlowerAIRecommendations(currentId, moments) {
     if (!moments) {
         document.getElementById('flower-suggestion-container').style.display = 'none';
         return;
     }
     
-    // Pega a primeira tag de ocasião (ex: Amour ou Anniversaire)
     const tag = moments.split(',')[0].trim();
-
     const { data: suggestions } = await _supabase
         .from('products')
         .select('id, name, price, image_url')
         .eq('category', 'fleur')
-        .ilike('moments', `%${tag}%`) // Busca similaridade por ocasião
+        .ilike('moments', `%${tag}%`)
         .neq('id', currentId)
-        .limit(6); // AMPLIADO: Agora sugere até 6 itens
+        .limit(6);
 
     const list = document.getElementById('flower-suggestion-list');
     if (suggestions && suggestions.length > 0) {
@@ -494,6 +659,72 @@ async function loadFlowerAIRecommendations(currentId, moments) {
     } else {
         document.getElementById('flower-suggestion-container').style.display = 'none';
     }
+}
+
+
+function filterByMoment(moment, btn) {
+    // 1. Marca o botão como ativo
+    document.querySelectorAll('.filter-badge').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 2. Filtra os cards
+    const products = document.querySelectorAll('.product-item, .col');
+    
+    products.forEach(p => {
+        // Pega o texto do card (onde estão os 'moments')
+        const content = p.innerText || "";
+        
+        if (moment === 'all') {
+            p.style.display = 'block';
+            setTimeout(() => p.style.opacity = '1', 10);
+        } else {
+            if (content.toLowerCase().includes(moment.toLowerCase())) {
+                p.style.display = 'block';
+                setTimeout(() => p.style.opacity = '1', 10);
+            } else {
+                p.style.opacity = '0';
+                setTimeout(() => p.style.display = 'none', 300); // Esconde após o fade
+            }
+        }
+    });
+}
+
+
+function changeLanguage(lang) {
+    // 1. Traduz Textos Normais (Títulos, Parágrafos, Botões)
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+            el.innerText = translations[lang][key];
+        }
+    });
+
+    // 2. NOVO: Traduz Placeholders (Caixas de texto como a da mensagem)
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) {
+            el.placeholder = translations[lang][key];
+        }
+    });
+
+    // 3. NOVO: Traduz Imagens (Se você tiver banners diferentes por idioma)
+    document.querySelectorAll('[data-i18n-src]').forEach(el => {
+        const key = el.getAttribute('data-i18n-src');
+        if (translations[lang] && translations[lang][key]) {
+            el.src = translations[lang][key];
+        }
+    });
+
+    // 4. Salva a preferência no navegador
+    localStorage.setItem('laprimavera_lang', lang);
+    
+    // 5. Garante que o seletor mostre a língua correta em todas as páginas
+    document.querySelectorAll('.lang-select').forEach(select => {
+        select.value = lang;
+    });
+
+    // 6. Atualiza o atributo "lang" do HTML (bom para SEO)
+    document.documentElement.lang = lang;
 }
 
     async function updateCartBadge() {
