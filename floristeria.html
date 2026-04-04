@@ -336,6 +336,28 @@
     color: var(--gold) !important;
 }
 
+
+/* Esconde a barra superior do Google que "empurra" o site para baixo */
+.goog-te-banner-frame.skiptranslate { display: none !important; }
+body { top: 0px !important; }
+
+/* Estiliza a caixinha do Google para parecer um botão de luxo */
+#google_translate_element select {
+    border: 1px solid #B8860B !important; /* Dourado */
+    border-radius: 20px !important;
+    padding: 3px 10px !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 11px !important;
+    color: #2C1810 !important;
+    background-color: white !important;
+    outline: none !important;
+}
+
+/* Esconde o logo "Powered by Google" para ficar mais limpo */
+.goog-logo-link { display: none !important; }
+.goog-te-gadget { color: transparent !important; }
+
+
     </style>
 </head>
 <body>
@@ -370,6 +392,7 @@
 </select>
 
 
+<div id="google_translate_element" style="margin-right: 15px; display: inline-block; vertical-align: middle;"></div>
             
             <div id="auth-area"></div> 
 
@@ -766,5 +789,16 @@ function changeLanguage(lang) {
 
     init();
 </script>
+<script type="text/javascript">
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'fr', 
+            includedLanguages: 'en,es,pt,fr',
+            layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
+<script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
