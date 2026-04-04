@@ -482,14 +482,14 @@ input[type="checkbox"].form-check-input:checked {
 
                     <h2 class="section-header">3. Paiement</h2>
                     <select id="payment-method" class="form-select" onchange="togglePaymentFields()">
-                        <option value="wa">WhatsApp (Zelle / CashApp)</option>
-                        <option value="paypal">PayPal</option>
-                        <option value="card">Carte de Crédit</option>
-                    </select>
+    <option value="wa">WhatsApp (Zelle / CashApp)</option>
+    <option value="paypal" disabled>PayPal (Temporairement indisponible)</option>
+    <option value="card">Carte de Crédit</option>
+</select>
 
-                    <div id="card-fields-container">
-                        <div class="alert alert-warning py-2 small">Indisponible temporairement. Utilisez WhatsApp.</div>
-                    </div>
+<div id="paypal-info" class="alert alert-light py-2 small mt-1" style="border: 1px solid #eee; color: #999;">
+    <i class="bi bi-info-circle"></i> Le paiement par PayPal est en cours de maintenance.
+</div>
 
                     <label class="form-label">Note / Message carte</label>
 <textarea id="order_message" class="form-control" rows="4" 
@@ -754,13 +754,17 @@ input[type="checkbox"].form-check-input:checked {
     const name = document.getElementById('full_name')?.value.trim();
     const date = document.getElementById('order_date')?.value;
     const phone = document.getElementById('customer_phone')?.value.trim();
+    // Obtém o método de pagamento selecionado
+    const paymentMethod = document.getElementById('payment-method')?.value;
 
     // canFinish só é true se a logística estiver validada (isLogisticsValid === true)
+    // E incluímos a trava: paymentMethod não pode ser 'paypal' enquanto estiver indisponível
     const canFinish = cart.length > 0 && 
                       name !== "" && 
                       date !== "" && 
                       (phone && phone.length >= 14) && 
-                      isLogisticsValid === true; 
+                      isLogisticsValid === true &&
+                      paymentMethod !== 'paypal'; 
 
     if (canFinish) {
         btn.disabled = false;
