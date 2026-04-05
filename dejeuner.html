@@ -366,6 +366,30 @@
 }
 
 
+.lang-select-custom {
+    border: 1px solid #B8860B !important; /* Dourado */
+    border-radius: 20px !important;       /* Deixa oval */
+    padding: 4px 15px !important;        /* Espaço interno */
+    font-size: 0.7rem !important;
+    font-family: 'Cinzel', serif !important;
+    color: #2C1810 !important;
+    background-color: white !important;
+    cursor: pointer !important;
+    outline: none !important;
+    appearance: none;                    /* Remove a seta padrão */
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8860B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 25px !important;      /* Espaço para a seta */
+}
+
+.lang-select-custom:hover {
+    background-color: #fffaf5 !important;
+}
+
+
 /* --- BLOQUEIO TOTAL DA BARRA AZUL DO GOOGLE --- */
 
 /* 1. Esconde o quadro da barra e qualquer elemento de tradução automática */
@@ -387,24 +411,6 @@ body {
     display: none !important;
 }
 
-/* 4. EXCEÇÃO: Não deixa o seletor oval sumir junto */
-#google_translate_element.skiptranslate {
-    display: inline-block !important;
-}
-
-/* 5. Estilo Oval Dourado (Igual à foto) */
-#google_translate_element select {
-    background-color: #ffffff !important;
-    border: 1px solid #B8860B !important;
-    border-radius: 20px !important;
-    padding: 6px 15px !important;
-    font-family: 'Cinzel', serif !important;
-    font-size: 0.75rem !important;
-    color: #2C1810 !important;
-    text-transform: uppercase !important;
-    cursor: pointer !important;
-    outline: none !important;
-}
 
 /* Esconde o logo colorido do Google de dentro do botão */
 .goog-te-gadget {
@@ -416,7 +422,19 @@ body {
 }
 
 
-
+/* --- SELETOR DE IDIOMAS MANUAL (ESTILO INDEX) --- */
+.lang-select {
+    border: 1px solid #B8860B;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    font-family: 'Cinzel', serif;
+    color: #2C1810;
+    background: white;
+    cursor: pointer;
+    margin-right: 10px;
+    outline: none;
+}
 
     </style>
 </head>
@@ -444,34 +462,27 @@ body {
 
         <div class="collapse navbar-collapse" id="navRes">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" href="index.html">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="boutique.html">Pâtisserie</a></li>
-                <li class="nav-item"><a class="nav-link" href="floristeria.html">Floristerie</a></li>
-                <li class="nav-item"><a class="nav-link active" href="dejeuner.html">Déjeuners</a></li>
-                <li class="nav-item"><a class="nav-link border-0" href="about.html">ABOUT US</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html" data-i18n="nav_home">Accueil</a></li>
+                <li class="nav-item"><a class="nav-link" href="boutique.html" data-i18n="nav_patis">Pâtisserie</a></li>
+                <li class="nav-item"><a class="nav-link" href="floristeria.html" data-i18n="nav_flor">Floristerie</a></li>
+                <li class="nav-item"><a class="nav-link active" href="dejeuner.html" data-i18n="nav_deje">Déjeuners</a></li>
+                <li class="nav-item"><a class="nav-link border-0" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
 
         <div class="d-flex align-items-center gap-3">
-            <div id="google_translate_element" style="display: inline-block; vertical-align: middle; margin-left: 15px;"></div>
-
+            <div class="search-box d-none d-xl-flex align-items-center">
+                <i class="bi bi-search me-2"></i>
+                <input type="text" class="form-control form-control-sm search-input" placeholder="Rechercher...">
+            </div>
 
             <select class="lang-select-custom" onchange="changeLanguage(this.value)">
                 <option value="fr">FR FR</option>
                 <option value="en">EN EN</option>
                 <option value="es">ES ES</option>
             </select>
-            
 
-
-            <div class="search-box d-none d-xl-flex align-items-center">
-    <i class="bi bi-search me-2"></i>
-    <input type="text" class="form-control form-control-sm search-input" placeholder="Rechercher...">
-</div>
-
-<div id="google_translate_element"></div>
-
-<div id="auth-area"></div>
+            <div id="auth-area"></div> 
 
             <a href="javascript:void(0)" class="cart-wrapper-custom" onclick="toggleCart()">
                 <i class="bi bi-cart3 fs-4"></i>
@@ -483,10 +494,9 @@ body {
             </button>
         </div>
     </div>
-</nav> 
-
+</nav>
 <section class="container py-5">
-    <h2 class="section-title">Collection Gastronomique Signature</h2>
+    <h2 class="section-title" data-i18n="section_title">Collection Gastronomique Signature</h2>
 
     <div class="container mb-5">
     <div class="d-flex justify-content-center flex-wrap gap-3" id="experience-filters">
@@ -597,7 +607,7 @@ body {
                 momentsDisplay = `<p style="font-size: 0.75rem; color: #B8860B; text-transform: uppercase; margin-bottom: 10px;"><strong>Idéal pour :</strong> ${p.moments}</p>`;
             }
 
-            return `
+          return `
             <div class="col-md-6 col-xl-4">
                 <div class="product-card">
                     <a href="${p.image_url}" class="zoom-trigger">
@@ -607,11 +617,11 @@ body {
                         <h3 class="product-name" style="cursor:pointer" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
                         <ul class="component-list">${components}</ul>
                         ${momentsDisplay} 
-			            ${priceDisplay}
+                        ${priceDisplay}
                         <button class="btn btn-dark w-100 rounded-pill" 
                             onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})" 
                             ${!inStock ? 'disabled' : ''}>
-                            ${inStock ? 'AJOUTER AU PANIER' : 'Indisponible'}
+                            ${inStock ? (translations[localStorage.getItem('laprimavera_lang') || 'fr'].btn_cart) : 'Indisponible'}
                         </button>
                     </div>
                 </div>
@@ -926,6 +936,38 @@ async function loadDejeunerRecommendations(currentId, moments) {
     }
 }
 
+
+// CONFIGURAÇÃO DE LOGOUT POR INATIVIDADE
+let inactivityTimeout;
+
+function resetInactivityTimer() {
+    // 2 horas em milissegundos (2 * 60 * 60 * 1000)
+    const TWO_HOURS = 7200000; 
+
+    // Limpa o cronômetro anterior
+    clearTimeout(inactivityTimeout);
+
+    // Inicia um novo cronômetro
+    inactivityTimeout = setTimeout(async () => {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            console.log("Inatividade detectada. Desconectando...");
+            logout(); // Chama sua função de logout existente
+        }
+    }, TWO_HOURS);
+}
+
+// Lista de eventos que indicam que o usuário está ativo
+const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+// Adiciona o "vigia" para cada evento
+activityEvents.forEach(event => {
+    document.addEventListener(event, resetInactivityTimer, true);
+});
+
+// Inicia o cronômetro assim que a página carrega
+resetInactivityTimer();
+
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/luminous-lightbox@2.3.2/dist/luminous.min.js"></script>
@@ -956,17 +998,60 @@ async function loadDejeunerRecommendations(currentId, moments) {
     </div>
 </div>
 
-<script type="text/javascript">
-    function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-            pageLanguage: 'fr', 
-            includedLanguages: 'en,es,fr',
-            layout: google.translate.TranslateElement.InlineLayout.SIMPLE, // Modo simples
-            autoDisplay: false // Impede a barra de aparecer sozinha
-        }, 'google_translate_element');
+<script>
+const translations = {
+    fr: {
+        nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "ABOUT US",
+        section_title: "Collection Gastronomique Signature",
+        filter_all: "TOUT", filter_vitality: "VITALITÉ (DETOX)", filter_gourmet: "GOURMET (CHAUD)", filter_brunch: "BRUNCH & PANIER", filter_surprise: "SURPRISE",
+        btn_cart: "AJOUTER AU PANIER", search_placeholder: "Rechercher..."
+    },
+    en: {
+        nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
+        section_title: "Signature Gastronomic Collection",
+        filter_all: "ALL", filter_vitality: "VITALITY (DETOX)", filter_gourmet: "GOURMET (HOT)", filter_brunch: "BRUNCH & BASKET", filter_surprise: "SURPRISE",
+        btn_cart: "ADD TO CART", search_placeholder: "Search..."
+    },
+    es: {
+        nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS",
+        section_title: "Colección Gastronómica Signature",
+        filter_all: "TODO", filter_vitality: "VITALIDAD (DETOX)", filter_gourmet: "GOURMET (CALIENTE)", filter_brunch: "BRUNCH Y CESTA", filter_surprise: "SORPRESA",
+        btn_cart: "AÑADIR AO CARRITO", search_placeholder: "Buscar..."
     }
+};
+
+function changeLanguage(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+            el.innerText = translations[lang][key];
+        }
+    });
+
+    // TRADUZ O "BUSCAR..." (Placeholder)
+    const searchInput = document.querySelector('.search-input');
+    if (searchInput && translations[lang].search_placeholder) {
+        searchInput.placeholder = translations[lang].search_placeholder;
+    }
+
+    localStorage.setItem('laprimavera_lang', lang);
+
+    // RECARREGA OS PRODUTOS (Para traduzir os botões "Ajouter au Panier" internos)
+    if (typeof loadProducts === "function") loadProducts();
+    if (typeof loadFlowers === "function") loadFlowers();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
+    
+    // Garante que o seletor oval mostre o idioma correto ao abrir a página
+    const select = document.querySelector('.lang-select-custom') || document.querySelector('.lang-select');
+    if(select) select.value = savedLang;
+    
+    changeLanguage(savedLang);
+});
+
 </script>
-<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
 </body>
 </html>

@@ -318,6 +318,8 @@
     color: var(--gold);
     font-size: 0.85rem;
 }
+.btn-user { text-decoration: none !important; color: var(--deep-coffee) !important; }
+
 
 .filter-badge:hover {
     border-color: var(--gold);
@@ -353,6 +355,25 @@ body { top: 0px !important; }
     outline: none !important;
 }
 
+.lang-select {
+    border: 1px solid #B8860B !important; /* Borda dourada */
+    border-radius: 20px !important;       /* Formato oval */
+    padding: 4px 15px !important;        /* Espaço interno */
+    font-size: 0.7rem !important;
+    font-family: 'Cinzel', serif !important;
+    color: #2C1810 !important;
+    background-color: white !important;
+    cursor: pointer !important;
+    outline: none !important;
+    appearance: none;                    /* Remove a seta padrão feia */
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8860B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 25px !important;      /* Espaço para a nova seta */
+}
+
 /* Esconde o logo "Powered by Google" para ficar mais limpo */
 .goog-logo-link { display: none !important; }
 .goog-te-gadget { color: transparent !important; }
@@ -372,28 +393,26 @@ body { top: 0px !important; }
 
         <div class="collapse navbar-collapse justify-content-center" id="navRes">
             <ul class="navbar-nav gap-2">
-                <li class="nav-item"><a class="nav-link" href="index.html">ACCUEIL</a></li>
-                <li class="nav-item"><a class="nav-link" href="boutique.html">PÂTISSERIE</a></li>
-                <li class="nav-item"><a class="nav-link active" href="floristeria.html">FLORISTERIE</a></li>
-                <li class="nav-item"><a class="nav-link" href="dejeuner.html">DÉJEUNERS</a></li>
-                <li class="nav-item"><a class="nav-link" href="about.html">ABOUT US</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html" data-i18n="nav_home">ACCUEIL</a></li>
+                <li class="nav-item"><a class="nav-link" href="boutique.html" data-i18n="nav_patis">PÂTISSERIE</a></li>
+                <li class="nav-item"><a class="nav-link active" href="floristeria.html" data-i18n="nav_flor">FLORISTERIE</a></li>
+                <li class="nav-item"><a class="nav-link" href="dejeuner.html" data-i18n="nav_deje">DÉJEUNERS</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html" data-i18n="nav_about">ABOUT US</a></li>
             </ul>
         </div>
 
         <div class="d-flex align-items-center gap-3">
             <div class="search-box d-none d-xl-flex align-items-center">
                 <i class="bi bi-search me-2"></i>
-	<input type="text" id="flowerSearch" class="form-control" data-i18n-placeholder="search_placeholder" placeholder="Rechercher...">            </div>
+                <input type="text" id="flowerSearch" class="form-control form-control-sm search-input" data-i18n-placeholder="search_placeholder" placeholder="Rechercher...">
+            </div>
 
-     <select class="lang-select" onchange="changeLanguage(this.value)">
-    <option value="fr">FR 🇫🇷</option>
-    <option value="en">EN 🇺🇸</option>
-    <option value="es">ES 🇪🇸</option>
-</select>
+            <select class="lang-select" onchange="changeLanguage(this.value)">
+                <option value="fr">FR 🇫🇷</option>
+                <option value="en">EN 🇺🇸</option>
+                <option value="es">ES 🇪🇸</option>
+            </select>
 
-
-<div id="google_translate_element" style="margin-right: 15px; display: inline-block; vertical-align: middle;"></div>
-            
             <div id="auth-area"></div> 
 
             <a href="checkout.html" class="cart-wrapper-custom">
@@ -509,19 +528,48 @@ body { top: 0px !important; }
 
 const translations = {
     fr: {
-        nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "ABOUT US",
-        section_title: "Éclats Floraux Signature", btn_cart: "AJOUTER AU PANIER", search_placeholder: "Rechercher..."
+        nav_home: "ACCUEIL", 
+        nav_patis: "PÂTISSERIE", 
+        nav_flor: "FLORISTERIE", 
+        nav_deje: "DÉJEUNERS", 
+        nav_about: "ABOUT US",
+        section_title: "Éclats Floraux Signature", 
+        btn_cart: "AJOUTER AU PANIER", 
+        search_placeholder: "Rechercher...",
+        btn_login: "CONNEXION",
+        btn_account: "Mon Compte",
+        btn_logout: "Déconnexion",
+        modal_close: "Fermer"
     },
     en: {
-        nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
-        section_title: "Signature Floral Glow", btn_cart: "ADD TO CART", search_placeholder: "Search..."
+        nav_home: "HOME", 
+        nav_patis: "PASTRY", 
+        nav_flor: "FLORISTRY", 
+        nav_deje: "LUNCHES", 
+        nav_about: "ABOUT US",
+        section_title: "Signature Floral Glow", 
+        btn_cart: "ADD TO CART", 
+        search_placeholder: "Search...",
+        btn_login: "LOGIN",
+        btn_account: "My Account",
+        btn_logout: "Logout",
+        modal_close: "Close"
     },
     es: {
-        nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "ABOUT US",
-        section_title: "Destellos Florales Signature", btn_cart: "AÑADIR AO CARRITO", search_placeholder: "Buscar..."
+        nav_home: "INICIO", 
+        nav_patis: "REPOSTERÍA", 
+        nav_flor: "FLORISTERÍA", 
+        nav_deje: "ALMUERZOS", 
+        nav_about: "SOBRE NOSOTROS",
+        section_title: "Destellos Florales Signature", 
+        btn_cart: "AÑADIR AL CARRITO", 
+        search_placeholder: "Buscar...",
+        btn_login: "CONEXIÓN",
+        btn_account: "Mi Cuenta",
+        btn_logout: "Cerrar Sesión",
+        modal_close: "Cerrar"
     }
 };
-
 
     async function init() {
     const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
@@ -534,53 +582,55 @@ const translations = {
 
 
     async function loadFlowers() {
-    const grid = document.getElementById('flower-grid');
-    const { data: flowers } = await _supabase.from('products')
-        .select('id, name, description, moments, price, image_url, stock, promo_discount_percent, promo_expiry_date')
-        .eq('category', 'fleur')
-        .neq('is_active', false)
-        .order('name');
+        const grid = document.getElementById('flower-grid');
+        const { data: flowers } = await _supabase.from('products')
+            .select('*')
+            .eq('category', 'fleur')
+            .neq('is_active', false)
+            .order('name');
 
-    if (flowers) {
-        const today = new Date().toISOString().split('T')[0];
+        if (flowers) {
+            const today = new Date().toISOString().split('T')[0];
+            const lang = localStorage.getItem('laprimavera_lang') || 'fr'; // Pega o idioma atual
 
-        grid.innerHTML = flowers.map(f => {
-            const inStock = (f.stock > 0);
-            const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
+            grid.innerHTML = flowers.map(f => {
+                const inStock = (f.stock > 0);
+                const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
 
-            let finalPrice = f.price;
-            let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
+                let finalPrice = f.price;
+                let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
 
-            if (isPromoValid) {
-                finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
-                priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
-            }
+                if (isPromoValid) {
+                    finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
+                    priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
+                }
 
-            return `
-            <div class="col product-item">
-                <div class="flower-card">
-                    <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
-                        <img src="${f.image_url}" class="flower-img" alt="${f.name}">
-                    </div>
-                    <div class="flower-body">
-                        <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
-                        <div class="flower-text-wrapper mb-3">
-                            <p class="flower-moments" style="color:var(--gold)">${f.moments || ''}</p>
+                return `
+                <div class="col product-item">
+                    <div class="flower-card">
+                        <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
+                            <img src="${f.image_url}" class="flower-img" alt="${f.name}">
                         </div>
-                        <div class="mt-auto">
-                            ${priceDisplay}
-                            <button class="btn btn-dark mt-3 w-100 rounded-pill" 
-                                onclick="quickAdd('${f.id}', '${f.name.replace(/'/g, "\\'")}', ${finalPrice})" 
-                                ${!inStock ? 'disabled' : ''}>
-                                ${inStock ? 'AJOUTER AU PANIER' : 'RUPTURE DE STOCK'}
-                            </button>
+                        <div class="flower-body">
+                            <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
+                            <div class="flower-text-wrapper mb-3">
+                                <p class="flower-description">${f.description || ''}</p>
+                                <p class="flower-moments" style="color:var(--gold)">${f.moments || ''}</p>
+                            </div>
+                            <div class="mt-auto">
+                                ${priceDisplay}
+                                <button class="btn btn-dark mt-3 w-100 rounded-pill" 
+                                    onclick="quickAdd('${f.id}', '${f.name.replace(/'/g, "\\'")}', ${finalPrice})" 
+                                    ${!inStock ? 'disabled' : ''}>
+                                    ${inStock ? (translations[lang].btn_cart) : 'RUPTURE'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`;
-        }).join('');
+                </div>`;
+            }).join('');
+        }
     }
-}
 
     async function quickAdd(id, name, price) {
         const { data: { user } } = await _supabase.auth.getUser();
@@ -798,6 +848,38 @@ function changeLanguage(lang) {
             autoDisplay: false
         }, 'google_translate_element');
     }
+
+// CONFIGURAÇÃO DE LOGOUT POR INATIVIDADE
+let inactivityTimeout;
+
+function resetInactivityTimer() {
+    // 2 horas em milissegundos (2 * 60 * 60 * 1000)
+    const TWO_HOURS = 7200000; 
+
+    // Limpa o cronômetro anterior
+    clearTimeout(inactivityTimeout);
+
+    // Inicia um novo cronômetro
+    inactivityTimeout = setTimeout(async () => {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            console.log("Inatividade detectada. Desconectando...");
+            logout(); // Chama sua função de logout existente
+        }
+    }, TWO_HOURS);
+}
+
+// Lista de eventos que indicam que o usuário está ativo
+const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+// Adiciona o "vigia" para cada evento
+activityEvents.forEach(event => {
+    document.addEventListener(event, resetInactivityTimer, true);
+});
+
+// Inicia o cronômetro assim que a página carrega
+resetInactivityTimer();
+
 </script>
 <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>

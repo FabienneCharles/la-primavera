@@ -276,6 +276,25 @@
 }
 
 
+.lang-select-custom {
+    border: 1px solid #B8860B !important; /* Dourado */
+    border-radius: 20px !important;       /* Formato oval */
+    padding: 4px 15px !important;
+    font-size: 0.7rem !important;
+    font-family: 'Cinzel', serif !important;
+    color: #2C1810 !important;
+    background-color: white !important;
+    cursor: pointer !important;
+    outline: none !important;
+    appearance: none;                    /* Remove a seta padrão */
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8860B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 12px;
+    padding-right: 25px !important;
+}
+
 .suggestion-card-patis {
     border: none;
     border-radius: 12px;
@@ -291,6 +310,68 @@
     height: 110px; 
     object-fit: cover; 
     border-radius: 10px; 
+}
+
+
+/* SEÇÃO L'ART D'OFFRIR */
+.art-offrir-section {
+    background-color: white;
+    border-radius: 30px;
+    padding: 40px;
+    margin: 40px 0;
+    border: 1px solid rgba(184, 134, 11, 0.2);
+}
+
+.harmony-card {
+    background: var(--luxury-bg);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.3s;
+    border: 1px solid transparent;
+}
+
+.harmony-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-5px);
+}
+
+.plus-sign {
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FILTROS ELEGANTES */
+.filter-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.filter-btn {
+    background-color: white !important;
+    border: 1px solid #d1bfa7 !important; /* Bege suave */
+    border-radius: 50px !important;
+    color: #4A2419 !important; /* Marrom café */
+    padding: 8px 20px !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.75rem !important;
+    letter-spacing: 1px !important;
+    transition: 0.3s !important;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.filter-btn:hover, .filter-btn.active {
+    background-color: #4A2419 !important;
+    color: white !important;
+    border-color: #4A2419 !important;
 }
 
 
@@ -345,7 +426,18 @@
 </nav>
 
 <div class="container-fluid px-lg-5 py-5">
+
+
+
+
     <h2 class="display-5 fw-bold text-center mb-5" style="font-family: 'Cinzel', serif; color: var(--gold);" data-i18n="page_title">Douceurs Haïtiennes</h2>
+
+<div class="filter-container">
+    <button class="filter-btn active" onclick="filterByCategory('all', this)" data-i18n="filter_all">Tous</button>
+    <button class="filter-btn" onclick="filterByCategory('Tradition', this)" data-i18n="filter_tradition">Tradition</button>
+    <button class="filter-btn" onclick="filterByCategory('Fraîcheur', this)" data-i18n="filter_fraicheur">Fraîcheur</button>
+    <button class="filter-btn" onclick="filterByCategory('Cadeaux', this)" data-i18n="filter_cadeaux">Cadeaux</button>
+</div>
     
     <div class="row">
         <div class="col-lg-3 mb-5">
@@ -363,6 +455,13 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="filter-container">
+    <button class="filter-btn active" onclick="filterByCategory('all', this)" data-i18n="filter_all">Tous</button>
+    <button class="filter-btn" onclick="filterByCategory('Tradition', this)" data-i18n="filter_tradition">Tradition</button>
+    <button class="filter-btn" onclick="filterByCategory('Fraîcheur', this)" data-i18n="filter_fraicheur">Fraîcheur</button>
+    <button class="filter-btn" onclick="filterByCategory('Cadeaux', this)" data-i18n="filter_cadeaux">Cadeaux</button>
 </div>
 
 <footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
@@ -410,37 +509,111 @@
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
     const translations = {
-        fr: { nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "À PROPOS", page_title: "Douceurs Haïtiennes", loading: "Chargement...", btn_add: "AJOUTER AU PANIER", btn_out: "Indisponible" },
-        en: { nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US", page_title: "Haitian Delights", loading: "Loading...", btn_add: "ADD TO CART", btn_out: "Out of Stock" },
-        es: { nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS", page_title: "Dulces Haitianos", loading: "Cargando...", btn_add: "AÑADIR AL CARRITO", btn_out: "Agotado" }
-    };
+    fr: { 
+        nav_home: "ACCUEIL", 
+        nav_patis: "PÂTISSERIE", 
+        nav_flor: "FLORISTERIE", 
+        nav_deje: "DÉJEUNERS", 
+        nav_about: "À PROPOS", 
+        page_title: "Douceurs Haïtiennes", 
+        loading: "Chargement...", 
+        btn_add: "AJOUTER AU PANIER", 
+        btn_out: "Indisponible",
+        search_placeholder: "Rechercher...",
+        btn_login: "CONNEXION",
+        btn_account: "Mon Compte",
+        btn_logout: "Déconnexion",
+        modal_close: "Fermer",
+        modal_suggest: "Vous aimerez aussi...",
+        // Chaves dos Filtros
+        filter_all: "Tous",
+        filter_tradition: "Tradition",
+        filter_fraicheur: "Fraîcheur",
+        filter_cadeaux: "Cadeaux"
+    },
+    en: { 
+        nav_home: "HOME", 
+        nav_patis: "PASTRY", 
+        nav_flor: "FLORISTRY", 
+        nav_deje: "LUNCHES", 
+        nav_about: "ABOUT US", 
+        page_title: "Haitian Delights", 
+        loading: "Loading...", 
+        btn_add: "ADD TO CART", 
+        btn_out: "Out of Stock",
+        search_placeholder: "Search...",
+        btn_login: "LOGIN",
+        btn_account: "My Account",
+        btn_logout: "Logout",
+        modal_close: "Close",
+        modal_suggest: "You might also like...",
+        // Chaves dos Filtros
+        filter_all: "All",
+        filter_tradition: "Tradition",
+        filter_fraicheur: "Freshness",
+        filter_cadeaux: "Gifts"
+    },
+    es: { 
+        nav_home: "INICIO", 
+        nav_patis: "REPOSTERÍA", 
+        nav_flor: "FLORISTERÍA", 
+        nav_deje: "ALMUERZOS", 
+        nav_about: "SOBRE NOSOTROS", 
+        page_title: "Dulces Haitianos", 
+        loading: "Cargando...", 
+        btn_add: "AÑADIR AL CARRITO", 
+        btn_out: "Agotado",
+        search_placeholder: "Buscar...",
+        btn_login: "CONEXIÓN",
+        btn_account: "Mi Cuenta",
+        btn_logout: "Cerrar Sesión",
+        modal_close: "Cerrar",
+        modal_suggest: "También te puede gustar...",
+        // Chaves dos Filtros
+        filter_all: "Todos",
+        filter_tradition: "Tradición",
+        filter_fraicheur: "Frescura",
+        filter_cadeaux: "Regalos"
+    }
+};
 
     function changeLanguage(lang) {
+        // 1. Traduz os elementos estáticos (Menu, Títulos)
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if (translations[lang][key]) el.innerText = translations[lang][key];
-        });
-        localStorage.setItem('laprimavera_lang', lang);
-    }
-
-    async function updateCartBadge() {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (user) {
-            const { data: items } = await _supabase.from('cart_items').select('quantity').eq('user_id', user.id);
-            if (items) {
-                const total = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
-                document.getElementById('cartCount').innerText = total;
+            if (translations[lang] && translations[lang][key]) {
+                el.innerText = translations[lang][key];
             }
+        });
+
+        // 2. Traduz o Placeholder da busca
+        const searchInput = document.getElementById('patisSearch');
+        if (searchInput) {
+            searchInput.placeholder = translations[lang].search_placeholder;
         }
+
+        // 3. Salva a escolha do cliente
+        localStorage.setItem('laprimavera_lang', lang);
+
+        // 4. ESSENCIAL: Recarrega a vitrine para os botões mudarem de idioma na hora
+        load(); 
     }
 
-    async function load() {
-    const { data: products } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
+   async function load() {
+    const { data: products, error } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
     const grid = document.getElementById('products');
+    
+    // Captura o idioma antes de começar
     const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-    if(products) {
+    if (error) {
+        console.error("Erro ao carregar produtos:", error);
+        return;
+    }
+
+    if (products) {
         const now = new Date();
+        
         grid.innerHTML = products.map(p => {
             const inStock = (p.stock > 0);
             const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
@@ -459,11 +632,13 @@
                     <div class="product-body">
                         <h4 style="cursor:pointer" onclick="openProductDetail('${p.id}')">${p.name}</h4>
                         <div class="price-tag">
-                            ${isPromoValid ? `<span class="old-price">$${p.price}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${p.price}`}
+                            ${isPromoValid ? `<span class="old-price">$${parseFloat(p.price).toFixed(2)}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${parseFloat(p.price).toFixed(2)}`}
                         </div>
                         <p class="product-moments" style="font-size:0.7rem">${p.moments ? p.moments : ''}</p>
                         ${inStock 
-                            ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">${translations[lang].btn_add}</button>` 
+                            ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">
+                                ${translations[lang].btn_add}
+                               </button>` 
                             : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
                     </div>
                 </div>
@@ -573,6 +748,22 @@ async function loadPatisAIRecommendations(currentId, moments) {
     }
 }
 
+
+async function updateCartBadge() {
+    const { data: { user } } = await _supabase.auth.getUser();
+    const badge = document.getElementById('cartCount');
+    
+    if (user && badge) {
+        const { data: items } = await _supabase.from('cart_items').select('quantity').eq('user_id', user.id);
+        if (items) {
+            const total = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
+            badge.innerText = total;
+        }
+    }
+}
+
+
+
     async function loadPromoSidebar() {
         const { data } = await _supabase.from('site_settings').select('*').eq('id', 'promo_sidebar').single();
         if (data) {
@@ -581,6 +772,43 @@ async function loadPatisAIRecommendations(currentId, moments) {
             box.innerHTML = `${media}<h4 class="blink-text mt-3" style="font-family:'Cinzel';">${data.title}</h4><p class="small">${data.description}</p>`;
         }
     }
+
+async function loadPatisAIRecommendations(currentId, moments) {
+    const list = document.getElementById('product-suggestion-list');
+    const container = document.getElementById('product-suggestion-container');
+    
+    if (!moments) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    // Pega a primeira tag (ex: 'Confiture' ou 'Tablette')
+    const tag = moments.split(',')[0].trim();
+
+    // Busca no banco produtos que tenham a mesma tag, mas que não seja o que já está aberto
+    const { data: suggestions } = await _supabase
+        .from('patisserie')
+        .select('id, name, price, image_url')
+        .ilike('moments', `%${tag}%`) 
+        .neq('id', currentId)
+        .limit(6);
+
+    if (suggestions && suggestions.length > 0) {
+        container.style.display = 'block';
+        list.innerHTML = suggestions.map(s => `
+            <div class="col-6 col-md-4" onclick="openProductDetail('${s.id}')" style="cursor:pointer">
+                <div class="suggestion-card-patis">
+                    <img src="${s.image_url}" class="suggestion-img-patis">
+                    <div class="small fw-bold mt-2 text-truncate" style="font-family:'Cinzel'; font-size:0.7rem;">${s.name}</div>
+                    <div class="small text-gold" style="font-size:0.8rem;">$${parseFloat(s.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        container.style.display = 'none';
+    }
+}
+
 
     async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
 
@@ -591,30 +819,78 @@ async function loadPatisAIRecommendations(currentId, moments) {
         loadPromoSidebar();
         updateNavbarAuth();
     });
+
+// --- LOGOUT AUTOMÁTICO POR INATIVIDADE (APENAS UMA VEZ) ---
+let inactivityTimeout;
+
+function resetInactivityTimer() {
+    const TWO_HOURS = 7200000; // 2 horas
+    clearTimeout(inactivityTimeout);
+
+    inactivityTimeout = setTimeout(async () => {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            console.log("Sessão expirada por inatividade.");
+            logout(); 
+        }
+    }, TWO_HOURS);
+}
+
+// Eventos que reiniciam o contador
+['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(event => {
+    document.addEventListener(event, resetInactivityTimer, true);
+});
+
+// Inicia ao carregar a página
+resetInactivityTimer();
+
+function filterByCategory(category, btn) {
+    // 1. Muda a aparência do botão ativo
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 2. Filtra os itens na tela
+    document.querySelectorAll('.product-item').forEach(item => {
+        // Pega o texto do campo 'moments' que está dentro do card
+        const momentsText = item.querySelector('.product-moments').innerText;
+        
+        if (category === 'all' || momentsText.includes(category)) {
+            item.style.display = "block";
+        } else {
+            item.style.display = "none";
+        }
+    });
+}
+
 </script>
 
 <div class="modal fade" id="productDetailModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--gold);">
             <div class="modal-body p-4">
-                <div class="row" id="product-main-detail">
-                    </div>
+                <div class="row" id="product-main-detail"></div>
                 
                 <div id="product-suggestion-container" class="mt-5" style="display:none;">
-                    <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; color: var(--gold); letter-spacing: 2px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                    <h6 class="text-uppercase mb-3" 
+                        style="font-family:'Cinzel'; color: var(--gold); letter-spacing: 2px; border-bottom: 1px solid #eee; padding-bottom: 10px;" 
+                        data-i18n="modal_suggest">
                         Vous aimerez aussi...
                     </h6>
-                    <div class="row g-3" id="product-suggestion-list">
-                        </div>
+                    <div class="row g-3" id="product-suggestion-list"></div>
                 </div>
             </div>
             <div class="modal-footer border-0">
-                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" 
+                        data-bs-dismiss="modal" 
+                        data-i18n="modal_close">
+                    Fermer
+                </button>
             </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

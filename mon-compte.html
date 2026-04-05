@@ -429,6 +429,39 @@
     async function logout() { await _supabase.auth.signOut(); window.location.href = "index.html"; }
 
     document.addEventListener('DOMContentLoaded', init);
+
+
+// CONFIGURAÇÃO DE LOGOUT POR INATIVIDADE
+let inactivityTimeout;
+
+function resetInactivityTimer() {
+    // 2 horas em milissegundos (2 * 60 * 60 * 1000)
+    const TWO_HOURS = 7200000; 
+
+    // Limpa o cronômetro anterior
+    clearTimeout(inactivityTimeout);
+
+    // Inicia um novo cronômetro
+    inactivityTimeout = setTimeout(async () => {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            console.log("Inatividade detectada. Desconectando...");
+            logout(); // Chama sua função de logout existente
+        }
+    }, TWO_HOURS);
+}
+
+// Lista de eventos que indicam que o usuário está ativo
+const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+// Adiciona o "vigia" para cada evento
+activityEvents.forEach(event => {
+    document.addEventListener(event, resetInactivityTimer, true);
+});
+
+// Inicia o cronômetro assim que a página carrega
+resetInactivityTimer();
+
 </script>
 </body>
 </html>

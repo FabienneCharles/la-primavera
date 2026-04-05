@@ -137,11 +137,20 @@
 }
 
     /* USER DROPDOWN */
-    .user-dropdown .btn-user { 
-        border: none; background: none; color: var(--deep-coffee); 
-        display: flex; align-items: center; gap: 8px; 
-        font-weight: 700; font-family: 'Cinzel', serif; font-size: 0.85rem; 
-        text-decoration: none; text-transform: uppercase;
+    .user-dropdown, .btn-user {
+        text-decoration: none !important;
+        color: var(--deep-coffee) !important;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+    }
+
+/* GARANTE QUE O MENU APAREÇA NA FRENTE DE TUDO */
+    .dropdown-menu {
+        z-index: 99999 !important;
     }
     .user-icon { font-size: 1.5rem; color: var(--deep-coffee); }
     .dropdown-menu { border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 12px; }
@@ -741,21 +750,21 @@ function setRating(n) {
     const translations = {
         fr: {
             nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS",
-            btn_login: "CONNEXION", hero_title: "Signature d'Excellence", hero_subtitle: "L'harmonie entre tradition haïtienne et raffinement floral.",
-            section_title: "La Collection de Saison", promo_title: "Offres Spéciales", promo_desc: "Découvrez nos promotions exclusives aqui.",
-            btn_discover: "Découvrir", btn_order: "Commander", btn_explore: "Explorer", btn_view_more: "Voir plus"
+            btn_login: "CONNEXION", btn_account: "Mon Compte", btn_logout: "Déconnexion",
+            hero_title: "Signature d'Excellence", hero_subtitle: "L'harmonie entre tradition haïtienne et raffinement floral.",
+            section_title: "La Collection de Saison", btn_discover: "Découvrir", btn_order: "Commander", btn_explore: "Explorer"
         },
         en: {
             nav_home: "HOME", nav_about: "ABOUT US", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES",
-            btn_login: "LOGIN", hero_title: "Signature of Excellence", hero_subtitle: "The harmony between Haitian tradition and floral refinement.",
-            section_title: "Seasonal Collection", promo_title: "Special Offers", promo_desc: "Discover our exclusive promotions here.",
-            btn_discover: "Discover", btn_order: "Order", btn_explore: "Explore", btn_view_more: "View more"
+            btn_login: "LOGIN", btn_account: "My Account", btn_logout: "Logout",
+            hero_title: "Signature of Excellence", hero_subtitle: "The harmony between Haitian tradition and floral refinement.",
+            section_title: "Seasonal Collection", btn_discover: "Discover", btn_order: "Order", btn_explore: "Explore"
         },
         es: {
             nav_home: "INICIO", nav_about: "SOBRE NOSOTROS", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS",
-            btn_login: "CONEXIÓN", hero_title: "Sello de Excelencia", hero_subtitle: "La armonía entre la tradición haitiana y el refinamiento floral.",
-            section_title: "Colección de Temporada", promo_title: "Ofertas Especiales", promo_desc: "Descubra nuestras promociones exclusivas aquí.",
-            btn_discover: "Descubrir", btn_order: "Ordenar", btn_explore: "Explorar", btn_view_more: "Ver más"
+            btn_login: "CONEXIÓN", btn_account: "Mi Cuenta", btn_logout: "Cerrar Sesión",
+            hero_title: "Sello de Excelencia", hero_subtitle: "La armonía entre la tradición haitiana y el refinamiento floral.",
+            section_title: "Colección de Temporada", btn_discover: "Descubrir", btn_order: "Ordenar", btn_explore: "Explorar"
         }
     };
 
@@ -772,38 +781,68 @@ function setRating(n) {
     async function logout() { await _supabase.auth.signOut(); window.location.reload(); }
 
     async function updateNavbarAuth() {
-        const area = document.getElementById('auth-area');
-        const { data: { user } } = await _supabase.auth.getUser();
+    const area = document.getElementById('auth-area');
+    if (!area) return;
+
+    const { data: { user } } = await _supabase.auth.getUser();
+    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+
+    if (user) {
+        const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+        const firstName = profile?.full_name?.split(' ')[0] || 'Client';
         
-        if (user) {
-            const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
-           area.innerHTML = `
-    <div class="dropdown user-dropdown">
-        <a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle user-icon"></i>
-            <span>${profile?.full_name?.split(' ')[0] || 'Client'}</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
-            <li><a class="dropdown-item" href="mon-compte.html">Mon Compte</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li>
-        </ul>
-    </div>`;
-            updateCartBadge(); // Atualiza o badge se logado
-        } else {
-            area.innerHTML = `<a href="login.html" class="btn-luxury" style="padding: 8px 18px; font-size: 0.75rem; border-width: 1px;">CONNEXION</a>`;
-            document.getElementById('cartCount').innerText = "0";
-        }
+        const txtAccount = translations[lang]?.btn_account || "Mon Compte";
+        const txtLogout = translations[lang]?.btn_logout || "Déconnexion";
+
+        // Adicionamos onclick="toggleUserMenu(event)" para não depender do Bootstrap automático
+        area.innerHTML = `
+            <div class="dropdown" id="userMenuParent">
+                <a class="btn-user dropdown-toggle fw-bold" href="javascript:void(0)" 
+                   role="button" id="userMenuBtn" onclick="toggleUserMenu(event)"
+                   style="text-decoration:none !important; color:var(--deep-coffee) !important; display:flex; align-items:center; gap:5px; cursor:pointer;">
+                    <i class="bi bi-person-circle fs-5"></i>
+                    <span class="text-uppercase">${firstName}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" id="userMenuContent" style="display:none; position:absolute; right:0; background:white; min-width:160px; z-index:999999;">
+                    <li><a class="dropdown-item py-2" href="mon-compte.html">${txtAccount}</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><button class="dropdown-item py-2 text-danger" onclick="logout()">${txtLogout}</button></li>
+                </ul>
+            </div>`;
+        
+        updateCartBadge(); // Sincroniza o carrinho
+    } else {
+        area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill px-3">CONNEXION</a>`;
     }
+}
+
+// ESTA FUNÇÃO É O QUE VAI FAZER ABRIR DE QUALQUER JEITO
+function toggleUserMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('userMenuContent');
+    if (menu.style.display === 'none') {
+        menu.style.display = 'block';
+    } else {
+        menu.style.display = 'none';
+    }
+}
+
+// Fecha o menu se clicar fora dele
+document.addEventListener('click', () => {
+    const menu = document.getElementById('userMenuContent');
+    if (menu) menu.style.display = 'none';
+});
+
 
     async function updateCartBadge() {
         const { data: { user } } = await _supabase.auth.getUser();
-        if (user) {
+        const badge = document.getElementById('cartCount');
+        
+        if (user && badge) {
             const { data: items } = await _supabase.from('cart_items').select('quantity').eq('user_id', user.id);
             if (items) {
                 const total = items.reduce((acc, item) => acc + (item.quantity || 0), 0);
-                const badge = document.getElementById('cartCount');
-                if (badge) badge.innerText = total;
+                badge.innerText = total;
             }
         }
     }
@@ -941,7 +980,41 @@ const rating = document.getElementById('selected-rating').value;
         loadDynamicContent();
         updateNavbarAuth();
     });
+
+
+// CONFIGURAÇÃO DE LOGOUT POR INATIVIDADE
+let inactivityTimeout;
+
+function resetInactivityTimer() {
+    // 2 horas em milissegundos (2 * 60 * 60 * 1000)
+    const TWO_HOURS = 7200000; 
+
+    // Limpa o cronômetro anterior
+    clearTimeout(inactivityTimeout);
+
+    // Inicia um novo cronômetro
+    inactivityTimeout = setTimeout(async () => {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+            console.log("Inatividade detectada. Desconectando...");
+            logout(); // Chama sua função de logout existente
+        }
+    }, TWO_HOURS);
+}
+
+// Lista de eventos que indicam que o usuário está ativo
+const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+// Adiciona o "vigia" para cada evento
+activityEvents.forEach(event => {
+    document.addEventListener(event, resetInactivityTimer, true);
+});
+
+// Inicia o cronômetro assim que a página carrega
+resetInactivityTimer();
+
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
