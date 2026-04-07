@@ -436,6 +436,46 @@ body {
     outline: none;
 }
 
+
+/* Setas de Navegação no Modal (Déjeuner) */
+.modal-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 11000 !important;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.5rem;
+}
+.modal-nav-btn:hover { background: var(--accent); color: white; }
+.prev-item { left: 20px; }
+.next-item { right: 20px; }
+
+/* Imagem do prato com altura limitada para o nome aparecer */
+#dejeuner-main-detail img {
+    width: 100%;
+    max-height: 65vh; /* Garante que o título apareça embaixo */
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+@media (max-width: 768px) {
+    .modal-nav-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+    .prev-item { left: 10px; }
+    .next-item { right: 10px; }
+}
+
+
     </style>
 </head>
 <body>
@@ -530,7 +570,7 @@ body {
                     <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
                 </h5>
                 <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
-                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    L'excellence haïtienne raffinée. Boston • Manhattan<br>
                     Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
                 </p>
             </div>
@@ -563,76 +603,128 @@ body {
 <script>
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
+let allDejeuners = []; // Variável global para armazenar os pratos
+
+
     document.addEventListener('DOMContentLoaded', () => {
-        loadProducts();
-        loadPromoSidebar();
-        updateNavbarAuth();
-        persistentSync();
-    });
+    loadProducts();
+    loadPromoSidebar();
+    updateNavbarAuth();
+    persistentSync();
+    checkUrlForProduct(); // <--- ADICIONE ESTA LINHA AQUI
+});
 
    async function loadProducts() {
     const grid = document.getElementById('dejeuner-grid');
-    
-    // 1. Busca os dados incluindo a data de expiração da promo
-    const { data: prods } = await _supabase.from('products')
+    if (!grid) return;
+
+    // 1. Busca os dados do Supabase
+    const { data: prods, error } = await _supabase.from('products')
         .select('id, name, description, moments, price, image_url, stock, promo_discount_percent, promo_expiry_date')
         .eq('category', 'dejeuner')
         .neq('is_active', false)
         .order('name');
 
+    if (error) {
+        console.error("Erro ao carregar almoços:", error.message);
+        return;
+    }
+
     if (prods) {
+        // Habilita a navegação global entre pratos
+        allDejeuners = prods; 
+
         const today = new Date().toISOString().split('T')[0];
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
         grid.innerHTML = prods.map(p => {
             const inStock = (p.stock || 0) > 0;
             
-            // Trata a descrição como lista de componentes (estilo antigo)
+            // Tratamento de aspas para o clique do botão não quebrar
+            const escapedName = p.name.replace(/'/g, "\\'");
+            
+            // Trata a descrição como lista de componentes
             const components = p.description ? p.description.split('\n').map(line => `<li><i class="bi bi-check2-circle"></i> ${line}</li>`).join('') : '';
             
-            // Lógica de validade da promoção
-            const today = new Date().toISOString().split('T')[0];
+            // Lógica de promoção
             const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
 
             let finalPrice = p.price;
-            let priceDisplay = `<div class="price-tag">$${parseFloat(p.price).toFixed(2)}</div>`;
+            let priceDisplay = `<div class="price-tag fw-bold">$${parseFloat(p.price).toFixed(2)}</div>`;
 
             if (isPromoValid) {
                 finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
-                priceDisplay = `<div><span class="old-price">$${parseFloat(p.price).toFixed(2)}</span><span class="new-price text-danger">$${finalPrice}</span></div>`;
+                priceDisplay = `
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="old-price text-muted text-decoration-line-through small">$${parseFloat(p.price).toFixed(2)}</span>
+                        <span class="new-price text-danger fw-bold">$${finalPrice}</span>
+                    </div>`;
             }
 
-            // NOVA LÓGICA DE MOMENTOS PARA DEJEUNER
             let momentsDisplay = "";
             if (p.moments) {
                 momentsDisplay = `<p style="font-size: 0.75rem; color: #B8860B; text-transform: uppercase; margin-bottom: 10px;"><strong>Idéal pour :</strong> ${p.moments}</p>`;
             }
 
-          return `
-            <div class="col-md-6 col-xl-4">
-                <div class="product-card">
-                    <a href="${p.image_url}" class="zoom-trigger">
-                        <img src="${p.image_url}" class="product-img" style="cursor:pointer" onclick="openDejeunerDetail('${p.id}')">
+            return `
+            <div class="col-md-6 col-xl-4 product-item" data-product-id="${p.id}">
+                <div class="product-card shadow-sm h-100">
+                    <a href="${p.image_url}" class="zoom-trigger" onclick="event.preventDefault()">
+                        <img src="${p.image_url}" class="product-img" style="cursor:pointer; width:100%;" onclick="openDejeunerDetail('${p.id}')">
                     </a>
-                    <div class="card-body-custom">
-                        <h3 class="product-name" style="cursor:pointer" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
-                        <ul class="component-list">${components}</ul>
-                        ${momentsDisplay} 
-                        ${priceDisplay}
-                        <button class="btn btn-dark w-100 rounded-pill" 
-                            onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})" 
-                            ${!inStock ? 'disabled' : ''}>
-                            ${inStock ? (translations[localStorage.getItem('laprimavera_lang') || 'fr'].btn_cart) : 'Indisponible'}
-                        </button>
+                    <div class="card-body-custom p-4 d-flex flex-column h-100">
+                        <h3 class="product-name mb-2" style="cursor:pointer; font-family:'Cinzel'; font-size: 1.2rem;" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
+                        <ul class="component-list list-unstyled small text-muted mb-3">${components}</ul>
+                        
+                        <div class="mt-auto">
+                            ${momentsDisplay} 
+                            <div class="mb-3">${priceDisplay}</div>
+                            
+                            <button class="btn btn-dark w-100 rounded-pill fw-bold py-2" 
+                                onclick="quickAdd('${p.id}', '${escapedName}', ${finalPrice}, 'dejeuner', '${p.image_url}')" 
+                                ${!inStock ? 'disabled' : ''}>
+                                ${inStock ? (translations[lang]?.btn_cart || "AJOUTER") : "INDISPONIBLE"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>`;
         }).join('');
 
+        // Inicializa o efeito de zoom se a biblioteca Luminous estiver presente
         if (window.Luminous) {
             document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
         }
+
+        // Executa a verificação de Link Direto (Deep Linking)
+        setTimeout(() => {
+            if (typeof checkUrlForProduct === 'function') {
+                checkUrlForProduct();
+            }
+        }, 150);
     }
 }
+
+
+// 3. Função de Navegação
+function navigateDejeuner(currentId, direction) {
+    const currentIndex = allDejeuners.findIndex(p => p.id == currentId);
+    let nextIndex = currentIndex + direction;
+
+    if (nextIndex >= allDejeuners.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = allDejeuners.length - 1;
+
+    const nextItem = allDejeuners[nextIndex];
+    
+    const detailArea = document.getElementById('dejeuner-main-detail');
+    detailArea.style.opacity = '0';
+    
+    setTimeout(() => {
+        openDejeunerDetail(nextItem.id);
+        detailArea.style.opacity = '1';
+    }, 200);
+}
+
 
     async function quickAdd(id, name, price) {
     const { data: { user } } = await _supabase.auth.getUser();
@@ -670,7 +762,7 @@ body {
             syncCartFromDB(user.id);
         } else {
             area.innerHTML = `<a href="login.html" class="btn btn-sm btn-outline-dark rounded-pill px-3">Connexion</a>`;
-	    
+        
         }
     }
 
@@ -856,29 +948,66 @@ function filterByMoment(moment, btn) {
 }
 
 
+// 2. Nova função openDejeunerDetail com setas
 async function openDejeunerDetail(id) {
-    const { data: item } = await _supabase.from('products').select('*').eq('id', id).single();
+    const item = allDejeuners.find(p => p.id == id);
     if (!item) return;
 
     const detailArea = document.getElementById('dejeuner-main-detail');
+    const modalElement = document.getElementById('dejeunerDetailModal');
+
+    // Limpa as setas de navegação anteriores
+    document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+
+    // --- NOVIDADE: GERA O LINK DIRETO PARA O PRODUTO ---
+    const shareLink = `${window.location.origin}${window.location.pathname}?product=${item.id}`;
+
     detailArea.innerHTML = `
-        <div class="col-md-6"><img src="${item.image_url}" class="img-fluid rounded-4 shadow"></div>
-        <div class="col-md-6">
-            <h3 style="font-family:'Cinzel'; color:var(--primary);">${item.name}</h3>
-            <p style="color:var(--accent); font-weight:600; font-size:0.8rem;">EXPÉRIENCE GASTRONOMIQUE</p>
-            <p class="text-muted" style="font-size:0.85rem;">${item.description || ''}</p>
-            <h4 class="mb-4">$${parseFloat(item.price).toFixed(2)}</h4>
+        <div class="col-md-6 mb-3">
+            <img src="${item.image_url}" class="img-fluid rounded-4 shadow">
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <h3 style="font-family:'Cinzel'; color:var(--primary); font-weight:700; margin-bottom:5px;">${item.name}</h3>
+            <p style="color:var(--accent); font-weight:600; font-size:0.8rem; letter-spacing:1px; text-transform:uppercase;">Expérience Gastronomique</p>
+            
+            <div class="d-flex align-items-center gap-3 my-2">
+                <h4 style="font-weight:700; font-size:1.8rem; margin:0;">$${parseFloat(item.price).toFixed(2)}</h4>
+                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')" title="Copier le lien">
+                    <i class="bi bi-share"></i>
+                </button>
+            </div>
+
+            <p class="text-muted" style="font-size:0.9rem; line-height:1.6; margin-bottom:20px;">${item.description || ''}</p>
+            
             <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" onclick="quickAdd('${item.id}', '${item.name.replace(/'/g, "\\'")}', ${item.price})">
                 AJOUTER AU PANIER
             </button>
         </div>
     `;
 
+    // Cria as setas de navegação (Mantendo sua lógica original)
+    const arrowLeft = document.createElement('div');
+    arrowLeft.className = 'modal-nav-btn prev-item';
+    arrowLeft.innerHTML = '<i class="bi bi-chevron-left"></i>';
+    arrowLeft.onclick = () => navigateDejeuner(item.id, -1);
+
+    const arrowRight = document.createElement('div');
+    arrowRight.className = 'modal-nav-btn next-item';
+    arrowRight.innerHTML = '<i class="bi bi-chevron-right"></i>';
+    arrowRight.onclick = () => navigateDejeuner(item.id, 1);
+
+    document.body.appendChild(arrowLeft);
+    document.body.appendChild(arrowRight);
+
     loadDejeunerAddons(); 
     loadDejeunerRecommendations(item.id, item.moments);
 
-    const modal = new bootstrap.Modal(document.getElementById('dejeunerDetailModal'));
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+    }, { once: true });
 }
 
 async function loadDejeunerAddons() {
@@ -1001,22 +1130,79 @@ resetInactivityTimer();
 <script>
 const translations = {
     fr: {
-        nav_home: "ACCUEIL", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS", nav_about: "ABOUT US",
+        nav_home: "ACCUEIL", 
+        nav_patis: "PÂTISSERIE", 
+        nav_flor: "FLORISTERIE", 
+        nav_deje: "DÉJEUNERS", 
+        nav_about: "À PROPOS",
         section_title: "Collection Gastronomique Signature",
-        filter_all: "TOUT", filter_vitality: "VITALITÉ (DETOX)", filter_gourmet: "GOURMET (CHAUD)", filter_brunch: "BRUNCH & PANIER", filter_surprise: "SURPRISE",
-        btn_cart: "AJOUTER AU PANIER", search_placeholder: "Rechercher..."
+        // Filtros Específicos de Gastronomia
+        filter_all: "TOUT", 
+        filter_vitality: "VITALITÉ (DETOX)", 
+        filter_gourmet: "GOURMET (CHAUD)", 
+        filter_brunch: "BRUNCH & PANIER", 
+        filter_surprise: "SURPRISE",
+        // Botões e Interface
+        btn_cart: "AJOUTER AU PANIER", 
+        btn_add: "AJOUTER AU PANIER", 
+        search_placeholder: "Rechercher...",
+        btn_login: "CONNEXION",
+        btn_account: "Mon Compte",
+        btn_logout: "Déconnexion",
+        loading: "Chargement...",
+        // Infos Locais
+        brand_location: "Boston . Manhattan",
+        local_delivery_info: "Desservant MA, NY & NJ"
     },
     en: {
-        nav_home: "HOME", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES", nav_about: "ABOUT US",
+        nav_home: "HOME", 
+        nav_patis: "PASTRY", 
+        nav_flor: "FLORISTRY", 
+        nav_deje: "LUNCHES", 
+        nav_about: "ABOUT US",
         section_title: "Signature Gastronomic Collection",
-        filter_all: "ALL", filter_vitality: "VITALITY (DETOX)", filter_gourmet: "GOURMET (HOT)", filter_brunch: "BRUNCH & BASKET", filter_surprise: "SURPRISE",
-        btn_cart: "ADD TO CART", search_placeholder: "Search..."
+        // Filtros Específicos de Gastronomia
+        filter_all: "ALL", 
+        filter_vitality: "VITALITY (DETOX)", 
+        filter_gourmet: "GOURMET (HOT)", 
+        filter_brunch: "BRUNCH & BASKET", 
+        filter_surprise: "SURPRISE",
+        // Botões e Interface
+        btn_cart: "ADD TO CART", 
+        btn_add: "ADD TO CART", 
+        search_placeholder: "Search...",
+        btn_login: "LOGIN",
+        btn_account: "My Account",
+        btn_logout: "Logout",
+        loading: "Loading...",
+        // Infos Locais
+        brand_location: "Boston . Manhattan",
+        local_delivery_info: "Serving MA, NY & NJ"
     },
     es: {
-        nav_home: "INICIO", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS", nav_about: "SOBRE NOSOTROS",
+        nav_home: "INICIO", 
+        nav_patis: "REPOSTERÍA", 
+        nav_flor: "FLORISTERÍA", 
+        nav_deje: "ALMUERZOS", 
+        nav_about: "SOBRE NOSOTROS",
         section_title: "Colección Gastronómica Signature",
-        filter_all: "TODO", filter_vitality: "VITALIDAD (DETOX)", filter_gourmet: "GOURMET (CALIENTE)", filter_brunch: "BRUNCH Y CESTA", filter_surprise: "SORPRESA",
-        btn_cart: "AÑADIR AO CARRITO", search_placeholder: "Buscar..."
+        // Filtros Específicos de Gastronomia
+        filter_all: "TODO", 
+        filter_vitality: "VITALIDAD (DETOX)", 
+        filter_gourmet: "GOURMET (CALIENTE)", 
+        filter_brunch: "BRUNCH Y CESTA", 
+        filter_surprise: "SORPRESA",
+        // Botões e Interface
+        btn_cart: "AÑADIR AL CARRITO", 
+        btn_add: "AÑADIR AL CARRITO", 
+        search_placeholder: "Buscar...",
+        btn_login: "CONEXIÓN",
+        btn_account: "Mi Cuenta",
+        btn_logout: "Cerrar Sesión",
+        loading: "Cargando...",
+        // Infos Locais
+        brand_location: "Boston . Manhattan",
+        local_delivery_info: "Sirviendo MA, NY & NJ"
     }
 };
 
@@ -1050,6 +1236,32 @@ document.addEventListener('DOMContentLoaded', () => {
     
     changeLanguage(savedLang);
 });
+
+// Função para verificar se existe um produto na URL e abrir o modal de detalhes
+async function checkUrlForProduct() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product');
+
+    if (productId) {
+        // Aguarda carregar os dados (allDejeuners) do banco
+        const checkExist = setInterval(() => {
+            if (allDejeuners && allDejeuners.length > 0) {
+                openDejeunerDetail(productId); // Abre a visualização
+                clearInterval(checkExist);
+                // Limpa a URL para estética
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, 500);
+        setTimeout(() => clearInterval(checkExist), 5000);
+    }
+}
+
+// Função de cópia (caso ainda não tenha neste arquivo)
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Lien copié ! Vous pouvez maintenant l'envoyer.");
+    });
+}
 
 </script>
 

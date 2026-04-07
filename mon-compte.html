@@ -208,32 +208,110 @@
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
     const ADMIN_ID = '066bd462-a2aa-4d7d-9465-b42cefe1af7c'; 
 
-    const translations = {
-        fr: {
-            nav_home: "Accueil", profile_title: "Mon Profil", btn_edit: "Modifier mes informations", label_name: "Nom Complet",
-            label_email: "Email", label_phone: "Téléphone", label_address: "Adresse", label_city: "Ville", label_zip: "Zip Code",
-            btn_save: "Enregistrer", btn_cancel: "Annuler", sec_title: "Sécurité", btn_reset: "Réinitialiser le mot de passe",
-            chat_title: "Service Client", chat_start: "Démarrer une conversation...", btn_send: "Envoyer",
-            orders_title: "Mes Commandes", receipt_header: "Reçu de Commande Officiel", btn_print: "Imprimer le Reçu", btn_close: "Fermer",
-            no_orders: "Aucune commande.", btn_reçu: "Reçu", btn_annuler: "Annuler la commande"
-        },
-        en: {
-            nav_home: "Home", profile_title: "My Profile", btn_edit: "Edit my information", label_name: "Full Name",
-            label_email: "Email", label_phone: "Phone", label_address: "Address", label_city: "City", label_zip: "Zip Code",
-            btn_save: "Save Changes", btn_cancel: "Cancel", sec_title: "Security", btn_reset: "Reset Password",
-            chat_title: "Customer Service", chat_start: "Start a conversation...", btn_send: "Send",
-            orders_title: "My Orders", receipt_header: "Official Order Receipt", btn_print: "Print Receipt", btn_close: "Close",
-            no_orders: "No orders found.", btn_reçu: "Receipt", btn_annuler: "Cancel Order"
-        },
-        es: {
-            nav_home: "Inicio", profile_title: "Mi Perfil", btn_edit: "Editar mi información", label_name: "Nombre Completo",
-            label_email: "Email", label_phone: "Teléfono", label_address: "Dirección", label_city: "Ciudad", label_zip: "Código Postal",
-            btn_save: "Guardar", btn_cancel: "Cancelar", sec_title: "Seguridad", btn_reset: "Restablecer contraseña",
-            chat_title: "Servicio al Cliente", chat_start: "Iniciar una conversación...", btn_send: "Enviar",
-            orders_title: "Mis Pedidos", receipt_header: "Recibo de Pedido Oficial", btn_print: "Imprimir Recibo", btn_close: "Cerrar",
-            no_orders: "No hay pedidos.", btn_reçu: "Recibo", btn_annuler: "Cancelar pedido"
-        }
-    };
+   const translations = {
+    fr: {
+        nav_home: "Accueil", 
+        profile_title: "Mon Profil", 
+        btn_edit: "Modifier mes informations", 
+        label_name: "Nom Complet",
+        label_email: "Email", 
+        label_phone: "Téléphone", 
+        label_address: "Adresse", 
+        label_city: "Ville", 
+        label_zip: "Zip Code",
+        btn_save: "Enregistrer", 
+        btn_cancel: "Annuler", 
+        sec_title: "Sécurité", 
+        btn_reset: "Réinitialiser le mot de passe",
+        chat_title: "Service Client", 
+        chat_start: "Démarrer une conversation...", 
+        btn_send: "Envoyer",
+        orders_title: "Mes Commandes", 
+        receipt_header: "Reçu de Commande Oficial", 
+        btn_print: "Imprimer le Reçu", 
+        btn_close: "Fermer",
+        no_orders: "Aucune commande.", 
+        btn_reçu: "Reçu", 
+        btn_annuler: "Annuler la commande",
+        btn_review: "Laisser un avis",
+        status_livree: "Livrée ✅",
+        status_envoyee: "Envoyée 🚚",
+        // Status Prestige & Localização
+        level_member: "Membre",
+        level_prestige: "Prestige",
+        level_ambassador: "Ambassadeur",
+        brand_location: "Boston . Manhattan",
+        site_url: "www.laprimaverastore.com"
+    },
+    en: {
+        nav_home: "Home", 
+        profile_title: "My Profile", 
+        btn_edit: "Edit my information", 
+        label_name: "Full Name",
+        label_email: "Email", 
+        label_phone: "Phone", 
+        label_address: "Address", 
+        label_city: "City", 
+        label_zip: "Zip Code",
+        btn_save: "Save Changes", 
+        btn_cancel: "Cancel", 
+        sec_title: "Security", 
+        btn_reset: "Reset Password",
+        chat_title: "Customer Service", 
+        chat_start: "Start a conversation...", 
+        btn_send: "Send",
+        orders_title: "My Orders", 
+        receipt_header: "Official Order Receipt", 
+        btn_print: "Print Receipt", 
+        btn_close: "Close",
+        no_orders: "No orders found.", 
+        btn_reçu: "Receipt", 
+        btn_annuler: "Cancel Order",
+        btn_review: "Leave a review",
+        status_livree: "Delivered ✅",
+        status_envoyee: "Shipped 🚚",
+        // Status Prestige & Location
+        level_member: "Member",
+        level_prestige: "Prestige",
+        level_ambassador: "Ambassador",
+        brand_location: "Boston . Manhattan",
+        site_url: "www.laprimaverastore.com"
+    },
+    es: {
+        nav_home: "Inicio", 
+        profile_title: "Mi Perfil", 
+        btn_edit: "Editar mi información", 
+        label_name: "Nombre Completo",
+        label_email: "Email", 
+        label_phone: "Teléfono", 
+        label_address: "Dirección", 
+        label_city: "Ciudad", 
+        label_zip: "Código Postal",
+        btn_save: "Guardar", 
+        btn_cancel: "Cancelar", 
+        sec_title: "Seguridad", 
+        btn_reset: "Restablecer contraseña",
+        chat_title: "Servicio al Cliente", 
+        chat_start: "Iniciar una conversación...", 
+        btn_send: "Enviar",
+        orders_title: "Mis Pedidos", 
+        receipt_header: "Recibo de Pedido Oficial", 
+        btn_print: "Imprimir Recibo", 
+        btn_close: "Cerrar",
+        no_orders: "No hay pedidos.", 
+        btn_reçu: "Recibo", 
+        btn_annuler: "Cancelar pedido",
+        btn_review: "Dejar un comentario",
+        status_livree: "Entregado ✅",
+        status_envoyee: "Enviado 🚚",
+        // Status Prestige & Localización
+        level_member: "Miembro",
+        level_prestige: "Prestige",
+        level_ambassador: "Embajador",
+        brand_location: "Boston . Manhattan",
+        site_url: "www.laprimaverastore.com"
+    }
+};
 
     function changeLanguage(lang) {
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -259,54 +337,73 @@
         finally { setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 600); }
     }
 
-    async function loadOrders(user) {
-        const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-        const list = document.getElementById('orders-list');
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
-        
-        if (!orders || orders.length === 0) { list.innerHTML = `<p class="text-center py-4">${translations[lang].no_orders}</p>`; return; }
-        
-        list.innerHTML = orders.map(o => {
-    // 1. Calcula a diferença de tempo em horas
-    const now = new Date();
-    const orderTime = new Date(o.created_at);
-    const diffInHours = (now - orderTime) / (1000 * 60 * 60);
-
-    // 2. Só cria o HTML do botão se tiver menos de 2 horas E não estiver cancelado/entregue
-    let cancelBtnHtml = '';
+  async function loadOrders(user) {
+    const { data: orders } = await _supabase.from('orders').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+    const list = document.getElementById('orders-list');
+    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
     
-    if (diffInHours <= 2 && o.status !== 'Annulé' && o.status !== 'Livrée' && o.status !== 'Approuvée') {
-        cancelBtnHtml = `
-            <button class="btn btn-sm btn-outline-danger rounded-pill mt-2" 
-                    onclick="handleCancelOrder('${o.id}', '${o.created_at}')">
-                <i class="bi bi-x-circle me-1"></i> ${translations[lang].btn_annuler}
-            </button>`;
-    } else if (o.status === 'Annulé') {
-        cancelBtnHtml = `<span class="badge bg-secondary mt-2">Annulée</span>`;
+    if (!orders || orders.length === 0) { 
+        list.innerHTML = `<p class="text-center py-4">${translations[lang].no_orders}</p>`; 
+        return; 
     }
+    
+    list.innerHTML = orders.map(o => {
+        const now = new Date();
+        const orderDate = new Date(o.created_at);
+        const diffInHours = (now - orderDate) / (1000 * 60 * 60);
+        const diffInDays = diffInHours / 24;
 
-    return `
-    <div class="order-card shadow-sm">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <strong>#${o.id.slice(0, 8).toUpperCase()}</strong>
-                <div class="small fw-bold text-rose">$${parseFloat(o.total).toFixed(2)}</div>
-                <div class="small text-muted">
-                    ${new Date(o.created_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+        let statusDisplay = o.status;
+        let statusClass = "bg-warning text-dark";
+
+        if (o.status === 'Livrée') {
+            statusDisplay = translations[lang].status_livree || "Livrée ✅";
+            statusClass = "bg-success text-white";
+        } else if (o.status === 'Envoyée') {
+            statusDisplay = translations[lang].status_envoyee || "Envoyée 🚚";
+            statusClass = "bg-info text-white";
+        } else if (o.status === 'Annulé') {
+            statusClass = "bg-secondary text-white";
+        }
+
+        let actionBtnHtml = '';
+        // Regra de cancelamento (2 horas)
+        if (diffInHours <= 2 && o.status !== 'Annulé' && o.status !== 'Livrée' && o.status !== 'Approuvée') {
+            actionBtnHtml = `
+                <button class="btn btn-sm btn-outline-danger rounded-pill mt-2" onclick="handleCancelOrder('${o.id}', '${o.created_at}')">
+                    <i class="bi bi-x-circle me-1"></i> ${translations[lang].btn_annuler}
+                </button>`;
+        } 
+        
+        // Regra de Avaliação (Livrée + menos de 15 dias)
+        if (o.status === 'Livrée' && diffInDays <= 15) {
+            actionBtnHtml = `
+                <a href="index.html?review=true#reviews-section" class="btn btn-sm text-white rounded-pill mt-2 d-block w-100 fw-bold" style="background:#B8860B">
+                    <i class="bi bi-star-fill me-1"></i> ${translations[lang].btn_review}
+                </a>`;
+        }
+
+        return `
+        <div class="order-card shadow-sm mb-3 p-3" style="border-left: 8px solid ${o.status === 'Livrée' ? '#198754' : '#B8860B'}; background: white; border-radius: 15px;">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small">Commande</span>
+                    <h6 class="mb-1 fw-bold">#${o.id.slice(0, 8).toUpperCase()}</h6>
+                    <div class="fw-bold">$${parseFloat(o.total).toFixed(2)}</div>
+                </div>
+                <div class="text-end">
+                    <span class="badge rounded-pill ${statusClass}">${statusDisplay}</span>
+                    <div class="mt-2">
+                        <button class="btn btn-sm btn-light border rounded-pill me-1" onclick="showReceipt('${o.id}')">
+                            <i class="bi bi-receipt"></i>
+                        </button>
+                        ${actionBtnHtml}
+                    </div>
                 </div>
             </div>
-            <div class="text-end">
-                <span class="badge-status ${o.status === 'Approuvée' || o.status === 'Livrée' ? 'bg-success text-white' : 'bg-warning'}">
-                    ${o.status}
-                </span>
-                <button class="btn btn-sm btn-outline-dark rounded-pill d-block mt-2 no-print" onclick="showReceipt('${o.id}')">
-                    <i class="bi bi-receipt me-1"></i> ${translations[lang].btn_reçu}
-                </button>
-                ${cancelBtnHtml}  </div>
-        </div>
-    </div>`;
-}).join('');
-    }
+        </div>`;
+    }).join('');
+}
 
     async function showReceipt(orderId) {
         const { data: order } = await _supabase.from('orders').select('*').eq('id', orderId).single();

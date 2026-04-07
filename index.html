@@ -489,6 +489,60 @@ body { top: 0px !important; }
 .goog-te-gadget { color: transparent !important; }
 
 
+/* Setas de Navegação no Modal (Index) */
+.modal-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: 2px solid var(--gold-title);
+    color: var(--gold-title);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 11000 !important;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.5rem;
+    
+}
+.modal-nav-btn:hover { background: var(--gold-title); color: white; }
+.prev-index { left: 20px; }
+.next-index { right: 20px; }
+
+/* Limita altura da imagem para o título aparecer sempre */
+#index-main-detail img {
+    width: 100%;
+    max-height: 65vh;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+@media (max-width: 768px) {
+    .modal-nav-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+    .prev-index { left: 10px; }
+    .next-index { right: 10px; }
+}
+
+
+
+.review-card {
+    border: 1px solid rgba(0,0,0,0.05);
+    transition: transform 0.3s ease;
+}
+.review-card:hover {
+    transform: translateY(-5px);
+}
+#average-badge {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
 
 </style>
 </head>
@@ -558,50 +612,49 @@ body { top: 0px !important; }
             <div class="col-lg-9">
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     
-                    <div class="col">
-                        <div class="luxury-card">
-                            <div class="img-container"><img id="img-patisserie" src="" alt="Pâtisserie"></div>
-                            <div class="card-label">
-                                <h3 id="title-patisserie">Douceurs Authentiques</h3>
-                                <p id="desc-patisserie" class="small text-muted px-2"></p>
-                                <a href="boutique.html" class="btn-luxury">Découvrir</a>
-                            </div>
-                        </div>
-                    </div>
+                   <div class="col">
+    <div class="luxury-card" onclick="openIndexDetail('card_patisserie')" style="cursor:pointer">
+        <div class="img-container"><img id="img-patisserie" src="" alt="Pâtisserie"></div>
+        <div class="card-label">
+            <h3 id="title-patisserie">Douceurs Authentiques</h3>
+            <p id="desc-patisserie" class="small text-muted px-2"></p>
+            <span class="btn-luxury">Découvrir</span>
+        </div>
+    </div>
+</div>
 
-                    <div class="col">
-                        <div class="luxury-card">
-                            <div class="img-container"><img id="img-dejeuner" src="" alt="Déjeuners"></div>
-                            <div class="card-label">
-                                <h3 id="title-dejeuner">L'Écrin Impérial</h3>
-                                <p id="desc-dejeuner" class="small text-muted px-2"></p>
-                                <a href="dejeuner.html" class="btn-luxury">Commander</a>
-                            </div>
-                        </div>
-                    </div>
+<div class="col">
+    <div class="luxury-card" onclick="openIndexDetail('card_dejeuner')" style="cursor:pointer">
+        <div class="img-container"><img id="img-dejeuner" src="" alt="Déjeuners"></div>
+        <div class="card-label">
+            <h3 id="title-dejeuner">L'Écrin Impérial</h3>
+            <p id="desc-dejeuner" class="small text-muted px-2"></p>
+            <span class="btn-luxury">Commander</span>
+        </div>
+    </div>
+</div>
 
-                    <div class="col">
-                        <div class="luxury-card">
-                            <div class="img-container"><img id="img-floristeria" src="" alt="Floristerie"></div>
-                            <div class="card-label">
-                                <h3 id="title-floristeria">Art Floral</h3>
-                                <p id="desc-floristeria" class="small text-muted px-2"></p>
-                                <a href="floristeria.html" class="btn-luxury">Explorer</a>
-                            </div>
-                        </div>
-                    </div>
+<div class="col">
+    <div class="luxury-card" onclick="openIndexDetail('card_floristeria')" style="cursor:pointer">
+        <div class="img-container"><img id="img-floristeria" src="" alt="Floristerie"></div>
+        <div class="card-label">
+            <h3 id="title-floristeria">Art Floral</h3>
+            <p id="desc-floristeria" class="small text-muted px-2"></p>
+            <span class="btn-luxury">Explorer</span>
+        </div>
+    </div>
+</div>
 
-                    <div class="col">
-                        <div class="luxury-card">
-                            <div class="img-container"><img id="img-spaghetti" src="" alt="Spaghetti"></div>
-                            <div class="card-label">
-                                <h3 id="title-spaghetti"></h3>
-                                <p id="desc-spaghetti" class="small text-muted px-2"></p>
-                                <a href="dejeuner.html" class="btn-luxury">Découvrir</a>
-                            </div>
-                        </div>
-                    </div>
-
+<div class="col">
+    <div class="luxury-card" onclick="openIndexDetail('card_spaghetti')" style="cursor:pointer">
+        <div class="img-container"><img id="img-spaghetti" src="" alt="Spaghetti"></div>
+        <div class="card-label">
+            <h3 id="title-spaghetti"></h3>
+            <p id="desc-spaghetti" class="small text-muted px-2"></p>
+            <span class="btn-luxury">Découvrir</span>
+        </div>
+    </div>
+</div>
                     <div class="col">
                         <div class="luxury-card">
                             <div class="img-container"><img id="img-detox" src="" alt="Detox"></div>
@@ -625,69 +678,83 @@ body { top: 0px !important; }
                     </div>
 
                 </div> </div> </div> </div>
-</section>
-
-
-<section class="reviews-section">
+</section> 
+<section class="reviews-section py-5">
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="section-title">Expériences Clients</h2>
-            <p class="text-muted">Ce que notre communauté dit de La Primavera.</p>
+            
+            <div id="rating-summary" class="text-center mb-4" style="display:none;">
+                <div class="d-inline-block p-3 bg-white shadow-sm rounded-4 border">
+                    <span style="font-size: 2rem; font-weight: 700; color: #B8860B;" id="avg-val">0.0</span>
+                    <span class="text-muted">/5</span>
+                    <div class="stars" id="avg-stars-display"></div>
+                    <small class="text-muted d-block mt-1" id="total-reviews-count"></small>
+                </div>
+            </div>
+            <p class="text-muted text-center">Ce que notre communauté dit de La Primavera.</p>
         </div>
 
+        <div class="text-center mb-4">
+    <div class="btn-group flex-wrap justify-content-center gap-2">
+        <button class="filter-badge active" onclick="filterByCat('Tous', this)">Tous</button>
+        <button class="filter-badge" onclick="filterByCat('Pâtisserie', this)">Pâtisserie</button>
+        <button class="filter-badge" onclick="filterByCat('Floristerie', this)">Floristerie</button>
+        <button class="filter-badge" onclick="filterByCat('Déjeuners', this)">Déjeuners</button>
+    </div>
+</div>
+
         <div class="row g-4 mb-5" id="reviews-list">
-            <div class="col-md-4">
-                <div class="review-card">
-                    <div class="stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="review-text">"Les fleurs étaient d'une fraîcheur incroyable et le message sur la carte Minimaliste a rendu le moment magique."</p>
-                    <span class="review-author">Sophie M.</span>
-                </div>
             </div>
 
-            <div class="col-md-4">
-                <div class="review-card">
-                    <div class="stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                    </div>
-                    <p class="review-text">"Le petit-déjeuner livré à domicile était digne d'un hôtel 5 étoiles. Les saveurs haïtiennes authentiques sont au rendez-vous !"</p>
-                    <span class="review-author">Thomas D.</span>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="review-card">
-                    <div class="stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
-                    </div>
-                    <p class="review-text">"Une expérience client irréprochable. La Primavera est devenue ma référence pour tous mes cadeaux d'anniversaire."</p>
-                    <span class="review-author">Isabella R.</span>
-                </div>
-            </div>
+        <div class="text-center mt-4 mb-5" id="load-more-container" style="display:none;">
+            <button onclick="toggleAllReviews()" id="btn-toggle-reviews" class="btn btn-outline-dark rounded-pill px-4">
+                Voir plus d'évaluations
+            </button>
         </div>
 
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <div class="review-form-container text-center">
-                    <h5 style="font-family:'Cinzel'; margin-bottom: 20px;">Partagez votre expérience</h5>
-                    
-                    <div class="star-rating mb-3">
-                        <p class="small mb-2 text-muted">Notez votre expérience :</p>
-                        <div class="d-flex justify-content-center gap-2 fs-3">
-                            <i class="bi bi-star-fill star-input" onclick="setRating(1)" style="cursor:pointer; color: #B8860B;"></i>
-                            <i class="bi bi-star-fill star-input" onclick="setRating(2)" style="cursor:pointer; color: #B8860B;"></i>
-                            <i class="bi bi-star-fill star-input" onclick="setRating(3)" style="cursor:pointer; color: #B8860B;"></i>
-                            <i class="bi bi-star-fill star-input" onclick="setRating(4)" style="cursor:pointer; color: #B8860B;"></i>
-                            <i class="bi bi-star-fill star-input" onclick="setRating(5)" style="cursor:pointer; color: #B8860B;"></i>
+                <div id="review-status-msg" class="text-center p-3 mb-3 small text-muted"></div>
+                
+                <div id="review-form-wrapper" style="display:none;">
+                    <div class="review-form-container text-center p-4 shadow-sm bg-white rounded-4 border-top border-4 border-warning">
+                        <h5 style="font-family:'Cinzel';">Partagez votre expérience</h5>
+                        
+                        <div class="star-rating mb-3">
+                            <p class="small mb-2 text-muted">Notez votre expérience :</p>
+                            <div class="d-flex justify-content-center gap-2 fs-3">
+                                <i class="bi bi-star star-input" onclick="updateStarRating(1)" style="cursor:pointer; color: #ccc;"></i>
+                                <i class="bi bi-star star-input" onclick="updateStarRating(2)" style="cursor:pointer; color: #ccc;"></i>
+                                <i class="bi bi-star star-input" onclick="updateStarRating(3)" style="cursor:pointer; color: #ccc;"></i>
+                                <i class="bi bi-star star-input" onclick="updateStarRating(4)" style="cursor:pointer; color: #ccc;"></i>
+                                <i class="bi bi-star star-input" onclick="updateStarRating(5)" style="cursor:pointer; color: #ccc;"></i>
+                            </div>
+                            <input type="hidden" id="selected-rating" value="0">
                         </div>
-                        <input type="hidden" id="selected-rating" value="5">
-                    </div>
 
-                    <form id="review-form">
-                        <textarea id="user-comment" class="form-control mb-3" rows="3" placeholder="Votre message..." required style="border-radius: 10px;"></textarea>
-                        <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fw-bold">ENVOYER</button>
-                    </form>
+                      <form id="review-form">
+    <textarea id="user-comment" class="form-control mb-3" rows="3" placeholder="Votre message..." required style="border-radius: 10px; border: 1px solid #ddd;"></textarea>
+    
+    <div class="row g-2 mb-3">
+        <div class="col-md-6 text-start">
+            <label class="small fw-bold text-muted mb-1"><i class="bi bi-tag-fill me-1"></i> Catégorie</label>
+            <select id="review-category" class="form-select form-select-sm" style="border-radius: 10px; border: 1px solid #ddd;">
+                <option value="Pâtisserie">Pâtisserie</option>
+                <option value="Floristerie">Floristerie</option>
+                <option value="Déjeuners">Déjeuners</option>
+            </select>
+        </div>
+
+        <div class="col-md-6 text-start">
+            <label class="small fw-bold text-muted mb-1"><i class="bi bi-camera-fill me-1"></i> Photo (Optionnel)</label>
+            <input type="file" id="review-image-input" class="form-control form-control-sm" accept="image/*" style="border-radius: 10px; border: 1px solid #ddd;">
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-dark rounded-pill px-5 py-2 fw-bold w-100 shadow-sm">ENVOYER MON AVIS</button>
+</form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -696,15 +763,20 @@ body { top: 0px !important; }
 
 <script>
 function setRating(n) {
-    document.getElementById('selected-rating').value = n;
+    // 1. Atualiza o valor no input invisível para o envio
+    const input = document.getElementById('selected-rating');
+    if (input) input.value = n;
+    
+    // 2. Acende as estrelas visualmente
     const stars = document.querySelectorAll('.star-input');
     stars.forEach((star, index) => {
         if (index < n) {
-            star.style.setProperty('color', '#B8860B', 'important'); // Acende dourado
+            star.style.setProperty('color', '#B8860B', 'important'); // Dourado
         } else {
-            star.style.setProperty('color', '#e9ecef', 'important'); // Apaga cinza
+            star.style.setProperty('color', '#e9ecef', 'important'); // Cinza
         }
     });
+    console.log("Nota selecionada:", n); // Para você ver no console se funcionou
 }
 </script>
 
@@ -716,7 +788,7 @@ function setRating(n) {
                     <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
                 </h5>
                 <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
-                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    L'excellence haïtienne raffinée. Boston • Manhattan<br>
                     Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
                 </p>
             </div>
@@ -747,28 +819,97 @@ function setRating(n) {
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const translations = {
-        fr: {
-            nav_home: "ACCUEIL", nav_about: "À PROPOS", nav_patis: "PÂTISSERIE", nav_flor: "FLORISTERIE", nav_deje: "DÉJEUNERS",
-            btn_login: "CONNEXION", btn_account: "Mon Compte", btn_logout: "Déconnexion",
-            hero_title: "Signature d'Excellence", hero_subtitle: "L'harmonie entre tradition haïtienne et raffinement floral.",
-            section_title: "La Collection de Saison", btn_discover: "Découvrir", btn_order: "Commander", btn_explore: "Explorer"
-        },
-        en: {
-            nav_home: "HOME", nav_about: "ABOUT US", nav_patis: "PASTRY", nav_flor: "FLORISTRY", nav_deje: "LUNCHES",
-            btn_login: "LOGIN", btn_account: "My Account", btn_logout: "Logout",
-            hero_title: "Signature of Excellence", hero_subtitle: "The harmony between Haitian tradition and floral refinement.",
-            section_title: "Seasonal Collection", btn_discover: "Discover", btn_order: "Order", btn_explore: "Explore"
-        },
-        es: {
-            nav_home: "INICIO", nav_about: "SOBRE NOSOTROS", nav_patis: "REPOSTERÍA", nav_flor: "FLORISTERÍA", nav_deje: "ALMUERZOS",
-            btn_login: "CONEXIÓN", btn_account: "Mi Cuenta", btn_logout: "Cerrar Sesión",
-            hero_title: "Sello de Excelencia", hero_subtitle: "La armonía entre la tradición haitiana y el refinamiento floral.",
-            section_title: "Colección de Temporada", btn_discover: "Descubrir", btn_order: "Ordenar", btn_explore: "Explorar"
-        }
-    };
 
-    const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
+
+const compressImage = (file, maxWidth = 800) => {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scale = maxWidth / img.width;
+                canvas.width = maxWidth;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL('image/jpeg', 0.7)); // Qualidade 70%
+            };
+        };
+    });
+};
+
+let allIndexCards = [];
+let currentRating = 5;
+
+
+    const translations = {
+    fr: { 
+        nav_home: "ACCUEIL", 
+        nav_about: "À PROPOS", 
+        nav_patis: "PÂTISSERIE", 
+        nav_flor: "FLORISTERIE", 
+        nav_deje: "DÉJEUNERS",
+        btn_login: "CONNEXION", 
+        btn_account: "Mon Compte", 
+        btn_logout: "Déconnexion",
+        hero_title: "Signature d'Excellence", 
+        hero_subtitle: "L'harmonie entre tradition haïtienne et raffinement floral.",
+        section_title: "La Collection de Saison", 
+        btn_discover: "Découvrir", 
+        btn_order: "Commander", 
+        btn_explore: "Explorer",
+        // Identidade & Rodapé
+        brand_location: "Boston . Haiti",
+        local_delivery_info: "Desservant MA, NY & NJ",
+        site_url: "www.laprimaverastore.com"
+    },
+    en: { 
+        nav_home: "HOME", 
+        nav_about: "ABOUT US", 
+        nav_patis: "PASTRY", 
+        nav_flor: "FLORISTRY", 
+        nav_deje: "LUNCHES",
+        btn_login: "LOGIN", 
+        btn_account: "My Account", 
+        btn_logout: "Logout",
+        hero_title: "Signature of Excellence", 
+        hero_subtitle: "The harmony between Haitian tradition and floral refinement.",
+        section_title: "Seasonal Collection", 
+        btn_discover: "Discover", 
+        btn_order: "Order", 
+        btn_explore: "Explore",
+        // Identity & Footer
+        brand_location: "Boston . Haiti",
+        local_delivery_info: "Serving MA, NY & NJ",
+        site_url: "www.laprimaverastore.com"
+    },
+    es: { 
+        nav_home: "INICIO", 
+        nav_about: "SOBRE NOSOTROS", 
+        nav_patis: "REPOSTERÍA", 
+        nav_flor: "FLORISTERÍA", 
+        nav_deje: "ALMUERZOS",
+        btn_login: "CONEXIÓN", 
+        btn_account: "Mi Cuenta", 
+        btn_logout: "Cerrar Sesión",
+        hero_title: "Sello de Excelencia", 
+        hero_subtitle: "La armonía entre la tradición haitiana y el refinamiento floral.",
+        section_title: "Colección de Temporada", 
+        btn_discover: "Descubrir", 
+        btn_order: "Ordenar", 
+        btn_explore: "Explorar",
+        // Identidad & Pie de página
+        brand_location: "Boston . Haiti",
+        local_delivery_info: "Sirviendo MA, NY & NJ",
+        site_url: "www.laprimaverastore.com"
+    }
+};
+
+    
 
     function changeLanguage(lang) {
         document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -834,6 +975,27 @@ document.addEventListener('click', () => {
 });
 
 
+// 3. Função de Navegação
+function navigateIndex(currentId, direction) {
+    const currentIndex = allIndexCards.findIndex(c => c.id === currentId);
+    let nextIndex = currentIndex + direction;
+
+    if (nextIndex >= allIndexCards.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = allIndexCards.length - 1;
+
+    const nextCard = allIndexCards[nextIndex];
+    
+    const detailArea = document.getElementById('index-main-detail');
+    detailArea.style.transition = "opacity 0.2s";
+    detailArea.style.opacity = '0';
+    
+    setTimeout(() => {
+        openIndexDetail(nextCard.id);
+        detailArea.style.opacity = '1';
+    }, 200);
+}
+
+
     async function updateCartBadge() {
         const { data: { user } } = await _supabase.auth.getUser();
         const badge = document.getElementById('cartCount');
@@ -847,125 +1009,375 @@ document.addEventListener('click', () => {
         }
     }
 
-document.getElementById('review-form')?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const comment = document.getElementById('user-comment').value;
-    
-    // Verifica se o usuário está logado
-    const { data: { user } } = await _supabase.auth.getUser();
-    if (!user) {
-        alert("Veuillez vous connecter pour laisser un commentaire.");
-        window.location.href = "login.html";
-        return;
-    }
-
-    // Salva no Supabase
-    const { error } = await _supabase.from('reviews').insert([
-        { 
-            user_id: user.id, 
-            content: comment,
-            user_name: user.user_metadata.full_name || "Client Anonyme",
-            is_approved: false // Para você moderar antes de aparecer no site
-        }
-    ]);
-
-    if (!error) {
-        alert("Merci ! Votre commentaire est en attente de modération.");
-        document.getElementById('review-form').reset();
-    } else {
-        alert("Erreur: " + error.message);
-    }
-});
 
 
-let currentRating = 5;
+
 
 function setRating(n) {
     currentRating = n;
-    document.getElementById('selected-rating').value = n;
+    const ratingInput = document.getElementById('selected-rating');
+    if (ratingInput) ratingInput.value = n;
     
+    const stars = document.querySelectorAll('.star-input');
+    if (stars.length === 0) return; // ADICIONE ESTA LINHA: evita erros se o HTML não carregou
+    
+    stars.forEach((star, index) => {
+        star.style.setProperty('color', index < n ? '#B8860B' : '#eee', 'important');
+    });
+}
+
+// Chame uma vez ao carregar para começar com 5 estrelas acesas
+//window.addEventListener('load', () => setRating(5));
+
+// --- COMPLEMENTO: FUNÇÃO DE ENVIO PARA O SUPABASE ---
+async function submitReview() {
+    const comment = document.getElementById('user-comment').value;
+    
+    // Capturamos o valor ATUALIZADO do input hidden no momento do clique no botão
+    const rating = document.getElementById('selected-rating').value;
+
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) {
+        alert("Veuillez vous connecter pour laisser un avis.");
+        return;
+    }
+
+    // No seu insert do Supabase, adicionamos a coluna rating:
+    const { error } = await _supabase
+        .from('reviews')
+        .insert([
+            { 
+                user_id: user.id, 
+                content: comment, 
+                rating: parseInt(rating), // Convertemos para número para o Postgres
+                created_at: new Date() 
+            }
+        ]);
+
+    if (!error) {
+        alert("Merci pour votre avis !");
+        location.reload(); 
+    } else {
+        console.error("Erro ao enviar avaliação:", error);
+    }
+}
+
+
+// --- LÓGICA DE ELIGIBILIDADE (LOGIN + COMPRA 15 DIAS) ---
+// --- LÓGICA DE ELIGIBILIDADE (STATUS: Livrée + PRAZO: 15 DIAS) ---
+async function checkReviewEligibility() {
+    const formWrapper = document.getElementById('review-form-wrapper');
+    const statusMsg = document.getElementById('review-status-msg');
+    
+    if (!formWrapper || !statusMsg) return;
+
+    // Esconde o formulário por padrão até validar
+    formWrapper.style.display = 'none';
+    statusMsg.style.display = 'block';
+
+    const { data: { user } } = await _supabase.auth.getUser();
+
+    if (!user) {
+        statusMsg.innerHTML = `<i class="bi bi-info-circle me-2"></i> Veuillez vous <a href="login.html" class="text-dark fw-bold">connecter</a> para avaliar sua compra.`;
+        return;
+    }
+
+    // Calcula a data limite de 15 dias atrás
+    const fifteenDaysAgo = new Date();
+    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+    const dateISO = fifteenDaysAgo.toISOString();
+
+    try {
+        // BUSCA: Pedidos do usuário, dos últimos 15 dias, que estejam com status 'Livrée'
+        const { data: orders, error } = await _supabase
+            .from('orders') 
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('status', 'Livrée') // REGRA: Só libera se o admin marcou como entregue
+            .gte('created_at', dateISO) // REGRA: Dentro dos últimos 15 dias
+            .limit(1);
+
+        if (error) throw error;
+
+        if (orders && orders.length > 0) {
+            // Cliente elegível!
+            formWrapper.style.display = 'block';
+            statusMsg.style.display = 'none';
+        } else {
+            // Não encontrou pedidos entregues recentemente
+            statusMsg.innerHTML = `
+                <div class="alert alert-light border-0 small py-2">
+                    <i class="bi bi-shield-lock me-2"></i> 
+                    L'évaluation est disponible uniquement após a entrega de sua encomenda (statut: <b>Livrée</b>) e dentro de um prazo de 15 dias.
+                </div>`;
+        }
+
+    } catch (err) {
+        console.error("Erro ao validar elegibilidade:", err);
+        statusMsg.innerHTML = "Une erreur est survenue. Veuillez rafraîchir la page.";
+    }
+}
+
+
+
+// --- CARREGAR REVIEWS APROVADAS ---
+// --- VARIÁVEIS GLOBAIS PARA CONTROLE ---
+let allReviewsData = []; 
+let reviewsVisible = false;
+
+// --- FUNÇÃO PARA ATUALIZAR AS ESTRELAS NO FORMULÁRIO ---
+function updateStarRating(n) {
+    // Salva o valor no input hidden para o Supabase
+    const ratingInput = document.getElementById('selected-rating');
+    if (ratingInput) ratingInput.value = n;
+    
+    // Atualiza visualmente os ícones
     const stars = document.querySelectorAll('.star-input');
     stars.forEach((star, index) => {
         if (index < n) {
-            star.style.setProperty('color', '#B8860B', 'important'); // Dourado
+            // Estrela selecionada: preenchida e dourada
+            star.classList.remove('bi-star');
+            star.classList.add('bi-star-fill');
+            star.style.color = '#B8860B';
         } else {
-            star.style.setProperty('color', '#eee', 'important');    // Cinza
+            // Estrela não selecionada: vazia e cinza
+            star.classList.remove('bi-star-fill');
+            star.classList.add('bi-star');
+            star.style.color = '#ccc';
         }
     });
 }
 
+// --- CARREGAR REVIEWS, CALCULAR MÉDIA E LIMITAR EXIBIÇÃO ---
+async function loadApprovedReviews() {
+    const list = document.getElementById('reviews-list');
+    if (!list) return;
 
-// Chame uma vez ao carregar para começar com 5 estrelas acesas
-window.onload = () => setRating(5);
+    const { data: reviews, error } = await _supabase
+        .from('product_reviews')
+        .select('*')
+        .eq('is_approved', true) 
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Erreur reviews:", error.message);
+        return;
+    }
+
+    if (reviews && reviews.length > 0) {
+        allReviewsData = reviews;
+        
+        // Cálculo da Média
+        const total = reviews.length;
+        const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
+        const average = (sum / total).toFixed(1);
+
+        if (document.getElementById('avg-val')) document.getElementById('avg-val').innerText = average;
+        if (document.getElementById('total-reviews-count')) document.getElementById('total-reviews-count').innerText = `${total} évaluations client`;
+        if (document.getElementById('rating-summary')) document.getElementById('rating-summary').style.display = 'block';
+
+        renderReviews(3); // Chama a função corrigida
+
+        if (total > 3) {
+            document.getElementById('load-more-container').style.display = 'block';
+        }
+    }
+}
+
+// Função única para desenhar as avaliações
+function renderReviews(limit) {
+    const list = document.getElementById('reviews-list');
+    if (!list) return;
+    const displayData = limit === -1 ? allReviewsData : allReviewsData.slice(0, limit);
+
+    list.innerHTML = displayData.map(r => `
+        <div class="col-md-4">
+            <div class="review-card shadow-sm h-100 p-4 bg-white rounded-4 border-0">
+                <div class="stars mb-2" style="color: #B8860B;">
+                    ${'<i class="bi bi-star-fill"></i>'.repeat(r.rating)}
+                </div>
+                
+                ${r.review_image_url ? `
+                    <div class="mb-3 overflow-hidden rounded-3" style="height: 200px;">
+                        <img src="${r.review_image_url}" class="w-100 h-100" style="object-fit: cover;">
+                    </div>
+                ` : ''}
+
+                <p class="review-text small">"${r.comment}"</p>
+                <span class="review-author fw-bold" style="font-size:0.75rem;">${r.user_name || 'Client'}</span>
+                
+                ${r.admin_reply ? `
+                    <div class="mt-2 p-2 rounded small" style="background:#fcf8f3; border-left:3px solid #B8860B;">
+                        <b>La Primavera:</b> ${r.admin_reply}
+                    </div>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+// Garanta que a toggle use o nome correto
+function toggleAllReviews() {
+    const btn = document.getElementById('btn-toggle-reviews');
+    if (!reviewsVisible) {
+        renderReviews(-1);
+        if (btn) btn.innerText = "Voir moins";
+        reviewsVisible = true;
+    } else {
+        renderReviews(3);
+        if (btn) btn.innerText = "Voir plus d'évaluations";
+        reviewsVisible = false;
+        document.querySelector('.reviews-section').scrollIntoView({ behavior: 'smooth' });
+    }
+}
 
 
-const rating = document.getElementById('selected-rating').value;
-// No seu insert do Supabase, adicione a coluna rating:
-// { content: comment, rating: rating, ... }
+
+async function likeReview(id, btn) {
+    const review = allReviewsData.find(r => r.id === id);
+    if (!review) return;
+
+    const newLikes = (review.likes || 0) + 1;
+    
+    // Atualiza no banco de dados
+    const { error } = await _supabase
+        .from('product_reviews')
+        .update({ likes: newLikes })
+        .eq('id', id);
+
+    if (!error) {
+        review.likes = newLikes; // Atualiza localmente
+        btn.querySelector('small').innerText = newLikes;
+        btn.classList.add('animate__animated', 'animate__heartBeat'); // Efeito visual opcional
+    }
+}
+
+
+
+
+
+// --- EVENTO DE SUBMISSÃO DO FORMULÁRIO ---
+// --- LÓGICA DE ENVIO DA AVALIAÇÃO COM FOTO E CATEGORIA ---
+document.getElementById('review-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.disabled = true;
+    submitBtn.innerText = "ENVOI EN COURS...";
+
+    const comment = document.getElementById('user-comment').value;
+    const rating = document.getElementById('selected-rating').value;
+    const category = document.getElementById('review-category').value; // <--- CAPTURA A CATEGORIA AQUI
+    const fileInput = document.getElementById('review-image-input');
+    
+    let base64Image = null;
+
+    if (rating === "0") {
+        alert("Veuillez sélectionner une note (cliquez sur les étoiles).");
+        submitBtn.disabled = false;
+        submitBtn.innerText = "ENVOYER MON AVIS";
+        return;
+    }
+
+    // Processa a imagem se o cliente escolheu uma
+    if (fileInput.files[0]) {
+        try {
+            base64Image = await compressImage(fileInput.files[0], 800);
+        } catch (err) {
+            console.error("Erreur image:", err);
+        }
+    }
+
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) {
+        alert("Veuillez vous connecter.");
+        submitBtn.disabled = false;
+        return;
+    }
+
+    const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+
+    // SALVA NO SUPABASE INCLUINDO A CATEGORIA
+    const { error } = await _supabase.from('product_reviews').insert([{ 
+        user_id: user.id, 
+        rating: parseInt(rating), 
+        comment: comment, 
+        category: category, // <--- SALVA A CATEGORIA NO BANCO AQUI
+        user_name: profile?.full_name || "Client La Primavera",
+        review_image_url: base64Image,
+        is_approved: false 
+    }]);
+
+    if (!error) {
+        alert("Merci ! Votre avis est en attente de modération.");
+        e.target.reset(); 
+        updateStarRating(0); 
+    } else {
+        alert("Erreur: " + error.message);
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.innerText = "ENVOYER MON AVIS";
+});
+
+
+
+
 
 
     async function loadDynamicContent() {
-    const { data } = await _supabase.from('site_settings').select('*');
-    const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+    const { data, error } = await _supabase.from('site_settings').select('*');
+    
+    if (error) {
+        console.error("Erro ao carregar configurações:", error.message);
+        return;
+    }
+
     if (data) {
+        // Filtra e guarda na lista global apenas os que são CARDS para o Modal
+        allIndexCards = data.filter(s => s.id.startsWith('card_'));
+
         data.forEach(s => {
-            // --- BANNER HERO ---
-            if (s.id === 'hero_bg') {
-                if (s.image_url && s.image_url.includes('video')) {
-                    document.getElementById('hero-bg').style.backgroundImage = 'none';
-                    document.getElementById('hero-bg').innerHTML = `<video autoplay loop muted style="position: absolute; width: 100%; height: 45vh; object-fit: cover; z-index: -1; top: 0; left: 0;"><source src="${s.image_url}"></video>` + document.getElementById('hero-bg').innerHTML;
-                } else if (s.image_url) {
-                    document.getElementById('hero-bg').style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
+            // --- 1. BANNER HERO (Suporte a Imagem ou Vídeo) ---
+            if (s.id === 'hero_bg' && s.image_url) {
+                const heroElement = document.getElementById('hero-bg');
+                if (heroElement) {
+                    if (s.image_url.includes('video') || s.image_url.includes('mp4')) {
+                        heroElement.style.backgroundImage = 'none';
+                        heroElement.innerHTML = `
+                            <video autoplay loop muted playsinline style="position: absolute; width: 100%; height: 100%; object-fit: cover; z-index: -1; top: 0; left: 0;">
+                                <source src="${s.image_url}">
+                            </video>` + heroElement.innerHTML;
+                    } else {
+                        heroElement.style.backgroundImage = `linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1)), url("${s.image_url}")`;
+                    }
                 }
             }
             
-            // --- CARDS ORIGINAIS ---
-            else if (s.id === 'card_patisserie') {
-                if (document.getElementById('img-patisserie')) document.getElementById('img-patisserie').src = s.image_url;
-            }
-            else if (s.id === 'card_dejeuner') {
-                if (document.getElementById('img-dejeuner')) document.getElementById('img-dejeuner').src = s.image_url;
-            }
-            else if (s.id === 'card_floristeria') {
-                if (document.getElementById('img-floristeria')) document.getElementById('img-floristeria').src = s.image_url;
+            // --- 2. PREENCHIMENTO DOS CARDS (Patisserie, Flor, Dejeuner...) ---
+            if (s.id.startsWith('card_')) {
+                const elementId = s.id.replace('card_', ''); 
+                const img = document.getElementById(`img-${elementId}`);
+                const title = document.getElementById(`title-${elementId}`);
+                const desc = document.getElementById(`desc-${elementId}`);
+
+                if (img) img.src = s.image_url;
+                if (title) title.innerText = s.title || '';
+                if (desc) desc.innerText = s.description || '';
             }
 
-            // --- NOVOS CARDS (SPAGHETTI, DETOX, COMBO) ---
-            else if (s.id === 'card_spaghetti') {
-                if (document.getElementById('img-spaghetti')) document.getElementById('img-spaghetti').src = s.image_url;
-                if (document.getElementById('title-spaghetti')) document.getElementById('title-spaghetti').innerText = s.title || '';
-                if (document.getElementById('desc-spaghetti')) document.getElementById('desc-spaghetti').innerText = s.description || '';
-            }
-            else if (s.id === 'card_detox') {
-                if (document.getElementById('img-detox')) document.getElementById('img-detox').src = s.image_url;
-                if (document.getElementById('title-detox')) document.getElementById('title-detox').innerText = s.title || '';
-                if (document.getElementById('desc-detox')) document.getElementById('desc-detox').innerText = s.description || '';
-            }
-            else if (s.id === 'card_combo') {
-                if (document.getElementById('img-combo')) document.getElementById('img-combo').src = s.image_url;
-                if (document.getElementById('title-combo')) document.getElementById('title-combo').innerText = s.title || '';
-                if (document.getElementById('desc-combo')) document.getElementById('desc-combo').innerText = s.description || '';
-            }
-            
-            // --- PROPAGANDA LATERAL ---
-            else if (s.id === 'promo_sidebar') {
+            // --- 3. PROPAGANDA LATERAL ---
+            if (s.id === 'promo_sidebar') {
                 const promoBox = document.getElementById('promo-sidebar-content');
-                if (promoBox) {
-                    let mediaHtml = "";
-                    if (s.image_url) {
-                        if (s.image_url.includes('video') || s.image_url.includes('mp4')) {
-                            mediaHtml = `<video src="${s.image_url}" autoplay loop muted style="width:100%; border-radius:10px;"></video>`;
-                        } else {
-                            mediaHtml = `<img src="${s.image_url}" alt="Promo" style="width:100%; border-radius:10px;">`;
-                        }
-                    } else {
-                        mediaHtml = `<i class="bi bi-megaphone" style="font-size: 2.5rem; color: var(--gold-title);"></i>`;
-                    }
+                if (promoBox && s.image_url) {
+                    let mediaHtml = s.image_url.includes('video') 
+                        ? `<video src="${s.image_url}" autoplay loop muted playsinline style="width:100%; border-radius:10px;"></video>`
+                        : `<img src="${s.image_url}" alt="Promo" style="width:100%; border-radius:10px;">`;
+                    
                     promoBox.innerHTML = `
                         ${mediaHtml}
                         <h4 class="blink-text mt-2">${s.title || "Offres"}</h4>
-                        <p class="small">${s.description || ""}</p>
-                        <a href="dejeuner.html" class="btn btn-sm btn-outline-dark mt-2">Voir plus</a>
+                        <p class="small text-muted">${s.description || ""}</p>
+                        <a href="checkout.html" class="btn btn-sm btn-outline-dark mt-2 w-100">Profiter</a>
                     `;
                 }
             }
@@ -973,14 +1385,89 @@ const rating = document.getElementById('selected-rating').value;
     }
 }
 
-    document.addEventListener('DOMContentLoaded', () => {
+// 2. Função para abrir o detalhe do card com setas
+async function openIndexDetail(cardId) {
+    const card = allIndexCards.find(c => c.id === cardId);
+    if (!card) return;
+
+    const detailArea = document.getElementById('index-main-detail');
+    const modalElement = document.getElementById('indexDetailModal');
+
+    // Limpa setas antigas
+    document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+
+    detailArea.innerHTML = `
+        <div class="col-md-6 mb-3">
+            <img src="${card.image_url}" class="img-fluid rounded-4 shadow">
+        </div>
+        <div class="col-md-6 d-flex flex-column justify-content-center text-center text-md-start">
+            <h3 style="font-family:'Cinzel'; color:var(--deep-coffee); font-weight:700;">${card.title}</h3>
+            <p style="color:var(--gold-title); font-weight:600; font-size:0.8rem; letter-spacing:2px; text-transform:uppercase;">Collection Exclusive</p>
+            <p class="text-muted" style="font-size:0.95rem; line-height:1.6;">${card.description || 'Découvrez l\'excellence de notre sélection saisonnière.'}</p>
+            <a href="${card.id.includes('patis') ? 'boutique.html' : card.id.includes('flor') ? 'floristeria.html' : 'dejeuner.html'}" 
+               class="btn btn-dark py-3 rounded-pill fw-bold mt-3">
+                VOIR TOUTE LA COLLECTION
+            </a>
+        </div>
+    `;
+
+    // Cria as setas dinâmicas
+    const arrowLeft = document.createElement('div');
+    arrowLeft.className = 'modal-nav-btn prev-index';
+    arrowLeft.innerHTML = '<i class="bi bi-chevron-left"></i>';
+    arrowLeft.onclick = () => navigateIndex(card.id, -1);
+
+    const arrowRight = document.createElement('div');
+    arrowRight.className = 'modal-nav-btn next-index';
+    arrowRight.innerHTML = '<i class="bi bi-chevron-right"></i>';
+    arrowRight.onclick = () => navigateIndex(card.id, 1);
+
+    document.body.appendChild(arrowLeft);
+    document.body.appendChild(arrowRight);
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    modal.show();
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+    }, { once: true });
+}
+
+  document.addEventListener('DOMContentLoaded', () => {
         const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
-        document.querySelector('.lang-select').value = savedLang;
+        const langSelect = document.querySelector('.lang-select');
+        
+        if (langSelect) langSelect.value = savedLang;
+        
         changeLanguage(savedLang);
         loadDynamicContent();
         updateNavbarAuth();
+
+        // --- ADICIONADO PARA O SISTEMA DE AVALIAÇÃO ---
+        checkReviewEligibility(); // Verifica se o cliente tem pedido 'Livrée' nos últimos 15 dias
+        loadApprovedReviews();    // Carrega as avaliações que você já aprovou no dashboard
     });
 
+
+// Verifica se o cliente veio do botão "Laisser um avis"
+function checkReviewUrlParam() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('review') === 'true') {
+        // Aguarda um pouquinho para a página carregar e rola até o formulário
+        setTimeout(() => {
+            const formSection = document.getElementById('review-form-wrapper');
+            if (formSection) {
+                formSection.scrollIntoView({ behavior: 'smooth' });
+                // Foca diretamente no campo de texto
+                const textarea = document.getElementById('user-comment');
+                if (textarea) textarea.focus();
+            }
+        }, 800); // Delay para garantir que o scroll funcione após o carregamento
+    }
+}
+
+// Ativa a verificação ao carregar a página
+document.addEventListener('DOMContentLoaded', checkReviewUrlParam);
 
 // CONFIGURAÇÃO DE LOGOUT POR INATIVIDADE
 let inactivityTimeout;
@@ -1013,8 +1500,126 @@ activityEvents.forEach(event => {
 // Inicia o cronômetro assim que a página carrega
 resetInactivityTimer();
 
+
+// --- LÓGICA DE ENVIO DA AVALIAÇÃO ---
+document.getElementById('review-form')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.disabled = true; // Evita cliques duplos
+    submitBtn.innerText = "ENVOI EM COURS...";
+
+    const comment = document.getElementById('user-comment').value;
+    const rating = document.getElementById('selected-rating').value;
+    const fileInput = document.getElementById('review-image-input');
+    
+    let base64Image = null;
+
+    // Se tiver foto, converte para Base64 usando a função compressImage que você já tem
+    if (fileInput.files[0]) {
+        try {
+            base64Image = await compressImage(fileInput.files[0], 800);
+        } catch (err) {
+            console.error("Erro na imagem:", err);
+        }
+    }
+
+    const { data: { user } } = await _supabase.auth.getUser();
+    
+    if (!user) {
+        alert("Veuillez vous connecter pour laisser un avis.");
+        submitBtn.disabled = false;
+        submitBtn.innerText = "ENVOYER MON AVIS";
+        return;
+    }
+
+    // Busca o nome do perfil
+    const { data: profile } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+
+    // SALVA NO SUPABASE
+    const { error } = await _supabase.from('product_reviews').insert([{ 
+        user_id: user.id, 
+        rating: parseInt(rating), 
+        comment: comment, 
+        user_name: profile?.full_name || "Client La Primavera",
+        review_image_url: base64Image,
+        is_approved: false 
+    }]);
+
+    if (!error) {
+        alert("Merci ! Votre avis est en attente de modération.");
+        e.target.reset(); // Limpa o formulário
+        updateStarRating(0); // Reseta as estrelas
+    } else {
+        alert("Erreur: " + error.message);
+    }
+
+    submitBtn.disabled = false;
+    submitBtn.innerText = "ENVOYER MON AVIS";
+});
+
+// Função auxiliar para resetar as estrelas
+function updateStarRating(n) {
+    document.getElementById('selected-rating').value = n;
+    const stars = document.querySelectorAll('.star-input');
+    stars.forEach((star, index) => {
+        star.style.setProperty('color', index < n ? '#B8860B' : '#ccc', 'important');
+    });
+}
+
+
+function filterByCat(cat, btn) {
+    // 1. Muda o visual dos botões
+    document.querySelectorAll('.filter-badge').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 2. Filtra os dados
+    const list = document.getElementById('reviews-list');
+    const dataFiltrada = cat === 'Tous' ? allReviewsData : allReviewsData.filter(r => r.category === cat);
+
+    // 3. Renderiza apenas os filtrados (limite -1 para mostrar todos daquela categoria)
+    renderReviewsByData(dataFiltrada);
+}
+
+// Função auxiliar para desenhar dados específicos
+function renderReviewsByData(data) {
+    const list = document.getElementById('reviews-list');
+    if (data.length === 0) {
+        list.innerHTML = '<p class="text-center text-muted w-100 py-4">Aucun avis dans cette catégorie.</p>';
+        return;
+    }
+    
+    list.innerHTML = data.map(r => `
+        <div class="col-md-4">
+            <div class="review-card shadow-sm h-100 p-4 bg-white rounded-4 border-0">
+                <div class="stars mb-2" style="color: #B8860B;">
+                    ${'<i class="bi bi-star-fill"></i>'.repeat(r.rating)}
+                </div>
+                <span class="badge bg-light text-dark mb-2" style="font-size: 0.6rem;">${r.category}</span>
+                ${r.review_image_url ? `<div class="mb-3 rounded-3 overflow-hidden" style="height:150px;"><img src="${r.review_image_url}" class="w-100 h-100" style="object-fit:cover;"></div>` : ''}
+                <p class="review-text small">"${r.comment}"</p>
+                <span class="review-author fw-bold">— ${r.user_name}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
 </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<div class="modal fade" id="indexDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--gold-title);">
+            <div class="modal-body p-4">
+                <div class="row" id="index-main-detail"></div>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

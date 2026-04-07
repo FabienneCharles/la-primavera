@@ -134,7 +134,7 @@
     color: var(--gold) !important; /* Muda para dourado ao passar o mouse */
 }
 
-	/* Estilo para a descrição e momentos dentro do card */
+    /* Estilo para a descrição e momentos dentro do card */
 .product-description {
     font-size: 0.85rem;
     color: #666;
@@ -375,6 +375,44 @@
 }
 
 
+/* Setas de Navegação no Modal (Pâtisserie) */
+.modal-nav-btn {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 11000 !important;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.5rem;
+}
+.modal-nav-btn:hover { background: var(--gold); color: white; }
+.prev-patis { left: 20px; }
+.next-patis { right: 20px; }
+
+/* Limita altura da imagem para o nome aparecer sempre */
+#product-main-detail img {
+    width: 100%;
+    max-height: 65vh;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+@media (max-width: 768px) {
+    .modal-nav-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+    .prev-patis { left: 10px; }
+    .next-patis { right: 10px; }
+}
+
     </style>
 </head>
 <body>
@@ -472,7 +510,7 @@
                     <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
                 </h5>
                 <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
-                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    L'excellence haïtienne raffinée. Boston • Manhattan<br>
                     Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
                 </p>
             </div>
@@ -508,6 +546,10 @@
 <script>
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
+
+let allPatisseries = []; // Guardará a lista para navegação
+
+
     const translations = {
     fr: { 
         nav_home: "ACCUEIL", 
@@ -525,11 +567,15 @@
         btn_logout: "Déconnexion",
         modal_close: "Fermer",
         modal_suggest: "Vous aimerez aussi...",
-        // Chaves dos Filtros
+        // Filtros
         filter_all: "Tous",
         filter_tradition: "Tradition",
         filter_fraicheur: "Fraîcheur",
-        filter_cadeaux: "Cadeaux"
+        filter_cadeaux: "Cadeaux",
+        // Identidade & Rodapé
+        brand_location: "Boston . Manhattan",
+        local_delivery_info: "Desservant MA, NY & NJ",
+        contact_hours: "Lun-Sam: 9:00 - 18:00 EST"
     },
     en: { 
         nav_home: "HOME", 
@@ -547,11 +593,15 @@
         btn_logout: "Logout",
         modal_close: "Close",
         modal_suggest: "You might also like...",
-        // Chaves dos Filtros
+        // Filtros
         filter_all: "All",
         filter_tradition: "Tradition",
         filter_fraicheur: "Freshness",
-        filter_cadeaux: "Gifts"
+        filter_cadeaux: "Gifts",
+        // Identity & Footer
+        brand_location: "Boston . Manhattan",
+        local_delivery_info: "Serving MA, NY & NJ",
+        contact_hours: "Mon-Sat: 9:00 AM - 6:00 PM EST"
     },
     es: { 
         nav_home: "INICIO", 
@@ -569,11 +619,15 @@
         btn_logout: "Cerrar Sesión",
         modal_close: "Cerrar",
         modal_suggest: "También te puede gustar...",
-        // Chaves dos Filtros
+        // Filtros
         filter_all: "Todos",
         filter_tradition: "Tradición",
         filter_fraicheur: "Frescura",
-        filter_cadeaux: "Regalos"
+        filter_cadeaux: "Regalos",
+        // Identidad & Pie de página
+        brand_location: "Boston . Manhattan",
+        local_delivery_info: "Sirviendo MA, NY & NJ",
+        contact_hours: "Lun-Sáb: 9:00 AM - 6:00 PM EST"
     }
 };
 
@@ -612,6 +666,10 @@
     }
 
     if (products) {
+        // --- LINHA ADICIONADA PARA HABILITAR A NAVEGAÇÃO ENTRE DOCES ---
+        allPatisseries = products; 
+        // -------------------------------------------------------------
+
         const now = new Date();
         
         grid.innerHTML = products.map(p => {
@@ -647,27 +705,87 @@
     }
 }
 
+
+
 // FUNÇÃO PARA ABRIR DETALHES E CARREGAR SUGESTÕES
 async function openProductDetail(id) {
-    const { data: p } = await _supabase.from('patisserie').select('*').eq('id', id).single();
+    // 1. Busca o produto na lista global
+    const p = allPatisseries.find(item => item.id == id);
     if (!p) return;
 
     const detailArea = document.getElementById('product-main-detail');
+    const modalElement = document.getElementById('productDetailModal');
+
+    // 2. Limpa setas de navegação anteriores
+    document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+
+    // --- NOVIDADE: GERA O LINK DIRETO PARA O PRODUTO ---
+    const shareLink = `${window.location.origin}${window.location.pathname}?product=${p.id}`;
+
+    // 3. Preenche o detalhe principal
     detailArea.innerHTML = `
-        <div class="col-md-5"><img src="${p.image_url}" class="img-fluid rounded-4 shadow-sm"></div>
-        <div class="col-md-7">
+        <div class="col-md-5 mb-3">
+            <img src="${p.image_url}" class="img-fluid rounded-4 shadow-sm w-100" style="max-height: 60vh; object-fit: cover;">
+        </div>
+        <div class="col-md-7 d-flex flex-column justify-content-center">
             <h3 style="font-family:'Cinzel';">${p.name}</h3>
+            
+            <div class="d-flex align-items-center gap-3 my-2">
+                <h4 class="text-gold" style="margin:0;">$${parseFloat(p.price).toFixed(2)}</h4>
+                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')" title="Copier le lien">
+                    <i class="bi bi-share"></i>
+                </button>
+            </div>
+
             <p class="text-muted small">${p.description || 'Une délicatesse artisanale de La Primavera.'}</p>
-            <h4 class="text-gold">$${parseFloat(p.price).toFixed(2)}</h4>
-            <button class="btn btn-dark w-100 mt-3 rounded-pill py-2" onclick="quickAdd('${p.id}', '${p.name}', ${p.price})">AJOUTER AU PANIER</button>
+            <button class="btn btn-dark w-100 mt-3 rounded-pill py-2 fw-bold" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price})">
+                AJOUTER AU PANIER
+            </button>
         </div>
     `;
 
-    // IA busca sugestões baseadas nos momentos (ex: "Petit-déjeuner")
+    // 4. Cria as setas dinâmicas (Navegação lateral)
+    const arrowLeft = document.createElement('div');
+    arrowLeft.className = 'modal-nav-btn prev-patis';
+    arrowLeft.innerHTML = '<i class="bi bi-chevron-left"></i>';
+    arrowLeft.onclick = () => navigatePatisserie(p.id, -1);
+
+    const arrowRight = document.createElement('div');
+    arrowRight.className = 'modal-nav-btn next-patis';
+    arrowRight.innerHTML = '<i class="bi bi-chevron-right"></i>';
+    arrowRight.onclick = () => navigatePatisserie(p.id, 1);
+
+    document.body.appendChild(arrowLeft);
+    document.body.appendChild(arrowRight);
+
     loadPatisAIRecommendations(p.id, p.moments);
 
-    const modal = new bootstrap.Modal(document.getElementById('productDetailModal'));
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+    }, { once: true });
+}
+
+// FUNÇÃO DE NAVEGAÇÃO
+function navigatePatisserie(currentId, direction) {
+    const currentIndex = allPatisseries.findIndex(item => item.id == currentId);
+    let nextIndex = currentIndex + direction;
+
+    if (nextIndex >= allPatisseries.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = allPatisseries.length - 1;
+
+    const nextPatis = allPatisseries[nextIndex];
+    
+    const detailArea = document.getElementById('product-main-detail');
+    detailArea.style.transition = "opacity 0.2s";
+    detailArea.style.opacity = '0';
+    
+    setTimeout(() => {
+        openProductDetail(nextPatis.id);
+        detailArea.style.opacity = '1';
+    }, 200);
 }
 
 async function loadPatisAIRecommendations(currentId, moments) {
@@ -818,6 +936,7 @@ async function loadPatisAIRecommendations(currentId, moments) {
         load();
         loadPromoSidebar();
         updateNavbarAuth();
+        checkUrlForProduct(); // <--- ADICIONE ESTA LINHA AQUI
     });
 
 // --- LOGOUT AUTOMÁTICO POR INATIVIDADE (APENAS UMA VEZ) ---
@@ -861,6 +980,32 @@ function filterByCategory(category, btn) {
         }
     });
 }
+
+// Função para verificar se existe um produto na URL e abrir o modal visualmente
+async function checkUrlForProduct() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product');
+
+    if (productId) {
+        // Aguarda carregar os dados (allPatisseries) que vêm do load()
+        const checkExist = setInterval(() => {
+            if (allPatisseries && allPatisseries.length > 0) {
+                openProductDetail(productId); // Abre o modal de detalhes
+                clearInterval(checkExist);
+                // Limpa o parâmetro da URL para manter o endereço limpo
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, 500);
+        setTimeout(() => clearInterval(checkExist), 5000);
+    }
+}
+
+// Função para copiar o link para a área de transferência
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Lien copié ! Vous pouvez maintenant l'envoyer.");
+    });
+} 
 
 </script>
 

@@ -379,6 +379,64 @@ body { top: 0px !important; }
 .goog-te-gadget { color: transparent !important; }
 
 
+/* Setas de Navegação no Modal - CORRIGIDO */
+.modal-nav-btn {
+    position: fixed; /* Mudado de absolute para fixed */
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 11000 !important; /* Valor bem alto para ficar acima do modal */
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.5rem;
+}
+.modal-nav-btn:hover { background: var(--gold); color: white; }
+.prev-flower { left: 20px; }
+.next-flower { right: 20px; }
+
+/* Ajuste para não sumir no celular */
+@media (max-width: 768px) {
+    .modal-nav-btn { width: 40px; height: 40px; font-size: 1.2rem; }
+    .prev-flower { left: 10px; }
+    .next-flower { right: 10px; }
+}
+
+
+/* Limita a altura da imagem no modal para garantir que o texto apareça */
+#flower-main-detail img {
+    width: 100%;
+    max-height: 70vh; /* Ocupa no máximo 70% da altura da tela */
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Ajuste específico para o corpo do modal */
+#flowerDetailModal .modal-body {
+    max-height: 90vh;
+    overflow-y: auto; /* Permite rolar se o conteúdo extra for muito longo */
+}
+
+/* Ajuste do Título no Modal */
+.modal-flower-title {
+    font-family: 'Cinzel', serif;
+    color: var(--deep-coffee);
+    font-weight: 700;
+    margin-top: 10px;
+    font-size: 1.6rem;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -490,7 +548,7 @@ body { top: 0px !important; }
                     <a href="index.html" style="color: inherit; text-decoration: none;">LA PRIMAVERA</a>
                 </h5>
                 <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8); line-height: 1.6;">
-                    L'excellence haïtienne raffinée. Miami . Haiti<br>
+                    L'excellence haïtienne raffinée. Boston • Manhattan<br>
                     Luxury Haitian Desserts & Floral Arrangements for the Haitian Diaspora in MA, NY & NJ.
                 </p>
             </div>
@@ -526,20 +584,35 @@ body { top: 0px !important; }
 <script>
     const _supabase = supabase.createClient('https://eqgpkdbdsfbtyisfkfsx.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxZ3BrZGJkc2ZidHlpc2ZrZnN4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzg5NjAsImV4cCI6MjA4OTgxNDk2MH0.XOiRUOt_5wwX5AcoVQX_VWL9lkNJWjA4k5-p4eEBYbg');
 
+let allFlowers = []; // Guardará a lista vinda do banco
+
+
 const translations = {
     fr: {
         nav_home: "ACCUEIL", 
         nav_patis: "PÂTISSERIE", 
         nav_flor: "FLORISTERIE", 
         nav_deje: "DÉJEUNERS", 
-        nav_about: "ABOUT US",
+        nav_about: "À PROPOS",
+        page_title: "Douceurs Haïtiennes",
         section_title: "Éclats Floraux Signature", 
-        btn_cart: "AJOUTER AU PANIER", 
+        loading: "Chargement...",
+        btn_add: "AJOUTER AU PANIER", 
+        btn_out: "Indisponible",
         search_placeholder: "Rechercher...",
         btn_login: "CONNEXION",
         btn_account: "Mon Compte",
         btn_logout: "Déconnexion",
-        modal_close: "Fermer"
+        modal_close: "Fermer",
+        modal_suggest: "Vous aimerez aussi...",
+        // Filtros
+        filter_all: "Tous",
+        filter_tradition: "Tradition",
+        filter_fraicheur: "Fraîcheur",
+        filter_cadeaux: "Cadeaux",
+        // Infos Contato & Localização
+        brand_location: "Boston . Haiti",
+        local_delivery_info: "Desservant MA, NY & NJ"
     },
     en: {
         nav_home: "HOME", 
@@ -547,13 +620,25 @@ const translations = {
         nav_flor: "FLORISTRY", 
         nav_deje: "LUNCHES", 
         nav_about: "ABOUT US",
+        page_title: "Haitian Delights",
         section_title: "Signature Floral Glow", 
-        btn_cart: "ADD TO CART", 
+        loading: "Loading...",
+        btn_add: "ADD TO CART", 
+        btn_out: "Out of Stock",
         search_placeholder: "Search...",
         btn_login: "LOGIN",
         btn_account: "My Account",
         btn_logout: "Logout",
-        modal_close: "Close"
+        modal_close: "Close",
+        modal_suggest: "You might also like...",
+        // Filtros
+        filter_all: "All",
+        filter_tradition: "Tradition",
+        filter_fraicheur: "Freshness",
+        filter_cadeaux: "Gifts",
+        // Infos Contato & Localização
+        brand_location: "Boston . Haiti",
+        local_delivery_info: "Serving MA, NY & NJ"
     },
     es: {
         nav_home: "INICIO", 
@@ -561,16 +646,27 @@ const translations = {
         nav_flor: "FLORISTERÍA", 
         nav_deje: "ALMUERZOS", 
         nav_about: "SOBRE NOSOTROS",
+        page_title: "Dulces Haitianos",
         section_title: "Destellos Florales Signature", 
-        btn_cart: "AÑADIR AL CARRITO", 
+        btn_add: "AÑADIR AL CARRITO", 
+        btn_out: "Agotado",
+        loading: "Cargando...",
         search_placeholder: "Buscar...",
         btn_login: "CONEXIÓN",
         btn_account: "Mi Cuenta",
         btn_logout: "Cerrar Sesión",
-        modal_close: "Cerrar"
+        modal_close: "Cerrar",
+        modal_suggest: "También te puede gustar...",
+        // Filtros
+        filter_all: "Todos",
+        filter_tradition: "Tradición",
+        filter_fraicheur: "Frescura",
+        filter_cadeaux: "Regalos",
+        // Infos Contato & Localização
+        brand_location: "Boston . Haiti",
+        local_delivery_info: "Sirviendo MA, NY & NJ"
     }
 };
-
     async function init() {
     const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
     changeLanguage(savedLang); // Aplica o idioma salvo
@@ -582,55 +678,62 @@ const translations = {
 
 
     async function loadFlowers() {
-        const grid = document.getElementById('flower-grid');
-        const { data: flowers } = await _supabase.from('products')
-            .select('*')
-            .eq('category', 'fleur')
-            .neq('is_active', false)
-            .order('name');
+    const grid = document.getElementById('flower-grid');
+    const { data: flowers } = await _supabase.from('products')
+        .select('*')
+        .eq('category', 'fleur')
+        .neq('is_active', false)
+        .order('name');
 
-        if (flowers) {
-            const today = new Date().toISOString().split('T')[0];
-            const lang = localStorage.getItem('laprimavera_lang') || 'fr'; // Pega o idioma atual
+    if (flowers) {
+        allFlowers = flowers; 
 
-            grid.innerHTML = flowers.map(f => {
-                const inStock = (f.stock > 0);
-                const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
+        const today = new Date().toISOString().split('T')[0];
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-                let finalPrice = f.price;
-                let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
+        grid.innerHTML = flowers.map(f => {
+            const inStock = (f.stock > 0);
+            const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
 
-                if (isPromoValid) {
-                    finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
-                    priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
-                }
+            let finalPrice = f.price;
+            let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
 
-                return `
-                <div class="col product-item">
-                    <div class="flower-card">
-                        <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
-                            <img src="${f.image_url}" class="flower-img" alt="${f.name}">
+            if (isPromoValid) {
+                finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
+                priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
+            }
+
+            return `
+            <div class="col product-item" data-product-id="${f.id}">
+                <div class="flower-card">
+                    <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
+                        <img src="${f.image_url}" class="flower-img" alt="${f.name}">
+                    </div>
+                    <div class="flower-body">
+                        <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
+                        <div class="flower-text-wrapper mb-3">
+                            <p class="flower-description">${f.description || ''}</p>
+                            <p class="flower-moments" style="color:var(--gold)">${f.moments || ''}</p>
                         </div>
-                        <div class="flower-body">
-                            <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
-                            <div class="flower-text-wrapper mb-3">
-                                <p class="flower-description">${f.description || ''}</p>
-                                <p class="flower-moments" style="color:var(--gold)">${f.moments || ''}</p>
-                            </div>
-                            <div class="mt-auto">
-                                ${priceDisplay}
-                                <button class="btn btn-dark mt-3 w-100 rounded-pill" 
-                                    onclick="quickAdd('${f.id}', '${f.name.replace(/'/g, "\\'")}', ${finalPrice})" 
-                                    ${!inStock ? 'disabled' : ''}>
-                                    ${inStock ? (translations[lang].btn_cart) : 'RUPTURE'}
-                                </button>
-                            </div>
+                        <div class="mt-auto">
+                            ${priceDisplay}
+                            <button class="btn btn-dark mt-3 w-100 rounded-pill" 
+onclick="quickAdd('${f.id}', \`${f.name}\`, ${finalPrice}, 'fleur', '${f.image_url}')"    ${!inStock ? 'disabled' : ''}>
+    ${inStock ? (translations[lang].btn_cart || translations[lang].btn_add) : 'RUPTURE'}
+</button>
                         </div>
                     </div>
-                </div>`;
-            }).join('');
+                </div>
+            </div>`;
+        }).join('');
+
+        // --- DISPARA A VERIFICAÇÃO DE LINK DIRETO APÓS CARREGAR OS PRODUTOS ---
+        if (typeof checkUrlForProduct === 'function') {
+            checkUrlForProduct();
         }
     }
+}
+
 
     async function quickAdd(id, name, price) {
         const { data: { user } } = await _supabase.auth.getUser();
@@ -645,34 +748,119 @@ const translations = {
 
 
 async function openFlowerDetail(id) {
-    const { data: flower } = await _supabase.from('products').select('*').eq('id', id).single();
+    const flower = allFlowers.find(f => f.id == id);
     if (!flower) return;
 
     const detailArea = document.getElementById('flower-main-detail');
-    if (!detailArea) return;
+    
+    // Remove setas antigas para não duplicar
+    document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+
+    // --- NOVIDADE: CRIA O LINK ÚNICO DO PRODUTO ---
+    const shareLink = `${window.location.origin}${window.location.pathname}?product=${flower.id}`;
 
     detailArea.innerHTML = `
-        <div class="col-md-6">
-            <img src="${flower.image_url}" class="img-fluid rounded-4 shadow">
+        <div class="col-md-6 mb-3">
+            <img src="${flower.image_url}" class="img-fluid" alt="${flower.name}">
         </div>
-        <div class="col-md-6">
-            <h3 style="font-family:'Cinzel'; color:var(--deep-coffee);">${flower.name}</h3>
-            <p style="color:var(--gold); font-weight:600; font-size:0.8rem; letter-spacing:1px;">COLLECTION SIGNATURE</p>
-            <p class="text-muted" style="font-size:0.85rem; line-height:1.5;">${flower.description || 'Une création florale exclusive.'}</p>
-            <h4 class="mb-4" style="font-weight:700;">$${parseFloat(flower.price).toFixed(2)}</h4>
-            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" onclick="quickAdd('${flower.id}', '${flower.name.replace(/'/g, "\\'")}', ${flower.price})">
-                AJOUTER AU PANIER
+        <div class="col-md-6 d-flex flex-column justify-content-center">
+            <p style="color:var(--gold); font-weight:600; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom: 5px;">
+                Collection Signature
+            </p>
+            <h3 class="modal-flower-title">${flower.name}</h3>
+            
+            <div class="d-flex align-items-center gap-3 my-2">
+                <span style="font-size: 1.8rem; font-weight: 700; color: var(--dark);">
+                    $${parseFloat(flower.price).toFixed(2)}
+                </span>
+                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')" title="Copier le lien">
+                    <i class="bi bi-share"></i>
+                </button>
+            </div>
+
+            <p class="text-muted" style="font-size:0.9rem; line-height:1.5; margin-bottom: 20px;">
+                ${flower.description || 'Une création florale exclusive de La Primavera.'}
+            </p>
+            
+            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" 
+                onclick="quickAdd('${flower.id}', '${flower.name.replace(/'/g, "\\'")}', ${flower.price})">
+                <i class="bi bi-cart-plus me-2"></i> AJOUTER AU PANIER
             </button>
         </div>
     `;
 
+    // Lógica das setas e abertura do modal (mantenha como está no seu código)
+    const modalElement = document.getElementById('flowerDetailModal');
+    const arrowLeft = document.createElement('div');
+    arrowLeft.className = 'modal-nav-btn prev-flower';
+    arrowLeft.innerHTML = '<i class="bi bi-chevron-left"></i>';
+    arrowLeft.onclick = () => navigateFlower(flower.id, -1);
+
+    const arrowRight = document.createElement('div');
+    arrowRight.className = 'modal-nav-btn next-flower';
+    arrowRight.innerHTML = '<i class="bi bi-chevron-right"></i>';
+    arrowRight.onclick = () => navigateFlower(flower.id, 1);
+
+    document.body.appendChild(arrowLeft);
+    document.body.appendChild(arrowRight);
+
     loadAddonsPatis(); 
     loadFlowerAIRecommendations(flower.id, flower.moments);
 
-    const modalElement = document.getElementById('flowerDetailModal');
-    const modal = new bootstrap.Modal(modalElement);
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
+
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
+    }, { once: true });
 }
+
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Feedback visual elegante
+        alert("Lien copié ! Vous pouvez maintenant le partager.");
+    }).catch(err => {
+        console.error('Erreur lors da cópia:', err);
+    });
+}
+
+// FUNÇÃO PARA TROCAR DE FLOR SEM FECHAR O MODAL - CORRIGIDA
+function navigateFlower(currentId, direction) {
+    // 1. Usamos == em vez de === para ignorar se um é String e outro é Number
+    const currentIndex = allFlowers.findIndex(f => f.id == currentId);
+    
+    // Verificação de segurança: se não encontrar a flor, não faz nada
+    if (currentIndex === -1) {
+        console.error("Flor atual não encontrada na lista para navegar.");
+        return;
+    }
+
+    let nextIndex = currentIndex + direction;
+
+    // 2. Lógica de Loop infinito
+    if (nextIndex >= allFlowers.length) nextIndex = 0;
+    if (nextIndex < 0) nextIndex = allFlowers.length - 1;
+
+    const nextFlower = allFlowers[nextIndex];
+    
+    const detailArea = document.getElementById('flower-main-detail');
+    
+    // 3. Transição Suave: Melhoramos o timing para não haver "pulo" visual
+    detailArea.style.transition = "opacity 0.2s ease-in-out";
+    detailArea.style.opacity = '0';
+    
+    setTimeout(() => {
+        // Chamamos a função que reconstrói o conteúdo do modal
+        openFlowerDetail(nextFlower.id);
+        
+        // Pequeno delay para garantir que o DOM foi atualizado antes de mostrar
+        setTimeout(() => {
+            detailArea.style.opacity = '1';
+        }, 50);
+    }, 200);
+}
+
 
 async function loadAddonsPatis() {
     const { data: addons, error } = await _supabase
@@ -876,6 +1064,40 @@ const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchst
 activityEvents.forEach(event => {
     document.addEventListener(event, resetInactivityTimer, true);
 });
+
+// Função para verificar se existe um produto na URL e abrir o modal
+async function checkUrlForProduct() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('product');
+
+    if (productId) {
+        // 1. Aguarda um pouco para garantir que a lista de flores (allFlowers) foi carregada do banco
+        const checkExist = setInterval(() => {
+            if (allFlowers && allFlowers.length > 0) {
+                // 2. Em vez de adicionar ao carrinho, chamamos o detalhe visual
+                openFlowerDetail(productId); 
+                clearInterval(checkExist);
+                
+                // 3. Limpa a URL (opcional) para o link não ficar "sujo" se o cliente atualizar a página
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }, 500);
+        
+        setTimeout(() => clearInterval(checkExist), 5000);
+    }
+}
+
+// Chame esta função dentro do seu DOMContentLoaded ou após carregar os dados
+document.addEventListener('DOMContentLoaded', checkUrlForProduct);
+
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Lien copié ! Vous pouvez maintenant l'envoyer.");
+    });
+}
+
+
 
 // Inicia o cronômetro assim que a página carrega
 resetInactivityTimer();

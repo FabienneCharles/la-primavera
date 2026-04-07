@@ -676,7 +676,6 @@ input[type="checkbox"].form-check-input:checked {
 
     async function syncCartFromDB(userId) {
     try {
-        // Buscamos os itens do carrinho de forma simples primeiro para garantir que apareçam
         const { data: items, error } = await _supabase
             .from('cart_items')
             .select('*')
@@ -685,70 +684,91 @@ input[type="checkbox"].form-check-input:checked {
         if (error) throw error;
 
         if (items) {
-            // Criamos o mapeamento. 
-            // Se o seu banco não retornar a categoria direto, vamos tentar identificar pelo nome
             const mapped = items.map(i => {
-                const nameLower = (i.product_name || '').toLowerCase();
-                
-                // Forçamos a categoria se o nome sugerir que é flor ou dejeuner
-                let detectedCategory = i.category || '';
-                if (nameLower.includes('écrin') || nameLower.includes('jardin') || nameLower.includes('fleur') || nameLower.includes('bouquet')) {
-                    detectedCategory = 'fleur';
-                }
-                if (nameLower.includes('déjeuner') || nameLower.includes('petit-déjeuner') || nameLower.includes('panier')) {
-                    detectedCategory = 'dejeuner';
-                }
-
                 return { 
                     id: i.id, 
+                    product_id: i.product_id, 
                     name: i.product_name, 
                     price: parseFloat(i.price) || 0, 
                     quantity: parseInt(i.quantity) || 1,
-                    category: detectedCategory
+                    category: i.category, 
+		    image_url: i.image_url// PEGA A URL REAL DA FOTO
                 };
             });
 
             localStorage.setItem('cart', JSON.stringify(mapped));
-            renderSummary(); // Isso vai fazer os valores saírem de $0.00
+            renderSummary();
             validateCheckoutForm();
         }
     } catch (err) {
         console.error("Erro ao sincronizar carrinho:", err);
     }
 }
+  function renderSummary() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const summaryDiv = document.getElementById('summary-items');
+    let subtotal = 0;
 
-    function renderSummary() {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const summaryDiv = document.getElementById('summary-items');
-        let subtotal = 0;
-
-        summaryDiv.innerHTML = cart.map((i, idx) => {
-            const itemTotal = (i.price * i.quantity);
-            subtotal += itemTotal;
-            return `
-                <div class="item-row">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div><strong>${i.name}</strong><br><small>$${i.price.toFixed(2)}</small></div>
-                        <strong>$${itemTotal.toFixed(2)}</strong>
-                    </div>
-                    <div class="qty-controls mt-2">
-                        <button type="button" class="btn-qty" onclick="updateQty('${i.id}', -1, ${idx})">-</button>
-                        <span class="fw-bold">${i.quantity}</span>
-                        <button type="button" class="btn-qty" onclick="updateQty('${i.id}', 1, ${idx})">+</button>
-                        <button type="button" class="btn-del ms-2 border-0 bg-transparent text-danger" onclick="removeItem('${i.id}', ${idx})"><i class="bi bi-trash"></i></button>
-                    </div>
-                </div>`;
-        }).join('');
-
-        const tax = subtotal * 0.01;
-        const shipping = (selectedMethod === 'delivery') ? globalShipping : 0;
-        const total = subtotal + tax + shipping;
-
-        document.getElementById('sub-total').innerText = `$${subtotal.toFixed(2)}`;
-        document.getElementById('tax-amount').innerText = `$${tax.toFixed(2)}`;
-        document.getElementById('shipping-amount').innerText = `$${shipping.toFixed(2)}`;
-        document.getElementById('grand-total').innerText = `$${total.toFixed(2)}`;
+    if (cart.length === 0) {
+        summaryDiv.innerHTML = "<p class='text-center text-muted py-3'>Votre panier est vide</p>";
+        return;
     }
+
+    summaryDiv.innerHTML = cart.map((i, idx) => {
+        const itemTotal = (i.price * i.quantity);
+        subtotal += itemTotal;
+
+        // 1. LOGICA DE DIRECIONAMENTO EXATA
+        let targetPage = "boutique.html"; 
+        const cat = (i.category || '').toLowerCase().trim();
+        
+        if (cat === 'fleur') targetPage = "floristeria.html";
+        else if (cat === 'dejeuner') targetPage = "dejeuner.html";
+        else targetPage = "boutique.html"; // Padrao para patisserie
+
+        const productLink = `${targetPage}?product=${i.product_id}`;
+
+        // 2. FOTO REAL (Se i.image_url estiver vazio, usamos um placeholder de erro)
+        const imageSrc = i.image_url && i.image_url !== "" ? i.image_url : 'images/Logo1.png';
+
+        return `
+            <div class="item-row d-flex align-items-center gap-3 py-3" style="border-bottom: 1px solid #f1f1f1;">
+                <a href="${productLink}" target="_blank">
+                    <img src="${imageSrc}" alt="${i.name}" 
+                         style="width: 70px; height: 70px; object-fit: cover; border-radius: 12px; border: 1px solid #eee;">
+                </a>
+
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between">
+                        <a href="${productLink}" target="_blank" style="text-decoration:none; color:inherit;">
+                            <strong style="font-size: 0.9rem;">${i.name}</strong>
+                        </a>
+                        <strong style="font-size: 0.95rem;">$${itemTotal.toFixed(2)}</strong>
+                    </div>
+                    <small class="text-muted d-block">$${i.price.toFixed(2)} unit.</small>
+
+                    <div class="qty-controls d-flex align-items-center gap-2 mt-2">
+                        <button type="button" class="btn-qty" onclick="updateQty('${i.id}', -1, ${idx})">-</button>
+                        <span class="fw-bold small">${i.quantity}</span>
+                        <button type="button" class="btn-qty" onclick="updateQty('${i.id}', 1, ${idx})">+</button>
+                        <button type="button" class="btn-del ms-auto border-0 bg-transparent" onclick="removeItem('${i.id}', ${idx})">
+                            <i class="bi bi-trash text-danger"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    }).join('');
+
+    const tax = subtotal * 0.01;
+    const shipping = (selectedMethod === 'delivery') ? globalShipping : 0;
+    const total = subtotal + tax + shipping;
+
+    document.getElementById('sub-total').innerText = `$${subtotal.toFixed(2)}`;
+    document.getElementById('tax-amount').innerText = `$${tax.toFixed(2)}`;
+    document.getElementById('shipping-amount').innerText = `$${shipping.toFixed(2)}`;
+    document.getElementById('grand-total').innerText = `$${total.toFixed(2)}`;
+}
+
 
     async function updateQty(id, delta, idx) {
         let cart = JSON.parse(localStorage.getItem('cart'));
