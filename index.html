@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="La Primavera | Excellence Haïtienne">
+<meta property="og:description" content="Découvrez nos douceurs artisanales et arrangements floraux de prestige.">
+<meta property="og:type" content="website">
+
+<meta property="og:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
+
     <title>La Primavera | Boutique de Prestige</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -544,6 +555,56 @@ body { top: 0px !important; }
 }
 
 
+/* --- SKELETON LOADING (INDEX) --- */
+.skeleton-index-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    height: 400px; /* Altura aproximada dos seus luxury-cards */
+    border: none;
+}
+
+.skeleton-img-lg { width: 100%; height: 250px; background: #eee; }
+.skeleton-line { height: 20px; background: #eee; margin: 20px auto; border-radius: 4px; width: 80%; }
+.skeleton-line.short { width: 50%; }
+
+.shimmer {
+    position: relative; overflow: hidden; background-color: #f6f7f8;
+}
+.shimmer::after {
+    position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(90deg, rgba(255,255,255,0) 0, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    animation: shimmer 1.5s infinite;
+    content: '';
+}
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* --- MICRO-ANIMAÇÕES DE ZOOM (INDEX) --- */
+.img-container { overflow: hidden; }
+.img-container img { 
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important; 
+}
+.luxury-card:hover .img-container img { 
+    transform: scale(1.1) !important; 
+}
+
+.luxury-card { 
+    transition: all 0.4s ease !important; 
+}
+.luxury-card:hover { 
+    transform: translateY(-10px); 
+    box-shadow: 0 15px 35px rgba(44, 24, 16, 0.15) !important; 
+}
+
+.btn-luxury {
+    transition: all 0.3s ease !important;
+}
+.luxury-card:hover .btn-luxury {
+    background: var(--deep-coffee);
+    color: white !important;
+}
+
 </style>
 </head>
 <body>
@@ -606,58 +667,60 @@ body { top: 0px !important; }
         <div class="row g-4">
             <div class="col-lg-3">
                 <div class="promo-sidebar" id="promo-sidebar-content">
-                    </div>
+                    <div class="skeleton-index-card shimmer" style="height: 300px;"></div>
+                </div>
             </div>
 
             <div class="col-lg-9">
                 <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                     
-                   <div class="col">
-    <div class="luxury-card" onclick="openIndexDetail('card_patisserie')" style="cursor:pointer">
-        <div class="img-container"><img id="img-patisserie" src="" alt="Pâtisserie"></div>
-        <div class="card-label">
-            <h3 id="title-patisserie">Douceurs Authentiques</h3>
-            <p id="desc-patisserie" class="small text-muted px-2"></p>
-            <span class="btn-luxury">Découvrir</span>
-        </div>
-    </div>
-</div>
+                    <div class="col">
+                        <div class="luxury-card" onclick="openIndexDetail('card_patisserie')" style="cursor:pointer">
+                            <div class="img-container shimmer"><img id="img-patisserie" src="" alt="Pâtisserie"></div>
+                            <div class="card-label">
+                                <h3 id="title-patisserie">Douceurs Authentiques</h3>
+                                <p id="desc-patisserie" class="small text-muted px-2"></p>
+                                <span class="btn-luxury">Découvrir</span>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col">
-    <div class="luxury-card" onclick="openIndexDetail('card_dejeuner')" style="cursor:pointer">
-        <div class="img-container"><img id="img-dejeuner" src="" alt="Déjeuners"></div>
-        <div class="card-label">
-            <h3 id="title-dejeuner">L'Écrin Impérial</h3>
-            <p id="desc-dejeuner" class="small text-muted px-2"></p>
-            <span class="btn-luxury">Commander</span>
-        </div>
-    </div>
-</div>
+                    <div class="col">
+                        <div class="luxury-card" onclick="openIndexDetail('card_dejeuner')" style="cursor:pointer">
+                            <div class="img-container shimmer"><img id="img-dejeuner" src="" alt="Déjeuners"></div>
+                            <div class="card-label">
+                                <h3 id="title-dejeuner">L'Écrin Impérial</h3>
+                                <p id="desc-dejeuner" class="small text-muted px-2"></p>
+                                <span class="btn-luxury">Commander</span>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col">
-    <div class="luxury-card" onclick="openIndexDetail('card_floristeria')" style="cursor:pointer">
-        <div class="img-container"><img id="img-floristeria" src="" alt="Floristerie"></div>
-        <div class="card-label">
-            <h3 id="title-floristeria">Art Floral</h3>
-            <p id="desc-floristeria" class="small text-muted px-2"></p>
-            <span class="btn-luxury">Explorer</span>
-        </div>
-    </div>
-</div>
+                    <div class="col">
+                        <div class="luxury-card" onclick="openIndexDetail('card_floristeria')" style="cursor:pointer">
+                            <div class="img-container shimmer"><img id="img-floristeria" src="" alt="Floristerie"></div>
+                            <div class="card-label">
+                                <h3 id="title-floristeria">Art Floral</h3>
+                                <p id="desc-floristeria" class="small text-muted px-2"></p>
+                                <span class="btn-luxury">Explorer</span>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col">
-    <div class="luxury-card" onclick="openIndexDetail('card_spaghetti')" style="cursor:pointer">
-        <div class="img-container"><img id="img-spaghetti" src="" alt="Spaghetti"></div>
-        <div class="card-label">
-            <h3 id="title-spaghetti"></h3>
-            <p id="desc-spaghetti" class="small text-muted px-2"></p>
-            <span class="btn-luxury">Découvrir</span>
-        </div>
-    </div>
-</div>
+                    <div class="col">
+                        <div class="luxury-card" onclick="openIndexDetail('card_spaghetti')" style="cursor:pointer">
+                            <div class="img-container shimmer"><img id="img-spaghetti" src="" alt="Spaghetti"></div>
+                            <div class="card-label">
+                                <h3 id="title-spaghetti"></h3>
+                                <p id="desc-spaghetti" class="small text-muted px-2"></p>
+                                <span class="btn-luxury">Découvrir</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="col">
                         <div class="luxury-card">
-                            <div class="img-container"><img id="img-detox" src="" alt="Detox"></div>
+                            <div class="img-container shimmer"><img id="img-detox" src="" alt="Detox"></div>
                             <div class="card-label">
                                 <h3 id="title-detox"></h3>
                                 <p id="desc-detox" class="small text-muted px-2"></p>
@@ -668,7 +731,7 @@ body { top: 0px !important; }
 
                     <div class="col">
                         <div class="luxury-card">
-                            <div class="img-container"><img id="img-combo" src="" alt="Combo"></div>
+                            <div class="img-container shimmer"><img id="img-combo" src="" alt="Combo"></div>
                             <div class="card-label">
                                 <h3 id="title-combo"></h3>
                                 <p id="desc-combo" class="small text-muted px-2"></p>
@@ -677,8 +740,11 @@ body { top: 0px !important; }
                         </div>
                     </div>
 
-                </div> </div> </div> </div>
-</section> 
+                </div> 
+            </div> 
+        </div> 
+    </div>
+</section>
 <section class="reviews-section py-5">
     <div class="container">
         <div class="text-center mb-5">
@@ -1336,6 +1402,8 @@ document.getElementById('review-form')?.addEventListener('submit', async (e) => 
         // Filtra e guarda na lista global apenas os que são CARDS para o Modal
         allIndexCards = data.filter(s => s.id.startsWith('card_'));
 
+        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+
         data.forEach(s => {
             // --- 1. BANNER HERO (Suporte a Imagem ou Vídeo) ---
             if (s.id === 'hero_bg' && s.image_url) {
@@ -1353,22 +1421,41 @@ document.getElementById('review-form')?.addEventListener('submit', async (e) => 
                 }
             }
             
-            // --- 2. PREENCHIMENTO DOS CARDS (Patisserie, Flor, Dejeuner...) ---
+            // --- 2. PREENCHIMENTO DOS CARDS COM REMOÇÃO DE SKELETON ---
             if (s.id.startsWith('card_')) {
                 const elementId = s.id.replace('card_', ''); 
                 const img = document.getElementById(`img-${elementId}`);
                 const title = document.getElementById(`title-${elementId}`);
                 const desc = document.getElementById(`desc-${elementId}`);
+                const cardContainer = img ? img.parentElement : null;
 
-                if (img) img.src = s.image_url;
+                if (img) {
+                    img.src = s.image_url;
+                    // Remove o efeito de brilho assim que a imagem carrega
+                    img.onload = () => {
+                        if (cardContainer) cardContainer.classList.remove('shimmer');
+                    };
+                }
+                
                 if (title) title.innerText = s.title || '';
                 if (desc) desc.innerText = s.description || '';
+
+                // Traduz o botão interno do card se existir
+                const btn = title?.parentElement?.querySelector('.btn-luxury');
+                if (btn && translations[lang]) {
+                    if (s.id.includes('patis')) btn.innerText = translations[lang].btn_discover;
+                    else if (s.id.includes('flor')) btn.innerText = translations[lang].btn_explore;
+                    else btn.innerText = translations[lang].btn_order;
+                }
             }
 
             // --- 3. PROPAGANDA LATERAL ---
             if (s.id === 'promo_sidebar') {
                 const promoBox = document.getElementById('promo-sidebar-content');
                 if (promoBox && s.image_url) {
+                    // Remove shimmer da sidebar ao carregar
+                    promoBox.classList.remove('shimmer');
+
                     let mediaHtml = s.image_url.includes('video') 
                         ? `<video src="${s.image_url}" autoplay loop muted playsinline style="width:100%; border-radius:10px;"></video>`
                         : `<img src="${s.image_url}" alt="Promo" style="width:100%; border-radius:10px;">`;
@@ -1377,7 +1464,9 @@ document.getElementById('review-form')?.addEventListener('submit', async (e) => 
                         ${mediaHtml}
                         <h4 class="blink-text mt-2">${s.title || "Offres"}</h4>
                         <p class="small text-muted">${s.description || ""}</p>
-                        <a href="checkout.html" class="btn btn-sm btn-outline-dark mt-2 w-100">Profiter</a>
+                        <a href="checkout.html" class="btn btn-sm btn-outline-dark mt-2 w-100">
+                            ${translations[lang].btn_discover || 'Profiter'}
+                        </a>
                     `;
                 }
             }

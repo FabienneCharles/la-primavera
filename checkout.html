@@ -425,6 +425,149 @@ input[type="checkbox"].form-check-input:checked {
 }
 
 
+/* --- BARRA DE PROGRESSO (STEPS) --- */
+.checkout-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto 40px;
+    position: relative;
+}
+
+.step-item {
+    text-align: center;
+    position: relative;
+    z-index: 2;
+    flex: 1;
+}
+
+.step-number {
+    width: 35px;
+    height: 35px;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #999;
+    transition: 0.3s;
+}
+
+.step-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: #999;
+}
+
+/* Estado Ativo e Concluído */
+.step-item.active .step-number {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 10px rgba(184, 134, 11, 0.2);
+}
+
+.step-item.active .step-label {
+    color: var(--dark);
+}
+
+.step-item.completed .step-number {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+}
+
+/* Linha conectora entre os círculos */
+.checkout-steps::before {
+    content: '';
+    position: absolute;
+    top: 17px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: #ddd;
+    z-index: 1;
+}
+
+@media (max-width: 576px) {
+    .step-label { font-size: 0.6rem; }
+}
+
+
+/* --- ESTILO PÁGINA DE MERCI --- */
+#merci-page {
+    display: none;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.merci-card {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(44, 24, 16, 0.1);
+    border-top: 6px solid var(--gold);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.merci-image-container {
+    width: 100%;
+    height: 350px;
+    overflow: hidden;
+    border-radius: 15px;
+    margin-bottom: 25px;
+}
+
+.merci-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.merci-title {
+    font-family: 'Cinzel', serif;
+    color: var(--dark);
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.merci-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.btn-merci-home {
+    background: var(--dark);
+    color: white;
+    padding: 12px 40px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    transition: 0.3s;
+}
+
+.btn-merci-home:hover {
+    background: var(--gold);
+    color: white;
+}
+
 </style>
 </head>
 <body>
@@ -439,6 +582,22 @@ input[type="checkbox"].form-check-input:checked {
 </nav>
 
 <div class="main-container">
+
+    <div class="checkout-steps mb-5">
+        <div class="step-item completed">
+            <div class="step-number">01</div>
+            <div class="step-label">Panier</div>
+        </div>
+        <div class="step-item active" id="step-delivery">
+            <div class="step-number">02</div>
+            <div class="step-label">Livraison</div>
+        </div>
+        <div class="step-item" id="step-payment">
+            <div class="step-number">03</div>
+            <div class="step-label">Paiement</div>
+        </div>
+    </div>
+
     <div id="auth-overlay" style="display:none; text-align:center; padding:50px;">
         <h2>Connexion requise</h2>
         <a href="login.html" class="btn btn-primary px-5 mt-3">Se connecter</a>
@@ -462,33 +621,31 @@ input[type="checkbox"].form-check-input:checked {
                         </div>
                     </div>
 
-                   <div id="delivery-fields-group">
-    <h2 class="section-header" style="font-family: 'Cinzel', serif; color: var(--gold-title); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">2. Détails de Livraison (MA Uniquement)</h2>
-    
-    <div class="row g-3">
-        <div class="col-md-12">
-            <label class="form-label">Destinataire *</label>
-            <input type="text" id="full_name" class="form-control" required placeholder="Qui recevra ces fleurs ?">
-        </div>
+                    <div id="delivery-fields-group">
+                        <h2 class="section-header" style="font-family: 'Cinzel', serif; color: var(--gold-title); border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px;">2. Détails de Livraison (MA Uniquement)</h2>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Destinataire *</label>
+                                <input type="text" id="full_name" class="form-control" required placeholder="Qui recevra ces fleurs ?">
+                            </div>
 
-<div class="col-md-6">
-            <label class="form-label">Téléphone *</label>
-            <input type="tel" id="customer_phone" class="form-control" required placeholder="(617) 000-0000" maxlength="14">
-        </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Téléphone *</label>
+                                <input type="tel" id="customer_phone" class="form-control" required placeholder="(617) 000-0000" maxlength="14">
+                            </div>
 
-
-        <div class="col-md-6">
-    <label class="form-label">ZIP Code (5 chiffres) *</label>
-    <input type="text" 
-           id="zip" 
-           class="form-control" 
-           required 
-           maxlength="5" 
-           placeholder="Ex: 02108" 
-           inputmode="numeric" 
-           oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateMAZip(this.value)">
-</div>
-
+                            <div class="col-md-6">
+                                <label class="form-label">ZIP Code (5 chiffres) *</label>
+                                <input type="text" 
+                                       id="zip" 
+                                       class="form-control" 
+                                       required 
+                                       maxlength="5" 
+                                       placeholder="Ex: 02108" 
+                                       inputmode="numeric" 
+                                       oninput="this.value = this.value.replace(/[^0-9]/g, ''); validateMAZip(this.value)">
+                            </div>
 
         <div class="col-md-8">
             <label class="form-label">Ville *</label>
@@ -692,7 +849,7 @@ input[type="checkbox"].form-check-input:checked {
                     price: parseFloat(i.price) || 0, 
                     quantity: parseInt(i.quantity) || 1,
                     category: i.category, 
-		    image_url: i.image_url// PEGA A URL REAL DA FOTO
+            image_url: i.image_url// PEGA A URL REAL DA FOTO
                 };
             });
 
@@ -846,6 +1003,7 @@ input[type="checkbox"].form-check-input:checked {
         window.open(`https://wa.me/13522982578?text=${encodeURIComponent(waMsg)}`, "_blank");
 
         // 4. Envio de E-mail via EmailJS
+        // 4. Envio de E-mail via EmailJS
         await emailjs.send("service_g3y43ep", "template_m6v2njk", {
             order_id: orderIdFormatted,
             client_name: clientName,
@@ -854,15 +1012,35 @@ input[type="checkbox"].form-check-input:checked {
             total: finalTotalStr,
             address: addr,
             delivery_date: newOrder.delivery_date,
-            card_style: cardStyle,
+            card_style: card_style,
             message: userMessage
         });
 
-        // 5. Limpeza e Redirecionamento
+        // --- AQUI COMEÇA O NOVO TRECHO DA PÁGINA DE MERCI (Substitua o antigo passo 5) ---
+
+        // 1. Esconde o formulário de checkout e a barra de progresso
+        document.getElementById('checkout-content').style.display = 'none';
+        const steps = document.querySelector('.checkout-steps');
+        if (steps) steps.style.display = 'none';
+
+        // 2. Mostra a página de Merci (A div que você colocou no final do body)
+        const merciPage = document.getElementById('merci-page');
+        if (merciPage) merciPage.style.display = 'block';
+
+        // 3. Rola a tela suavemente para o topo para o cliente ver a mensagem
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // 4. Limpa o banco de dados e o localStorage (Carrinho vira zero)
         await _supabase.from('cart_items').delete().eq('user_id', currentUser.id);
         localStorage.removeItem('cart');
-        alert("Merci! Votre commande est enregistrée.");
-        window.location.href = "mon-compte.html";
+
+        // 5. Opcional: Redirecionar para a conta após 15 segundos se ele não clicar em nada
+        setTimeout(() => { 
+            // Só redireciona se ele ainda estiver na página de merci
+            if(merciPage.style.display === 'block') {
+                window.location.href = "mon-compte.html"; 
+            }
+        }, 15000);
 
     } catch (err) { 
         alert("Erreur: " + err.message); 
@@ -903,6 +1081,30 @@ input[type="checkbox"].form-check-input:checked {
         btn.style.cursor = "not-allowed";
     }
 }
+
+
+function updateProgressBar() {
+    const stepDelivery = document.getElementById('step-delivery');
+    const stepPayment = document.getElementById('step-payment');
+    
+    // Pegamos valores para saber se a entrega está "ok"
+    const name = document.getElementById('full_name')?.value.trim();
+    const phone = document.getElementById('customer_phone')?.value.trim();
+    const zip = document.getElementById('zip')?.value;
+
+    // Se o nome e telefone estiverem preenchidos, marcamos a entrega como "concluída" visualmente
+    if (name !== "" && phone.length >= 14 && isLogisticsValid) {
+        stepDelivery.classList.remove('active');
+        stepDelivery.classList.add('completed');
+        stepPayment.classList.add('active');
+    } else {
+        stepDelivery.classList.add('active');
+        stepDelivery.classList.remove('completed');
+        stepPayment.classList.remove('active');
+    }
+}
+
+// Chame essa função dentro do seu validateCheckoutForm() que já roda em cada clique/digitação
 
 
 function selectCardStyle(style, element) {
@@ -1031,5 +1233,31 @@ function selectCardStyle(style, element) {
 
 
 </script>
+
+
+<div id="merci-page" class="container py-5">
+    <div class="merci-card">
+        <div class="merci-image-container">
+            <img src="images/Producao.jpg" alt="Préparation de votre commande">
+        </div>
+        <h1 class="merci-title">Merci pour votre confiance !</h1>
+        <p class="merci-subtitle">"Preparando sua doçura com carinho..."</p>
+        
+        <div class="text-muted small mb-4">
+            <p>Nous avons bien reçu votre commande. <br> 
+            Un artisan de <strong>La Primavera</strong> commence déjà à préparer votre bonheur.</p>
+        </div>
+
+        <div class="mb-4">
+            <span class="badge bg-light text-dark p-2 px-3 border" style="font-size: 0.7rem;">
+                <i class="bi bi-whatsapp me-2 text-success"></i> 
+                Détails envoyés sur votre WhatsApp
+            </span>
+        </div>
+
+        <a href="index.html" class="btn-merci-home">RETOUR À L'ACCUEIL</a>
+    </div>
+</div>
+
 </body>
 </html>

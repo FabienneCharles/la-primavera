@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="La Primavera | Excellence Haïtienne">
+<meta property="og:description" content="Découvrez nos douceurs artisanales et arrangements floraux de prestige.">
+<meta property="og:type" content="website">
+
+<meta property="og:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
     <title>Boutique | La Primavera</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -413,9 +423,156 @@
     .next-patis { right: 10px; }
 }
 
+
+
+/* Animação de "pulinho" no carrinho */
+@keyframes cartBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.cart-animate {
+    animation: cartBounce 0.5s ease-in-out;
+}
+
+/* Toast Elegante */
+.custom-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--cafe);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    border: 1px solid var(--gold);
+    opacity: 0;
+    transition: 0.4s;
+    transform: translateY(20px);
+}
+.custom-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+
+/* --- MICRO-ANIMAÇÕES DOS CARDS --- */
+
+/* 1. Garante que a imagem não saia dos limites ao crescer */
+.img-zoom-container, .flower-img-link {
+    overflow: hidden;
+    border-radius: 15px 15px 0 0; /* Mantém os cantos arredondados no topo */
+}
+
+/* 2. Efeito de Zoom na Imagem */
+.product-img, .flower-img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-card:hover .product-img, 
+.flower-card:hover .flower-img {
+    transform: scale(1.1); /* Aumenta 10% */
+}
+
+/* 3. Efeito de "Levantada" no Card */
+.product-card, .flower-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+.product-card:hover, .flower-card:hover {
+    transform: translateY(-10px); /* O card sobe levemente */
+    box-shadow: 0 20px 40px rgba(44, 24, 16, 0.2) !important; /* Sombra fica mais profunda */
+}
+
+/* 4. Animação Suave no Botão (Ele sobe e brilha) */
+.btn-add, .btn-dark, .btn-order {
+    transition: all 0.3s ease-in-out !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover .btn-add, 
+.flower-card:hover .btn-dark {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
+    filter: brightness(1.1); /* Dá um leve brilho no botão */
+}
+
+
+/* --- ESTILOS DO SKELETON LOADING --- */
+
+/* O card cinza que reserva o espaço */
+.skeleton-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 450px; /* Altura aproximada do seu card de doce */
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+/* Espaço da imagem no skeleton */
+.skeleton-img {
+    width: 100%;
+    height: 280px;
+    background: #f0f0f0;
+}
+
+/* Linhas de texto no skeleton */
+.skeleton-text {
+    height: 18px;
+    background: #f0f0f0;
+    margin: 20px 25px 10px;
+    border-radius: 4px;
+}
+
+.skeleton-text.short {
+    width: 50%;
+    margin-top: 10px;
+}
+
+/* A animação mágica do brilho (Shimmer) */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: #f6f7f8;
+}
+
+.shimmer::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer-ani 1.5s infinite;
+    content: '';
+}
+
+@keyframes shimmer-ani {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+
     </style>
 </head>
 <body>
+
+
 
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container-fluid d-flex align-items-center justify-content-between">
@@ -463,6 +620,14 @@
     </div>
 </nav>
 
+
+<div id="toast-container" class="custom-toast">
+    <i class="bi bi-check-circle-fill text-gold"></i>
+    <span id="toast-message">Produit ajouté !</span>
+</div>
+
+
+
 <div class="container-fluid px-lg-5 py-5">
 
 
@@ -486,11 +651,28 @@
 
         <div class="col-lg-9">
             <div class="row g-4" id="products">
-                <div class="text-center w-100 py-5">
-                    <div class="spinner-border text-brown" role="status"></div>
-                    <p class="mt-2" data-i18n="loading">Chargement de la pâtisserie...</p>
-                </div>
-            </div>
+    <div class="col-md-6 col-xl-4 skeleton-box">
+        <div class="skeleton-card">
+            <div class="skeleton-img shimmer"></div>
+            <div class="skeleton-text shimmer"></div>
+            <div class="skeleton-text short shimmer"></div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 skeleton-box">
+        <div class="skeleton-card">
+            <div class="skeleton-img shimmer"></div>
+            <div class="skeleton-text shimmer"></div>
+            <div class="skeleton-text short shimmer"></div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 skeleton-box">
+        <div class="skeleton-card">
+            <div class="skeleton-img shimmer"></div>
+            <div class="skeleton-text shimmer"></div>
+            <div class="skeleton-text short shimmer"></div>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 </div>
@@ -654,54 +836,54 @@ let allPatisseries = []; // Guardará a lista para navegação
     }
 
    async function load() {
-    const { data: products, error } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
     const grid = document.getElementById('products');
+    const { data: products, error } = await _supabase.from('patisserie').select('*').neq('is_active', false).order('name');
     
-    // Captura o idioma antes de começar
     const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
     if (error) {
         console.error("Erro ao carregar produtos:", error);
+        grid.innerHTML = `<p class="text-center">Erreur de chargement des pâtisseries.</p>`;
         return;
     }
 
     if (products) {
-        // --- LINHA ADICIONADA PARA HABILITAR A NAVEGAÇÃO ENTRE DOCES ---
-        allPatisseries = products; 
-        // -------------------------------------------------------------
-
+        allPatisseries = products;
         const now = new Date();
         
-        grid.innerHTML = products.map(p => {
-            const inStock = (p.stock > 0);
-            const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
-            const isPromoValid = p.promo_discount_percent > 0 && expiry && expiry >= now;
-            
-            let finalPrice = isPromoValid 
-                ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) 
-                : parseFloat(p.price).toFixed(2);
+        // Pequeno atraso para o efeito de luxo do Skeleton Shimmer ser percebido
+        setTimeout(() => {
+            grid.innerHTML = products.map(p => {
+                const inStock = (p.stock > 0);
+                const expiry = p.promo_expiry_date ? new Date(p.promo_expiry_date + "T23:59:59") : null;
+                const isPromoValid = p.promo_discount_percent > 0 && expiry && expiry >= now;
+                
+                let finalPrice = isPromoValid 
+                    ? (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2) 
+                    : parseFloat(p.price).toFixed(2);
 
-            return `
-            <div class="col-md-6 col-xl-4 product-item">
-                <div class="product-card">
-                    <div class="img-zoom-container" onclick="openProductDetail('${p.id}')">
-                        <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}">
-                    </div>
-                    <div class="product-body">
-                        <h4 style="cursor:pointer" onclick="openProductDetail('${p.id}')">${p.name}</h4>
-                        <div class="price-tag">
-                            ${isPromoValid ? `<span class="old-price">$${parseFloat(p.price).toFixed(2)}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${parseFloat(p.price).toFixed(2)}`}
+                return `
+                <div class="col-md-6 col-xl-4 product-item">
+                    <div class="product-card">
+                        <div class="img-zoom-container" onclick="openProductDetail('${p.id}')">
+                            <img src="${p.image_url}" class="product-img" style="${!inStock ? 'filter: grayscale(0.8);' : ''}" loading="lazy">
                         </div>
-                        <p class="product-moments" style="font-size:0.7rem">${p.moments ? p.moments : ''}</p>
-                        ${inStock 
-                            ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${finalPrice})">
-                                ${translations[lang].btn_add}
-                               </button>` 
-                            : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
+                        <div class="product-body">
+                            <h4 style="cursor:pointer" onclick="openProductDetail('${p.id}')">${p.name}</h4>
+                            <div class="price-tag">
+                                ${isPromoValid ? `<span class="old-price">$${parseFloat(p.price).toFixed(2)}</span><span class="new-price text-danger">$${finalPrice}</span>` : `$${parseFloat(p.price).toFixed(2)}`}
+                            </div>
+                            <p class="product-moments" style="font-size:0.7rem">${p.moments ? p.moments : ''}</p>
+                            ${inStock 
+                                ? `<button class="btn-add mt-3" onclick="quickAdd('${p.id}', \`${p.name}\`, ${finalPrice}, 'patisserie', '${p.image_url}')">
+                                    ${translations[lang].btn_add}
+                                   </button>` 
+                                : `<button class="btn-unavailable" disabled>${translations[lang].btn_out}</button>`}
+                        </div>
                     </div>
-                </div>
-            </div>`;
-        }).join('');
+                </div>`;
+            }).join('');
+        }, 300); // 300ms de shimmer
     }
 }
 
@@ -738,9 +920,10 @@ async function openProductDetail(id) {
             </div>
 
             <p class="text-muted small">${p.description || 'Une délicatesse artisanale de La Primavera.'}</p>
-            <button class="btn btn-dark w-100 mt-3 rounded-pill py-2 fw-bold" onclick="quickAdd('${p.id}', '${p.name.replace(/'/g, "\\'")}', ${p.price})">
-                AJOUTER AU PANIER
-            </button>
+            <button class="btn btn-dark w-100 mt-3 rounded-pill py-2 fw-bold" 
+    onclick="quickAdd('${p.id}', \`${p.name}\`, ${p.price}, 'patisserie', '${p.image_url}')">
+    AJOUTER AU PANIER
+</button>
         </div>
     `;
 
@@ -828,16 +1011,42 @@ async function loadPatisAIRecommendations(currentId, moments) {
         });
     }
 
-    async function quickAdd(id, name, price) {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
+    async function quickAdd(id, name, price, category, imageUrl) {
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
 
-        const { error } = await _supabase.from('cart_items').insert([{
-            user_id: user.id, product_name: name, price: price, quantity: 1
-        }]);
-
-        if (!error) { alert(name + " ajouté !"); updateCartBadge(); }
+    if (!user) { 
+        window.location.href = "login.html"; 
+        return; 
     }
+
+    const { error } = await _supabase.from('cart_items').insert([{
+        user_id: user.id, product_id: id, product_name: name, 
+        price: parseFloat(price), category: category, 
+        image_url: imageUrl, quantity: 1
+    }]);
+
+    if (!error) {
+        // 1. Feedback visual: Notificação elegante
+        const toast = document.getElementById('toast-container');
+        document.getElementById('toast-message').innerText = name + " ajouté !";
+        toast.classList.add('show');
+        
+        // 2. Feedback visual: Carrinho pulsando
+        const cartIcon = document.querySelector('.cart-wrapper-custom');
+        cartIcon.classList.add('cart-animate');
+
+        // Remove os efeitos após o tempo da animação
+        setTimeout(() => {
+            toast.classList.remove('show');
+            cartIcon.classList.remove('cart-animate');
+        }, 3000);
+
+        if (typeof updateCartBadge === 'function') updateCartBadge();
+    } else {
+        alert("Erreur lors de l'ajout.");
+    }
+}
 
    async function updateNavbarAuth() {
     const area = document.getElementById('auth-area');

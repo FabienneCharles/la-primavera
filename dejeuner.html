@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta property="og:title" content="La Primavera | Excellence Haïtienne">
+<meta property="og:description" content="Découvrez nos douceurs artisanales et arrangements floraux de prestige.">
+<meta property="og:type" content="website">
+
+<meta property="og:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
     <title>La Primavera | Déjeuners de Prestige</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -476,6 +487,176 @@ body {
 }
 
 
+/* Animação do ícone do carrinho */
+@keyframes cartBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.cart-animate {
+    animation: cartBounce 0.5s ease-in-out;
+}
+
+/* Toast (Notificação) Elegante */
+.custom-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2C1810; /* Sua cor café */
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 20001; /* Acima de tudo */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    border: 1px solid #B8860B; /* Sua cor ouro */
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.4s;
+    transform: translateY(20px);
+}
+.custom-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+/* --- MICRO-ANIMAÇÕES DOS CARDS --- */
+
+/* 1. Garante que a imagem não saia dos limites ao crescer */
+.img-zoom-container, .flower-img-link {
+    overflow: hidden;
+    border-radius: 15px 15px 0 0; /* Mantém os cantos arredondados no topo */
+}
+
+/* 2. Efeito de Zoom na Imagem */
+.product-img, .flower-img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-card:hover .product-img, 
+.flower-card:hover .flower-img {
+    transform: scale(1.1); /* Aumenta 10% */
+}
+
+/* 3. Efeito de "Levantada" no Card */
+.product-card, .flower-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+.product-card:hover, .flower-card:hover {
+    transform: translateY(-10px); /* O card sobe levemente */
+    box-shadow: 0 20px 40px rgba(44, 24, 16, 0.2) !important; /* Sombra fica mais profunda */
+}
+
+/* 4. Animação Suave no Botão (Ele sobe e brilha) */
+.btn-add, .btn-dark, .btn-order {
+    transition: all 0.3s ease-in-out !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover .btn-add, 
+.flower-card:hover .btn-dark {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
+    filter: brightness(1.1); /* Dá um leve brilho no botão */
+}
+
+
+/* --- SKELETON LOADING (DÉJEUNER) --- */
+.skeleton-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 500px; /* Altura aproximada do seu card de almoço */
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.skeleton-img {
+    width: 100%;
+    height: 260px;
+    background: #f0f0f0;
+}
+
+.skeleton-text {
+    height: 18px;
+    background: #f0f0f0;
+    margin: 20px 25px 10px;
+    border-radius: 4px;
+}
+
+.skeleton-text.short { width: 50%; }
+
+/* Efeito Shimmer (Brilho que se move) */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: #f6f7f8;
+}
+
+.shimmer::after {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shimmer-ani 1.5s infinite;
+    content: '';
+}
+
+@keyframes shimmer-ani {
+    100% { transform: translateX(100%); }
+}
+
+/* --- MICRO-ANIMAÇÕES DE ZOOM E HOVER --- */
+
+/* Garante que a imagem não saia do card ao crescer */
+.img-zoom-container {
+    overflow: hidden;
+    border-radius: 15px 15px 0 0;
+}
+
+/* Efeito de Zoom Suave na Imagem */
+.product-img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+}
+
+.product-card:hover .product-img {
+    transform: scale(1.1); /* Aumenta 10% */
+}
+
+/* Efeito do Card subindo e ganhando sombra */
+.product-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(44, 24, 16, 0.2) !important;
+}
+
+/* Botão "Ajouter" subindo no hover */
+.btn-dark {
+    transition: all 0.3s ease-in-out !important;
+}
+
+.product-card:hover .btn-dark {
+    transform: translateY(-3px);
+    filter: brightness(1.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
     </style>
 </head>
 <body>
@@ -535,6 +716,12 @@ body {
         </div>
     </div>
 </nav>
+
+<div id="toast-container" class="custom-toast">
+    <i class="bi bi-check-circle-fill" style="color: #D4AF37;"></i>
+    <span id="toast-message">Produit ajouté !</span>
+</div>
+
 <section class="container py-5">
     <h2 class="section-title" data-i18n="section_title">Collection Gastronomique Signature</h2>
 
@@ -559,7 +746,28 @@ body {
 
 
     <div class="row g-4" id="dejeuner-grid">
+    <div class="col-md-6 col-xl-4 skeleton-box">
+        <div class="skeleton-card shimmer">
+            <div class="skeleton-img" style="height: 260px;"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
         </div>
+    </div>
+    <div class="col-md-6 col-xl-4 skeleton-box">
+        <div class="skeleton-card shimmer">
+            <div class="skeleton-img" style="height: 260px;"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-4 skeleton-box">
+        <div class="skeleton-card shimmer">
+            <div class="skeleton-img" style="height: 260px;"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+        </div>
+    </div>
+</div>
 </section>
 
 <footer class="text-center" style="background-color: #2C1810; color: #fdfaf8; padding: 60px 20px 40px; border-top: 4px solid #B8860B; font-family: 'Poppins', sans-serif;">
@@ -620,88 +828,84 @@ let allDejeuners = []; // Variável global para armazenar os pratos
 
     // 1. Busca os dados do Supabase
     const { data: prods, error } = await _supabase.from('products')
-        .select('id, name, description, moments, price, image_url, stock, promo_discount_percent, promo_expiry_date')
+        .select('*')
         .eq('category', 'dejeuner')
         .neq('is_active', false)
         .order('name');
 
     if (error) {
         console.error("Erro ao carregar almoços:", error.message);
+        grid.innerHTML = `<p class="text-center">Erreur de chargement des produits.</p>`;
         return;
     }
 
     if (prods) {
-        // Habilita a navegação global entre pratos
         allDejeuners = prods; 
 
         const today = new Date().toISOString().split('T')[0];
         const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-        grid.innerHTML = prods.map(p => {
-            const inStock = (p.stock || 0) > 0;
-            
-            // Tratamento de aspas para o clique do botão não quebrar
-            const escapedName = p.name.replace(/'/g, "\\'");
-            
-            // Trata a descrição como lista de componentes
-            const components = p.description ? p.description.split('\n').map(line => `<li><i class="bi bi-check2-circle"></i> ${line}</li>`).join('') : '';
-            
-            // Lógica de promoção
-            const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
+        // Pequeno atraso de 300ms para o efeito de luxo do Shimmer ser percebido
+        setTimeout(() => {
+            grid.innerHTML = prods.map(p => {
+                const inStock = (p.stock || 0) > 0;
+                
+                // Tratamento da descrição como lista de componentes
+                const components = p.description ? p.description.split('\n').map(line => `<li><i class="bi bi-check2-circle"></i> ${line}</li>`).join('') : '';
+                
+                // Lógica de promoção
+                const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
 
-            let finalPrice = p.price;
-            let priceDisplay = `<div class="price-tag fw-bold">$${parseFloat(p.price).toFixed(2)}</div>`;
+                let finalPrice = p.price;
+                let priceDisplay = `<div class="price-tag fw-bold">$${parseFloat(p.price).toFixed(2)}</div>`;
 
-            if (isPromoValid) {
-                finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
-                priceDisplay = `
-                    <div class="d-flex align-items-center gap-2">
-                        <span class="old-price text-muted text-decoration-line-through small">$${parseFloat(p.price).toFixed(2)}</span>
-                        <span class="new-price text-danger fw-bold">$${finalPrice}</span>
-                    </div>`;
-            }
+                if (isPromoValid) {
+                    finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
+                    priceDisplay = `
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="old-price text-muted text-decoration-line-through small">$${parseFloat(p.price).toFixed(2)}</span>
+                            <span class="new-price text-danger fw-bold">$${finalPrice}</span>
+                        </div>`;
+                }
 
-            let momentsDisplay = "";
-            if (p.moments) {
-                momentsDisplay = `<p style="font-size: 0.75rem; color: #B8860B; text-transform: uppercase; margin-bottom: 10px;"><strong>Idéal pour :</strong> ${p.moments}</p>`;
-            }
+                let momentsDisplay = p.moments ? `<p style="font-size: 0.75rem; color: #B8860B; text-transform: uppercase; margin-bottom: 10px;"><strong>Idéal pour :</strong> ${p.moments}</p>` : "";
 
-            return `
-            <div class="col-md-6 col-xl-4 product-item" data-product-id="${p.id}">
-                <div class="product-card shadow-sm h-100">
-                    <a href="${p.image_url}" class="zoom-trigger" onclick="event.preventDefault()">
-                        <img src="${p.image_url}" class="product-img" style="cursor:pointer; width:100%;" onclick="openDejeunerDetail('${p.id}')">
-                    </a>
-                    <div class="card-body-custom p-4 d-flex flex-column h-100">
-                        <h3 class="product-name mb-2" style="cursor:pointer; font-family:'Cinzel'; font-size: 1.2rem;" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
-                        <ul class="component-list list-unstyled small text-muted mb-3">${components}</ul>
-                        
-                        <div class="mt-auto">
-                            ${momentsDisplay} 
-                            <div class="mb-3">${priceDisplay}</div>
+                // Retorno do Card Real com container de Zoom
+                return `
+                <div class="col-md-6 col-xl-4 product-item" data-product-id="${p.id}">
+                    <div class="product-card shadow-sm h-100">
+                        <div class="img-zoom-container" onclick="openDejeunerDetail('${p.id}')">
+                            <img src="${p.image_url}" class="product-img" style="cursor:pointer; width:100%;" loading="lazy">
+                        </div>
+                        <div class="card-body-custom p-4 d-flex flex-column h-100">
+                            <h3 class="product-name mb-2" style="cursor:pointer; font-family:'Cinzel'; font-size: 1.2rem;" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
+                            <ul class="component-list list-unstyled small text-muted mb-3">${components}</ul>
                             
-                            <button class="btn btn-dark w-100 rounded-pill fw-bold py-2" 
-                                onclick="quickAdd('${p.id}', '${escapedName}', ${finalPrice}, 'dejeuner', '${p.image_url}')" 
-                                ${!inStock ? 'disabled' : ''}>
-                                ${inStock ? (translations[lang]?.btn_cart || "AJOUTER") : "INDISPONIBLE"}
-                            </button>
+                            <div class="mt-auto">
+                                ${momentsDisplay} 
+                                <div class="mb-3">${priceDisplay}</div>
+                                
+                                <button class="btn btn-dark w-100 rounded-pill fw-bold py-2" 
+                                    onclick="quickAdd('${p.id}', \`${p.name}\`, ${finalPrice}, 'dejeuner', '${p.image_url}')" 
+                                    ${!inStock ? 'disabled' : ''}>
+                                    ${inStock ? (translations[lang]?.btn_cart || "AJOUTER") : "INDISPONIBLE"}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`;
-        }).join('');
+                </div>`;
+            }).join('');
 
-        // Inicializa o efeito de zoom se a biblioteca Luminous estiver presente
-        if (window.Luminous) {
-            document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
-        }
+            // Inicializa efeito de zoom se a biblioteca Luminous estiver presente
+            if (window.Luminous) {
+                document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
+            }
 
-        // Executa a verificação de Link Direto (Deep Linking)
-        setTimeout(() => {
+            // Executa a verificação de Link Direto
             if (typeof checkUrlForProduct === 'function') {
                 checkUrlForProduct();
             }
-        }, 150);
+        }, 300); // 300ms de delay para o Skeleton Shimmer
     }
 }
 
@@ -726,17 +930,48 @@ function navigateDejeuner(currentId, direction) {
 }
 
 
-    async function quickAdd(id, name, price) {
-    const { data: { user } } = await _supabase.auth.getUser();
-    if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
+   async function quickAdd(id, name, price, category, imageUrl) {
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
+
+    if (!user) { 
+        alert("Veuillez vous connecter !"); 
+        window.location.href = "login.html"; 
+        return; 
+    }
 
     const { error } = await _supabase.from('cart_items').insert([{
-        user_id: user.id, product_name: name, price: price, quantity: 1
+        user_id: user.id, 
+        product_id: id, 
+        product_name: name, 
+        price: parseFloat(price), 
+        category: category || 'boutique', 
+        image_url: imageUrl || 'images/Logo1.png', 
+        quantity: 1
     }]);
 
     if (!error) {
+        // --- INÍCIO DO FEEDBACK VISUAL ---
+        const toast = document.getElementById('toast-container');
+        const cartIcon = document.querySelector('.cart-wrapper-custom');
+
+        // 1. Mostra o Toast
+        document.getElementById('toast-message').innerText = name + " ajouté !";
+        toast.classList.add('show');
+        
+        // 2. Faz o carrinho pular
+        if (cartIcon) cartIcon.classList.add('cart-animate');
+
+        // 3. Limpa os efeitos após 3 segundos
+        setTimeout(() => {
+            toast.classList.remove('show');
+            if (cartIcon) cartIcon.classList.remove('cart-animate');
+        }, 3000);
+        // --- FIM DO FEEDBACK VISUAL ---
+
         await syncCartFromDB(user.id);
-        toggleCart();
+    } else {
+        console.error(error.message);
     }
 }
 
@@ -869,13 +1104,20 @@ async function suggestSimilar(currentProductId, currentMoments) {
     function goToCheckout() { window.location.href = "checkout.html"; }
 
     async function syncCartFromDB(userId) {
-        const { data: items } = await _supabase.from('cart_items').select('*').eq('user_id', userId);
-        if (items) {
-            const cartMapped = items.map(i => ({ id: i.id, name: i.product_name, price: i.price, quantity: i.quantity }));
-            localStorage.setItem('cart', JSON.stringify(cartMapped));
-            updateCartUI();
-        }
+    const { data: items } = await _supabase.from('cart_items').select('*').eq('user_id', userId);
+    if (items) {
+        const cartMapped = items.map(i => ({ 
+            id: i.id, 
+            name: i.product_name, 
+            price: i.price, 
+            quantity: i.quantity,
+            category: i.category,
+            image_url: i.image_url // <--- ISSO RESOLVE O PROBLEMA DO LOGO
+        }));
+        localStorage.setItem('cart', JSON.stringify(cartMapped));
+        updateCartUI();
     }
+}
 
     function updateCartUI() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];

@@ -3,6 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<meta property="og:title" content="La Primavera | Excellence Haïtienne">
+<meta property="og:description" content="Découvrez nos douceurs artisanales et arrangements floraux de prestige.">
+<meta property="og:type" content="website">
+
+<meta property="og:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sua-url.com/images/Logo-Preview-WhatsApp.jpg">
+
+
+    
     <title>Floristerie Élégante | La Primavera</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -436,6 +451,228 @@ body { top: 0px !important; }
 }
 
 
+/* Animação do ícone do carrinho */
+@keyframes cartBounce {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+.cart-animate {
+    animation: cartBounce 0.5s ease-in-out;
+}
+
+/* Toast (Notificação) Elegante */
+.custom-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #2C1810; /* Cor café */
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 20001;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    border: 1px solid #B8860B; /* Cor ouro */
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.4s;
+    transform: translateY(20px);
+}
+.custom-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+
+
+/* --- MICRO-ANIMAÇÕES DOS CARDS --- */
+
+/* 1. Garante que a imagem não saia dos limites ao crescer */
+.img-zoom-container, .flower-img-link {
+    overflow: hidden;
+    border-radius: 15px 15px 0 0; /* Mantém os cantos arredondados no topo */
+}
+
+/* 2. Efeito de Zoom na Imagem */
+.product-img, .flower-img {
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.product-card:hover .product-img, 
+.flower-card:hover .flower-img {
+    transform: scale(1.1); /* Aumenta 10% */
+}
+
+/* 3. Efeito de "Levantada" no Card */
+.product-card, .flower-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+}
+
+.product-card:hover, .flower-card:hover {
+    transform: translateY(-10px); /* O card sobe levemente */
+    box-shadow: 0 20px 40px rgba(44, 24, 16, 0.2) !important; /* Sombra fica mais profunda */
+}
+
+/* 4. Animação Suave no Botão (Ele sobe e brilha) */
+.btn-add, .btn-dark, .btn-order {
+    transition: all 0.3s ease-in-out !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-card:hover .btn-add, 
+.flower-card:hover .btn-dark {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
+    filter: brightness(1.1); /* Dá um leve brilho no botão */
+}
+
+
+
+/* --- SKELETON LOADING ANIMATION --- */
+.skeleton-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 100%;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.skeleton-img {
+    width: 100%;
+    height: 280px;
+    background: #e2e2e2;
+}
+
+.skeleton-text {
+    height: 20px;
+    background: #e2e2e2;
+    margin: 15px 25px;
+    border-radius: 4px;
+}
+
+.skeleton-text.short { width: 40%; }
+
+/* O efeito de brilho passando */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+.shimmer::after {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0,
+        rgba(255, 255, 255, 0.2) 20%,
+        rgba(255, 255, 255, 0.5) 60%,
+        rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 1.5s infinite;
+    content: '';
+}
+
+@keyframes shimmer {
+    100% { transform: translateX(100%); }
+}
+
+
+/* --- TÍTULO DOS FILTROS --- */
+.filter-moment-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+/* --- BANNER DE SUGESTÃO DINÂMICO --- */
+#upsell-banner {
+    display: none;
+    background: #fff;
+    border: 1px solid var(--gold);
+    border-radius: 15px;
+    padding: 15px 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(184, 134, 11, 0.1);
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.upsell-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.btn-upsell {
+    background: var(--gold);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-family: 'Cinzel', serif;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-upsell:hover { background: var(--dark); color: white; }
+
+@media (max-width: 768px) {
+    .upsell-content { flex-direction: column; text-align: center; }
+}
+
+
+
+.btn-upsell {
+    background: var(--dark);
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-family: 'Cinzel', serif;
+    text-decoration: none;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.btn-upsell:hover {
+    background: var(--gold);
+    color: white !important;
+}
+
+
+#upsell-banner {
+    display: none; /* Começa escondido */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    background: #fff;
+    border: 1px solid var(--gold);
+    border-radius: 15px;
+    padding: 15px 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(184, 134, 11, 0.1);
+}
 
     </style>
 </head>
@@ -485,30 +722,73 @@ body { top: 0px !important; }
     </div>
 </nav>
 
+<div id="toast-container" class="custom-toast">
+    <i class="bi bi-check-circle-fill" style="color: #D4AF37;"></i>
+    <span id="toast-message">Arranjo adicionado !</span>
+</div>
+
+
 <section class="container py-5">
 <h2 class="section-title" data-i18n="section_title">Éclats Floraux Signature</h2>
 
     <div class="container mb-5">
-        <div class="d-flex justify-content-center flex-wrap gap-3" id="experience-filters">
-            <button class="filter-badge active" onclick="filterByMoment('all', this)">
-                <i class="bi bi-stars"></i> TOUT
-            </button>
-            <button class="filter-badge" onclick="filterByMoment('Romantisme', this)">
-                <i class="bi bi-heart-fill"></i> ROMANTISME
-            </button>
-            <button class="filter-badge" onclick="filterByMoment('Anniversaire', this)">
-                <i class="bi bi-cake2-fill"></i> ANNIVERSAIRE
-            </button> <button class="filter-badge" onclick="filterByMoment('Énergie', this)">
-                <i class="bi bi-lightning-charge-fill"></i> ÉNERGIE
-            </button>
-            <button class="filter-badge" onclick="filterByMoment('Surprise', this)">
-                <i class="bi bi-gift-fill"></i> SURPRISE
-            </button>
-        </div>
+    <h5 class="filter-moment-title">Pour quel moment ?</h5>
+    
+    <div class="d-flex justify-content-center flex-wrap gap-3" id="experience-filters">
+        <button class="filter-badge active" onclick="filterByMoment('all', this)">
+            <i class="bi bi-stars"></i> TOUT
+        </button>
+        <button class="filter-badge" onclick="filterByMoment('Romantisme', this)">
+            <i class="bi bi-heart-fill"></i> ROMANTISME
+        </button>
+        <button class="filter-badge" onclick="filterByMoment('Anniversaire', this)">
+            <i class="bi bi-cake2-fill"></i> ANNIVERSAIRE
+        </button> 
+        <button class="filter-badge" onclick="filterByMoment('Énergie', this)">
+            <i class="bi bi-lightning-charge-fill"></i> ÉNERGIE
+        </button>
+        <button class="filter-badge" onclick="filterByMoment('Surprise', this)">
+            <i class="bi bi-gift-fill"></i> SURPRISE
+        </button>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid">
+    <div id="upsell-banner" class="mt-4">
+        <div class="upsell-content">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-cup-straw fs-3 text-gold"></i>
+                <div class="upsell-text">
+                    <h5 style="font-family:'Cinzel'; margin:0;">Un moment parfait...</h5>
+                    <p class="small text-muted mb-0">Accompagnez vos fleurs avec un <strong>Crémans Haïtien</strong> de notre Boutique.</p>
+                </div>
+            </div>
+            <a href="boutique.html" class="btn-upsell">VOIR LA BOUTIQUE</a>
         </div>
+    </div>
+</div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid">
+    <div class="col skeleton-box">
+        <div class="skeleton-card shimmer">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+        </div>
+    </div>
+    <div class="col skeleton-box">
+        <div class="skeleton-card shimmer">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+        </div>
+    </div>
+    <div class="col skeleton-box">
+        <div class="skeleton-card shimmer">
+            <div class="skeleton-img"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text short"></div>
+        </div>
+    </div>
+</div>
 </section>
 
 <div class="modal fade" id="flowerDetailModal" tabindex="-1" aria-hidden="true">
@@ -679,72 +959,148 @@ const translations = {
 
     async function loadFlowers() {
     const grid = document.getElementById('flower-grid');
-    const { data: flowers } = await _supabase.from('products')
+    if (!grid) return;
+
+    // 1. Busca os dados do Supabase
+    const { data: flowers, error } = await _supabase.from('products')
         .select('*')
-        .eq('category', 'fleur')
+        .eq('category', 'fleur') // Certifique-se que no banco está "fleur"
         .neq('is_active', false)
         .order('name');
 
+    if (error) {
+        console.error("Erro ao carregar flores:", error.message);
+        grid.innerHTML = `<p class="text-center">Erreur de chargement des fleurs.</p>`;
+        return;
+    }
+
     if (flowers) {
         allFlowers = flowers; 
-
         const today = new Date().toISOString().split('T')[0];
         const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-        grid.innerHTML = flowers.map(f => {
-            const inStock = (f.stock > 0);
-            const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
+        // O SEGREDO: Usamos um pequeno delay para garantir que os esqueletos sumam e as flores apareçam
+        setTimeout(() => {
+            grid.innerHTML = flowers.map(f => {
+                const inStock = (f.stock > 0);
+                const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
 
-            let finalPrice = f.price;
-            let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
+                let finalPrice = f.price;
+                let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
 
-            if (isPromoValid) {
-                finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
-                priceDisplay = `<div><span class="old-price">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
-            }
+                if (isPromoValid) {
+                    finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
+                    priceDisplay = `<div><span class="old-price text-muted">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
+                }
 
-            return `
-            <div class="col product-item" data-product-id="${f.id}">
-                <div class="flower-card">
-                    <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
-                        <img src="${f.image_url}" class="flower-img" alt="${f.name}">
-                    </div>
-                    <div class="flower-body">
-                        <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
-                        <div class="flower-text-wrapper mb-3">
-                            <p class="flower-description">${f.description || ''}</p>
-                            <p class="flower-moments" style="color:var(--gold)">${f.moments || ''}</p>
+                return `
+                <div class="col product-item" data-product-id="${f.id}">
+                    <div class="flower-card h-100 shadow-sm">
+                        <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
+                            <img src="${f.image_url}" class="flower-img" alt="${f.name}" loading="lazy">
                         </div>
-                        <div class="mt-auto">
-                            ${priceDisplay}
-                            <button class="btn btn-dark mt-3 w-100 rounded-pill" 
-onclick="quickAdd('${f.id}', \`${f.name}\`, ${finalPrice}, 'fleur', '${f.image_url}')"    ${!inStock ? 'disabled' : ''}>
-    ${inStock ? (translations[lang].btn_cart || translations[lang].btn_add) : 'RUPTURE'}
-</button>
+                        <div class="flower-body p-4 text-center d-flex flex-column">
+                            <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
+                            <div class="flower-text-wrapper mb-3">
+                                <p class="flower-description text-muted small">${f.description || ''}</p>
+                                <p class="flower-moments small fw-bold" style="color:var(--gold)">${f.moments || ''}</p>
+                            </div>
+                            <div class="mt-auto">
+                                ${priceDisplay}
+                                <button class="btn btn-dark mt-3 w-100 rounded-pill fw-bold" 
+                                    onclick="quickAdd('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, ${finalPrice}, 'fleur', '${f.image_url}')" 
+                                    ${!inStock ? 'disabled' : ''}>
+                                    ${inStock ? (translations[lang]?.btn_cart || translations[lang]?.btn_add || "AJOUTER") : 'RUPTURE'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`;
-        }).join('');
+                </div>`;
+            }).join('');
 
-        // --- DISPARA A VERIFICAÇÃO DE LINK DIRETO APÓS CARREGAR OS PRODUTOS ---
-        if (typeof checkUrlForProduct === 'function') {
-            checkUrlForProduct();
-        }
+            if (typeof checkUrlForProduct === 'function') checkUrlForProduct();
+        }, 400); // 400ms de brilho antes de mostrar
     }
 }
 
+// FILTRO INTELIGENTE QUE MOSTRA O BANNER
+// FILTRO INTELIGENTE COM BANNER
+function filterByMoment(moment, btn) {
+    // 1. Botão Ativo
+    document.querySelectorAll('.filter-badge').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
 
-    async function quickAdd(id, name, price) {
-        const { data: { user } } = await _supabase.auth.getUser();
-        if (!user) { alert("Veuillez vous connecter !"); window.location.href = "login.html"; return; }
-
-        const { error } = await _supabase.from('cart_items').insert([{
-            user_id: user.id, product_id: id, product_name: name, price: price, quantity: 1
-        }]);
-
-        if (!error) { alert(name + " ajouté !"); updateCartBadge(); }
+    // 2. Lógica do Banner (Ajustada para garantir visibilidade)
+    const upsellBanner = document.getElementById('upsell-banner');
+    if (upsellBanner) {
+        if (moment === 'Romantisme') {
+            upsellBanner.style.setProperty('display', 'block', 'important');
+            setTimeout(() => { upsellBanner.style.opacity = '1'; }, 50);
+        } else {
+            upsellBanner.style.opacity = '0';
+            setTimeout(() => { upsellBanner.style.display = 'none'; }, 300);
+        }
     }
+
+    // 3. Filtro das flores (Sua lógica que já funciona)
+    const items = document.querySelectorAll('.product-item');
+    items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        if (moment === 'all' || text.includes(moment.toLowerCase())) {
+            item.style.display = 'block';
+            setTimeout(() => item.style.opacity = '1', 10);
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+
+    async function quickAdd(id, name, price, category, imageUrl) {
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
+
+    if (!user) { 
+        alert("Veuillez vous connecter !"); 
+        window.location.href = "login.html"; 
+        return; 
+    }
+
+    const { error } = await _supabase.from('cart_items').insert([{
+        user_id: user.id, 
+        product_id: id, 
+        product_name: name, 
+        price: parseFloat(price), 
+        category: category || 'fleur', 
+        image_url: imageUrl || 'images/Logo1.png', 
+        quantity: 1
+    }]);
+
+    if (!error) {
+        // --- INÍCIO DO FEEDBACK VISUAL ---
+        const toast = document.getElementById('toast-container');
+        const cartIcon = document.querySelector('.cart-wrapper-custom');
+
+        // 1. Atualiza a mensagem e mostra o Toast
+        document.getElementById('toast-message').innerText = name + " ajouté !";
+        toast.classList.add('show');
+        
+        // 2. Faz o ícone do carrinho pular
+        if (cartIcon) cartIcon.classList.add('cart-animate');
+
+        // 3. Esconde o Toast e limpa a animação após 3 segundos
+        setTimeout(() => {
+            toast.classList.remove('show');
+            if (cartIcon) cartIcon.classList.remove('cart-animate');
+        }, 3000);
+        // --- FIM DO FEEDBACK VISUAL ---
+
+        if (typeof updateCartBadge === 'function') updateCartBadge();
+    } else {
+        console.error("Erro Supabase:", error.message);
+        alert("Erreur lors de l'ajout.");
+    }
+}
 
 
 async function openFlowerDetail(id) {
@@ -783,9 +1139,9 @@ async function openFlowerDetail(id) {
             </p>
             
             <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" 
-                onclick="quickAdd('${flower.id}', '${flower.name.replace(/'/g, "\\'")}', ${flower.price})">
-                <i class="bi bi-cart-plus me-2"></i> AJOUTER AU PANIER
-            </button>
+    onclick="quickAdd('${flower.id}', \`${flower.name}\`, ${flower.price}, 'fleur', '${flower.image_url}')">
+    <i class="bi bi-cart-plus me-2"></i> AJOUTER AU PANIER
+</button>
         </div>
     `;
 
