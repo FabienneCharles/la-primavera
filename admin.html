@@ -305,6 +305,21 @@
                     </div>
 
                     <div class="col-12 border-bottom py-4">
+    <label class="fw-bold d-block mb-3" style="color:var(--accent); font-size:1.1rem;">
+        <i class="bi bi-power"></i> Disponibilité de la Boutique
+    </label>
+    <div class="admin-card d-flex align-items-center justify-content-between" style="background: #fff9f0; border: 1px dashed var(--gold);">
+        <div>
+            <h6 class="mb-1 fw-bold">Prendre des commandes</h6>
+            <p class="small text-muted mb-0">Si désactivé, les clients verront le message "Commandes temporairement indisponibles".</p>
+        </div>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="switch-orders-enabled" style="width: 60px; height: 30px; cursor:pointer;" onchange="toggleOrdersAvailability(this.checked)">
+        </div>
+    </div>
+</div>
+
+                    <div class="col-12 border-bottom py-4">
                         <label class="fw-bold d-block mb-3" style="color:var(--accent); font-size:1.1rem;"><i class="bi bi-tag-fill"></i> Rabais Global sur Sous-Total</label>
                         <div class="row g-3">
                             <div class="col-md-4">
@@ -730,39 +745,77 @@ async function loadSlots() { console.log("Loading slots..."); }
     function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
 
     async function loadHomeSettings() {
-        const { data } = await _supabase.from('site_settings').select('*');
-        if (data) {
-            data.forEach(s => {
-                const preview = document.getElementById(`preview-${s.id}`);
-                if (preview) {
-                    if (s.image_url && s.image_url.includes('data:video')) {
-                        preview.innerHTML = `<video src="${s.image_url}" autoplay loop muted style="width:100%"></video>`;
-                    } else if (s.image_url) {
-                        preview.innerHTML = `<img src="${s.image_url}" style="width:100%">`;
-                    }
+    const { data } = await _supabase.from('site_settings').select('*');
+    if (data) {
+        data.forEach(s => {
+            // 1. Previsão de Mídia (Imagens/Vídeos)
+            const preview = document.getElementById(`preview-${s.id}`);
+            if (preview) {
+                if (s.image_url && s.image_url.includes('data:video')) {
+                    preview.innerHTML = `<video src="${s.image_url}" autoplay loop muted style="width:100%"></video>`;
+                } else if (s.image_url) {
+                    preview.innerHTML = `<img src="${s.image_url}" style="width:100%">`;
                 }
-                if (document.getElementById(`title-${s.id}`)) document.getElementById(`title-${s.id}`).value = s.title || '';
-                if (document.getElementById(`subtitle-${s.id}`)) document.getElementById(`subtitle-${s.id}`).value = s.subtitle || '';
-                
-                if (document.getElementById(`desc-${s.id}`)) {
-                    document.getElementById(`desc-${s.id}`).value = s.description || '';
-                }
+            }
 
-                if (s.id === 'global_shipping') document.getElementById('input-global_shipping').value = s.description || '0';
-                if (s.id === 'global_tax') document.getElementById('input-global_tax').value = s.description || '0';
-                
-                if (s.id === 'global_discount_type') document.getElementById('input-discount_type').value = s.description || 'none';
-                if (s.id === 'global_discount_value') document.getElementById('input-discount_value').value = s.description || '0';
+            // 2. Preenchimento de Títulos, Subtítulos e Descrições Gerais
+            if (document.getElementById(`title-${s.id}`)) {
+                document.getElementById(`title-${s.id}`).value = s.title || '';
+            }
+            if (document.getElementById(`subtitle-${s.id}`)) {
+                document.getElementById(`subtitle-${s.id}`).value = s.subtitle || '';
+            }
+            if (document.getElementById(`desc-${s.id}`)) {
+                document.getElementById(`desc-${s.id}`).value = s.description || '';
+            }
 
-                if (s.id === 'promo_sidebar') {
-                    const titleInput = document.getElementById('promo-title');
+            // 3. Configurações de Frete e Taxas
+            if (s.id === 'global_shipping') {
+                document.getElementById('input-global_shipping').value = s.description || '0';
+            }
+            if (s.id === 'global_tax') {
+                document.getElementById('input-global_tax').value = s.description || '0';
+            }
+
+            // 4. Configurações de Desconto Global
+            if (s.id === 'global_discount_type') {
+                document.getElementById('input-discount_type').value = s.description || 'none';
+            }
+            if (s.id === 'global_discount_value') {
+                document.getElementById('input-discount_value').value = s.description || '0';
+            }
+
+            // 5. Publicidade Lateral (Promo Sidebar)
+            if (s.id === 'promo_sidebar') {
+                const titleInput = document.getElementById('promo-title');
+                if (titleInput) {
                     titleInput.value = s.title || '';
-                    titleInput.classList.add('blink-text'); 
+                    titleInput.classList.add('blink-text');
+                }
+                if (document.getElementById('promo-text')) {
                     document.getElementById('promo-text').value = s.description || '';
                 }
-            });
-        }
+            }
+
+            // 6. NOVA LÓGICA: Disponibilidade de Pedidos (Switch do Admin)
+            if (s.id === 'orders_enabled') {
+                const switchOrders = document.getElementById('switch-orders-enabled');
+                if (switchOrders) {
+                    // Se description for 'true', o switch fica marcado
+                    switchOrders.checked = (s.description === 'true');
+                }
+            }
+            
+            // 7. Campos específicos do "About Us" (Fichas)
+            if (s.id.startsWith('about_')) {
+                const aboutField = document.getElementById(`desc-${s.id}`);
+                if (aboutField) {
+                    aboutField.value = s.description || '';
+                }
+            }
+        });
     }
+}
 
     async function saveGlobalTaxes() {
         showLoading(true);
@@ -802,6 +855,31 @@ async function loadSlots() { console.log("Loading slots..."); }
         else alert("Erreur.");
         showLoading(false);
     }
+
+
+    async function toggleOrdersAvailability(status) {
+    showLoading(true);
+    const statusStr = status ? 'true' : 'false';
+
+    const { error } = await _supabase
+        .from('site_settings')
+        .upsert({ id: 'orders_enabled', description: statusStr });
+
+    if (error) {
+        alert("Erreur lors de la mise à jour : " + error.message);
+        // Volta o switch para o estado anterior se der erro
+        document.getElementById('switch-orders-enabled').checked = !status;
+    } else {
+        const msg = status ? "Boutique OUVERTE aux commandes !" : "Boutique FERMÉE (Mode Maintenance).";
+        alert(msg);
+    }
+    showLoading(false);
+}
+
+
+
+
+
 
     async function uploadHomeImage(id, input) {
         if (!input.files[0]) return;
@@ -1274,6 +1352,52 @@ async function toggleBanClient(id, currentlyBanned) {
     if (p === 'orders') loadOrders();
     if (p === 'clients') loadClients();
 }
+
+
+let ordersEnabled = true; // Variável global para o estado das vendas
+
+async function loadGlobalSettings() {
+    const { data } = await _supabase.from('site_settings').select('*');
+    if (data) {
+        // ... sua lógica de frete já existente ...
+        globalShipping = parseFloat(data.find(s => s.id === 'global_shipping')?.description || 2);
+        
+        // NOVA LÓGICA: Verifica se as ordens estão habilitadas
+        const statusSetting = data.find(s => s.id === 'orders_enabled')?.description;
+        ordersEnabled = (statusSetting === 'true');
+
+        // Mostra ou esconde o aviso de manutenção
+        document.getElementById('maintenance-notice').style.display = ordersEnabled ? 'none' : 'block';
+        
+        renderSummary();
+        validateCheckoutForm(); // Revalida o botão
+    }
+}
+
+// Atualize sua função de validação para incluir a trava do Admin
+function validateCheckoutForm() {
+    const btn = document.getElementById('submit-btn');
+    if (!btn) return;
+
+    // ... todos os seus checks de nome, zip, etc ...
+    const isFormValid = (cart.length > 0 && name !== "" && isLogisticsValid); 
+
+    // O botão só funciona se o formulário estiver OK E o Admin permitiu vendas
+    if (isFormValid && ordersEnabled) {
+        btn.disabled = false;
+        btn.style.display = "block"; // Ou mantém visível
+        btn.style.backgroundColor = "#4A2419";
+    } else {
+        btn.disabled = true;
+        // Se o motivo for o bloqueio do Admin, podemos até esconder o botão
+        if (!ordersEnabled) {
+            btn.style.opacity = "0.5";
+            btn.innerText = "COMMANDES BLOQUÉES";
+        }
+    }
+}
+
+
 
 async function toggleStatus(t,id,st){await _supabase.from(t).update({is_active:!st}).eq('id',id); loadData();}
 
