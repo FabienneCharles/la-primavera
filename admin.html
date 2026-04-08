@@ -179,7 +179,10 @@
                     <div class="col-12 text-end"><button type="submit" class="btn btn-dark px-5">ENREGISTRER</button></div>
                 </form>
             </div>
-            <div class="admin-card table-responsive"><table class="table align-middle"><thead><tr><th>Visuel</th><th>Produit</th><th>Moment</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-flor"></tbody></table></div>
+            <div class="admin-card table-responsive">
+                <table class="table align-middle"><thead><tr><th>Visuel</th><th>Produit</th><th>Moment</th><th>Remise %</th><th>Expire le</th><th>Stock</th><th>Vues</th><th>Prix / Promo</th><th>Action</th></tr></thead><tbody id="lista-flor"></tbody>
+                </table>
+            </div>
         </div>
 
         <div id="painel-deje" style="display:none;">
@@ -485,14 +488,16 @@
                         <input type="text" id="orderSearchInput" class="form-control" placeholder="Chercher par nom de client..." onkeyup="filterOrdersUI()">
                     </div>
                     <div class="col-md-4">
-                        <select id="orderStatusFilter" class="form-select" onchange="filterOrdersUI()">
-                            <option value="">Tous les statuts</option>
-                            <option value="En attente">En attente</option>
-                            <option value="Pago">Pago</option>
-                            <option value="Approuvée">Approuvée</option>
-                            <option value="cancelled">Annulée</option>
-                        </select>
-                    </div>
+    <select id="orderStatusFilter" class="form-select" onchange="filterOrdersUI()">
+        <option value="">Tous os status (Tudo)</option>
+        <option value="En attente">⏳ En attente</option>
+        <option value="Pago">💳 Pago</option>
+        <option value="Approuvée">✅ Approuvée</option>
+        <option value="Envoyée">🚚 Envoyée</option>
+        <option value="Livrée">🏠 Livrée</option>
+        <option value="cancelled">❌ Annulée</option>
+    </select>
+</div>
                 </div>
                 <div style="height: 300px;"><canvas id="salesChart"></canvas></div>
             </div>
@@ -508,7 +513,9 @@
                             <th class="sort-header" onclick="sortOrders('customer_name')">Client <i class="bi bi-sort-alpha-down"></i></th>
                             <th>Produits</th>
                             <th class="sort-header" onclick="sortOrders('total')">Total <i class="bi bi-sort-numeric-down"></i></th>
-                            <th>Statut</th>
+                            <th class="sort-header" onclick="sortOrders('status')">Statut <i class="bi bi-sort-alpha-down"></i></th>
+
+                            
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -623,15 +630,33 @@
 function renderOrdersList(orders) { 
     const lista = document.getElementById('lista-orders');
     if(!lista) return;
-    lista.innerHTML = orders.map(x=>`
+
+    lista.innerHTML = orders.map(x => {
+        // Lógica de cores para o seletor de status na tabela
+        let bgClass = "bg-light";
+        if (x.status === 'Livrée' || x.status === 'Approuvée') bgClass = "text-success";
+        if (x.status === 'En attente') bgClass = "text-warning";
+        if (x.status === 'cancelled') bgClass = "text-danger";
+
+        return `
         <tr>
             <td>${new Date(x.created_at).toLocaleDateString()}</td>
             <td class="fw-bold">${x.customer_name}</td>
             <td class="small">${x.items}</td>
             <td class="fw-bold">$${parseFloat(x.total).toFixed(2)}</td>
-            <td>${x.status}</td>
-            <td><button class="btn btn-sm btn-dark" onclick="showReceipt('${x.id}')">Détails</button></td>
-        </tr>`).join(''); 
+            <td>
+                <select class="form-select form-select-sm ${bgClass}" style="font-weight:600;" onchange="updateOrderStatus('${x.id}', this.value)">
+                    <option value="En attente" ${x.status === 'En attente' ? 'selected' : ''}>⏳ En attente</option>
+                    <option value="Pago" ${x.status === 'Pago' ? 'selected' : ''}>💳 Pago</option>
+                    <option value="Approuvée" ${x.status === 'Approuvée' ? 'selected' : ''}>✅ Approuvée</option>
+                    <option value="Envoyée" ${x.status === 'Envoyée' ? 'selected' : ''}>🚚 Envoyée</option>
+                    <option value="Livrée" ${x.status === 'Livrée' ? 'selected' : ''}>🏠 Livrée</option>
+                    <option value="cancelled" ${x.status === 'cancelled' ? 'selected' : ''}>❌ Annulée</option>
+                </select>
+            </td>
+            <td><button class="btn btn-sm btn-dark" onclick="showReceipt('${x.id}')">Voir Reçu</button></td>
+        </tr>`;
+    }).join(''); 
 }
 
 async function loadClients() {
@@ -1113,18 +1138,24 @@ async function deleteProduct(table, id, name) {
     }
 
     function sortOrders(field) {
-        currentSort.direction = (currentSort.field === field && currentSort.direction === 'asc') ? 'desc' : 'asc';
-        currentSort.field = field;
-        
-        allOrders.sort((a, b) => {
-            let valA = a[field], valB = b[field];
-            if(field === 'total') { valA = parseFloat(valA); valB = parseFloat(valB); }
-            if(valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
-            if(valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
-            return 0;
-        });
-        filterOrdersUI();
-    }
+    currentSort.direction = (currentSort.field === field && currentSort.direction === 'asc') ? 'desc' : 'asc';
+    currentSort.field = field;
+    
+    allOrders.sort((a, b) => {
+        let valA = a[field] ? a[field].toString().toLowerCase() : "";
+        let valB = b[field] ? b[field].toString().toLowerCase() : "";
+
+        if(field === 'total') { 
+            valA = parseFloat(a[field]); 
+            valB = parseFloat(b[field]); 
+        }
+
+        if(valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+        if(valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+        return 0;
+    });
+    filterOrdersUI();
+}
 
     function renderOrdersList(orders) { 
         document.getElementById('lista-orders').innerHTML = orders.map(x=>`
@@ -1160,15 +1191,21 @@ async function deleteProduct(table, id, name) {
     }
 
     function filterOrdersUI() {
-        const search = document.getElementById('orderSearchInput').value.toLowerCase();
-        const status = document.getElementById('orderStatusFilter').value;
-        const filtered = allOrders.filter(o => {
-            const matchName = o.customer_name.toLowerCase().includes(search);
-            const matchStatus = status === "" || o.status === status || (status === "En attente" && o.status === "Awaiting Approval");
-            return matchName && matchStatus;
-        });
-        renderOrdersList(filtered);
-    }
+    const search = document.getElementById('orderSearchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('orderStatusFilter').value;
+    
+    const filtered = allOrders.filter(o => {
+        const matchName = o.customer_name.toLowerCase().includes(search);
+        
+        // Filtra pelo status selecionado no combo superior
+        const matchStatus = statusFilter === "" || o.status === statusFilter;
+        
+        return matchName && matchStatus;
+    });
+    
+    renderOrdersList(filtered);
+    updateSalesChart(filtered);
+}
 
     async function showReceipt(orderId) {
         const order = allOrders.find(x => x.id === orderId);
