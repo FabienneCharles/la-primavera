@@ -674,6 +674,37 @@ body { top: 0px !important; }
     box-shadow: 0 10px 25px rgba(184, 134, 11, 0.1);
 }
 
+
+.btn-fav {
+    border: none;
+    background: white;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: var(--rose);
+    transition: 0.3s;
+}
+.btn-fav.active {
+    background: var(--rose);
+    color: white;
+}
+
+
+
+.btn-fav.active {
+    background: var(--rose) !important; /* Cor de fundo quando ativo */
+    color: white !important; /* Cor do ícone quando ativo */
+    border-color: var(--rose) !important;
+}
+
+.btn-fav.active i {
+    color: white !important;
+}
+
+
+.btn-fav.active { background-color: var(--rose) !important; color: white !important; }
+
     </style>
 </head>
 <body>
@@ -795,14 +826,14 @@ body { top: 0px !important; }
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content" style="border-radius: 20px; border-top: 6px solid var(--gold);">
             <div class="modal-body p-4">
+                
                 <div class="row" id="flower-main-detail"></div>
                 
                 <div id="flower-addons-container" class="mt-4 mb-4" style="display:none; background: #fffaf5; padding: 15px; border-radius: 15px; border: 1px dashed var(--gold);">
                     <h6 class="text-uppercase mb-3" style="font-family:'Cinzel'; font-size: 0.75rem; color: var(--deep-coffee); letter-spacing: 1px; font-weight: 700;">
-                        <i class="bi bi-plus-circle me-1"></i> Complétez votre cadeau (Pâtisserie)
+                        <i class="bi bi-plus-circle me-1"></i> Complétez votre cadeau
                     </h6>
-                    <div class="row g-2" id="flower-addons-list">
-                        </div>
+                    <div class="row g-2" id="flower-addons-list"></div>
                 </div>
                 
                 <div id="flower-suggestion-container" class="mt-5" style="display:none;">
@@ -811,6 +842,7 @@ body { top: 0px !important; }
                     </h6>
                     <div class="row g-3" id="flower-suggestion-list"></div>
                 </div>
+
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
@@ -947,43 +979,61 @@ const translations = {
         local_delivery_info: "Sirviendo MA, NY & NJ"
     }
 };
-    async function init() {
+
+
+
+    // INTEGRAÇÃO COM O SEU INIT EXISTENTE
+async function init() {
     const savedLang = localStorage.getItem('laprimavera_lang') || 'fr';
-    changeLanguage(savedLang); // Aplica o idioma salvo
+    changeLanguage(savedLang);
     updateNavbarAuth();
-    loadFlowers();
+    
+    // IMPORTANTE: Use o await aqui para garantir que os dados cheguem antes do checkUrl
+    await loadFlowers(); 
+    
     updateCartBadge();
+    
+    // Chama a verificação da URL logo após o carregamento dos dados
+    checkUrlForProduct();
 }
 
+// Inicialização padrão
+document.addEventListener('DOMContentLoaded', init);
 
 
-    async function loadFlowers() {
+
+   async function loadFlowers() {
     const grid = document.getElementById('flower-grid');
     if (!grid) return;
 
-    // 1. Busca os dados do Supabase
-    const { data: flowers, error } = await _supabase.from('products')
-        .select('*')
-        .eq('category', 'fleur') // Certifique-se que no banco está "fleur"
-        .neq('is_active', false)
-        .order('name');
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
 
-    if (error) {
-        console.error("Erro ao carregar flores:", error.message);
-        grid.innerHTML = `<p class="text-center">Erreur de chargement des fleurs.</p>`;
+    // Busca produtos e favoritos ao mesmo tempo
+    const [{ data: flowers, error: flowerErr }, { data: favs }] = await Promise.all([
+        _supabase.from('products').select('*').eq('category', 'fleur').neq('is_active', false).order('name'),
+        user ? _supabase.from('favorites').select('product_id').eq('user_id', user.id) : Promise.resolve({ data: [] })
+    ]);
+
+    if (flowerErr) {
+        console.error("Erro ao carregar flores:", flowerErr.message);
         return;
     }
 
     if (flowers) {
         allFlowers = flowers; 
         const today = new Date().toISOString().split('T')[0];
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
+        
+        // CORREÇÃO CRÍTICA: Convertemos todos os IDs para STRING para a comparação funcionar sempre
+        const userFavIds = favs ? favs.map(f => String(f.product_id)) : [];
 
-        // O SEGREDO: Usamos um pequeno delay para garantir que os esqueletos sumam e as flores apareçam
         setTimeout(() => {
             grid.innerHTML = flowers.map(f => {
                 const inStock = (f.stock > 0);
                 const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
+                
+                // CORREÇÃO CRÍTICA: Compara os IDs como String
+                const isFavorited = userFavIds.includes(String(f.id));
 
                 let finalPrice = f.price;
                 let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
@@ -992,6 +1042,9 @@ const translations = {
                     finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
                     priceDisplay = `<div><span class="old-price text-muted">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
                 }
+
+                // BUSCA OS MOMENTOS (Tags como Romantisme, Plaisir d'offrir, etc)
+                let momentsDisplay = f.moments ? `<p class="flower-moments mb-2"><strong>Idéal pour :</strong> ${f.moments}</p>` : "";
 
                 return `
                 <div class="col product-item" data-product-id="${f.id}">
@@ -1003,23 +1056,28 @@ const translations = {
                             <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
                             <div class="flower-text-wrapper mb-3">
                                 <p class="flower-description text-muted small">${f.description || ''}</p>
-                                <p class="flower-moments small fw-bold" style="color:var(--gold)">${f.moments || ''}</p>
+                                ${momentsDisplay}
                             </div>
                             <div class="mt-auto">
                                 ${priceDisplay}
-                                <button class="btn btn-dark mt-3 w-100 rounded-pill fw-bold" 
-                                    onclick="quickAdd('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, ${finalPrice}, 'fleur', '${f.image_url}')" 
-                                    ${!inStock ? 'disabled' : ''}>
-                                    ${inStock ? (translations[lang]?.btn_cart || translations[lang]?.btn_add || "AJOUTER") : 'RUPTURE'}
-                                </button>
+                                <div class="d-flex gap-2 mt-3">
+                                    <button class="btn btn-dark flex-grow-1 rounded-pill fw-bold" 
+                                        onclick="quickAdd('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, ${finalPrice}, 'fleur', '${f.image_url}')" 
+                                        ${!inStock ? 'disabled' : ''}>
+                                        ${inStock ? "AJOUTER" : 'RUPTURE'}
+                                    </button>
+                                    <button class="btn-fav ${isFavorited ? 'active' : ''}" 
+                                        onclick="toggleFavorite('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, '${f.image_url}', 'fleur')" 
+                                        id="fav-${f.id}">
+                                        <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}" id="icon-fav-${f.id}"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>`;
             }).join('');
-
-            if (typeof checkUrlForProduct === 'function') checkUrlForProduct();
-        }, 400); // 400ms de brilho antes de mostrar
+        }, 400);
     }
 }
 
@@ -1104,32 +1162,50 @@ function filterByMoment(moment, btn) {
 
 
 async function openFlowerDetail(id) {
-    const flower = allFlowers.find(f => f.id == id);
+    // 1. Localiza o objeto da flor (garantindo comparação de Strings)
+    const flower = allFlowers.find(f => String(f.id) === String(id));
     if (!flower) return;
+
+    // --- VERIFICAÇÃO DE FAVORITO REAL-TIME ---
+    // Forçamos o código a esperar (await) a resposta do banco para não carregar vazio
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
+    let isFavorited = false;
+
+    if (user) {
+        const { data: fav, error: favError } = await _supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('product_id', String(id)) // Força string para bater com o banco
+            .maybeSingle();
+        
+        if (fav && !favError) isFavorited = true;
+    }
 
     const detailArea = document.getElementById('flower-main-detail');
     
-    // Remove setas antigas para não duplicar
+    // Limpa navegação antiga para evitar duplicados
     document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
 
-    // --- NOVIDADE: CRIA O LINK ÚNICO DO PRODUTO ---
     const shareLink = `${window.location.origin}${window.location.pathname}?product=${flower.id}`;
 
+    // 2. Injeta o HTML com o estado do coração já definido (isFavorited)
     detailArea.innerHTML = `
         <div class="col-md-6 mb-3">
-            <img src="${flower.image_url}" class="img-fluid" alt="${flower.name}">
+            <img src="${flower.image_url}" class="img-fluid rounded shadow-sm" alt="${flower.name}">
         </div>
-        <div class="col-md-6 d-flex flex-column justify-content-center">
+        <div class="col-md-6 d-flex flex-column justify-content-center text-start">
             <p style="color:var(--gold); font-weight:600; font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; margin-bottom: 5px;">
                 Collection Signature
             </p>
-            <h3 class="modal-flower-title">${flower.name}</h3>
+            <h3 class="modal-flower-title" style="font-family:'Cinzel';">${flower.name}</h3>
             
             <div class="d-flex align-items-center gap-3 my-2">
                 <span style="font-size: 1.8rem; font-weight: 700; color: var(--dark);">
                     $${parseFloat(flower.price).toFixed(2)}
                 </span>
-                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')" title="Copier le lien">
+                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')">
                     <i class="bi bi-share"></i>
                 </button>
             </div>
@@ -1138,15 +1214,23 @@ async function openFlowerDetail(id) {
                 ${flower.description || 'Une création florale exclusive de La Primavera.'}
             </p>
             
-            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" 
-    onclick="quickAdd('${flower.id}', \`${flower.name}\`, ${flower.price}, 'fleur', '${flower.image_url}')">
-    <i class="bi bi-cart-plus me-2"></i> AJOUTER AU PANIER
-</button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-dark flex-grow-1 py-3 rounded-pill fw-bold" 
+                    onclick="quickAdd('${flower.id}', \`${flower.name.replace(/'/g, "\\'")}\`, ${flower.price}, 'fleur', '${flower.image_url}')">
+                    <i class="bi bi-cart-plus me-2"></i> AJOUTER AU PANIER
+                </button>
+                
+                <button class="btn-fav ${isFavorited ? 'active' : ''}" 
+                    style="width: 55px; height: 55px; display: flex; align-items: center; justify-content: center;"
+                    onclick="toggleFavorite('${flower.id}', \`${flower.name.replace(/'/g, "\\'")}\`, '${flower.image_url}', 'fleur')" 
+                    id="fav-modal-${flower.id}">
+                    <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}" id="icon-fav-modal-${flower.id}" style="font-size: 1.5rem;"></i>
+                </button>
+            </div>
         </div>
     `;
 
-    // Lógica das setas e abertura do modal (mantenha como está no seu código)
-    const modalElement = document.getElementById('flowerDetailModal');
+    // 3. Lógica das setas de navegação
     const arrowLeft = document.createElement('div');
     arrowLeft.className = 'modal-nav-btn prev-flower';
     arrowLeft.innerHTML = '<i class="bi bi-chevron-left"></i>';
@@ -1160,15 +1244,125 @@ async function openFlowerDetail(id) {
     document.body.appendChild(arrowLeft);
     document.body.appendChild(arrowRight);
 
+    // Carrega complementos e recomendações
     loadAddonsPatis(); 
     loadFlowerAIRecommendations(flower.id, flower.moments);
 
+    // 4. Abre o Modal após carregar os dados
+    const modalElement = document.getElementById('flowerDetailModal');
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     modal.show();
 
+    // Limpa as setas ao fechar para não acumular no body
     modalElement.addEventListener('hidden.bs.modal', () => {
         document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
     }, { once: true });
+}
+
+// --- FUNÇÃO PARA CARREGAR RECOMENDAÇÕES POR MOMENTOS ---
+async function loadFlowerAIRecommendations(currentId, moments) {
+    const container = document.getElementById('flower-suggestion-container');
+    const list = document.getElementById('flower-suggestion-list');
+    
+    if (!moments || !list) {
+        if(container) container.style.display = 'none';
+        return;
+    }
+
+    // Pega a primeira tag (Ex: de "Romantisme, Fresh" pega "Romantisme")
+    const firstTag = moments.split(',')[0].trim();
+
+    const { data: suggestions } = await _supabase
+        .from('products')
+        .select('id, name, price, image_url')
+        .eq('category', 'fleur')
+        .neq('id', currentId) // Não mostra a flor que já está aberta
+        .ilike('moments', `%${firstTag}%`) // Filtro parcial para encontrar momentos parecidos
+        .limit(3);
+
+    if (suggestions && suggestions.length > 0) {
+        if(container) container.style.display = 'block';
+        list.innerHTML = suggestions.map(s => `
+            <div class="col-6 col-md-4" onclick="openFlowerDetail('${s.id}')" style="cursor:pointer">
+                <div class="suggestion-card-flower shadow-sm p-2" style="border-radius:15px; border:1px solid #f0e6d2;">
+                    <img src="${s.image_url}" class="suggestion-img-flower" style="width:100%; height:120px; object-fit:cover; border-radius:10px;">
+                    <div class="small fw-bold mt-2 text-truncate" style="font-family:'Cinzel'; font-size:0.7rem;">${s.name}</div>
+                    <div class="small" style="color:var(--gold); font-size:0.75rem;">$${parseFloat(s.price).toFixed(2)}</div>
+                </div>
+            </div>
+        `).join('');
+    } else {
+        if(container) container.style.display = 'none';
+    }
+}
+
+async function toggleFavorite(productId, name, img, cat) {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) {
+        alert("Veuillez vous connecter.");
+        return;
+    }
+
+    try {
+        // Busca exata usando o ID
+        const { data: existing, error: fetchError } = await _supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('product_id', productId)
+            .maybeSingle();
+
+        if (fetchError) {
+            console.error(fetchError);
+            alert("Erro de banco: Rode o comando SQL no Supabase novamente.");
+            return;
+        }
+
+        if (existing) {
+            await _supabase.from('favorites').delete().eq('id', existing.id);
+            updateFavoriteUI(productId, false);
+        } else {
+            // Inserção com tratamento de aspas para nomes como L'Amour
+            const { error: insErr } = await _supabase.from('favorites').insert([{
+                user_id: user.id,
+                product_id: productId,
+                product_name: name,
+                image_url: img,
+                category: cat
+            }]);
+
+            if (insErr) {
+                console.error(insErr);
+                alert("Erro ao salvar: " + insErr.message);
+            } else {
+                updateFavoriteUI(productId, true);
+            }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// FUNÇÃO AUXILIAR: Mudar o coração na tela na hora
+function updateFavoriteUI(productId, isAdded) {
+    const ids = [`fav-${productId}`, `fav-modal-${productId}`];
+    const icons = [`icon-fav-${productId}`, `icon-fav-modal-${productId}`];
+
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) isAdded ? el.classList.add('active') : el.classList.remove('active');
+    });
+
+    icons.forEach(id => {
+        const icon = document.getElementById(id);
+        if (icon) {
+            if (isAdded) {
+                icon.classList.replace('bi-heart', 'bi-heart-fill');
+            } else {
+                icon.classList.replace('bi-heart-fill', 'bi-heart');
+            }
+        }
+    });
 }
 
 
@@ -1421,25 +1615,38 @@ activityEvents.forEach(event => {
     document.addEventListener(event, resetInactivityTimer, true);
 });
 
-// Função para verificar se existe um produto na URL e abrir o modal
+// Função para verificar se existe um produto na URL e abrir o modal automaticamente
 async function checkUrlForProduct() {
     const urlParams = new URLSearchParams(window.location.search);
     const productId = urlParams.get('product');
 
     if (productId) {
+        console.log("Produto detectado na URL:", productId);
+        
         // 1. Aguarda um pouco para garantir que a lista de flores (allFlowers) foi carregada do banco
         const checkExist = setInterval(() => {
-            if (allFlowers && allFlowers.length > 0) {
-                // 2. Em vez de adicionar ao carrinho, chamamos o detalhe visual
-                openFlowerDetail(productId); 
-                clearInterval(checkExist);
+            // Verificamos se allFlowers já tem dados vindos do loadFlowers()
+            if (typeof allFlowers !== 'undefined' && allFlowers.length > 0) {
                 
-                // 3. Limpa a URL (opcional) para o link não ficar "sujo" se o cliente atualizar a página
-                window.history.replaceState({}, document.title, window.location.pathname);
+                // Procuramos se o produto realmente existe na lista
+                const exists = allFlowers.some(f => String(f.id) === String(productId));
+                
+                if (exists) {
+                    console.log("Produto localizado. Abrindo modal...");
+                    openFlowerDetail(productId); 
+                    clearInterval(checkExist);
+                    
+                    // 3. Limpa a URL para o link não ficar "sujo" se o cliente atualizar a página
+                    // Isso evita que o modal abra sozinho toda vez que der F5
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
             }
-        }, 500);
+        }, 500); // Tenta a cada meio segundo
         
-        setTimeout(() => clearInterval(checkExist), 5000);
+        // Timeout de segurança: para de procurar após 5 segundos se não achar o ID
+        setTimeout(() => {
+            clearInterval(checkExist);
+        }, 5000);
     }
 }
 

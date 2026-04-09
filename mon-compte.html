@@ -145,10 +145,16 @@
                 <div id="chat-box" style="height: 250px; overflow-y: auto; border: 1px solid #eee; padding: 15px; background: #fff; border-radius: 15px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
                     <p class="text-center text-muted small" data-i18n="chat_start">Démarrer une conversation...</p>
                 </div>
-                <div class="input-group">
-                    <input type="text" id="user-msg-input" class="form-control mb-0" placeholder="Votre message..." style="border-radius: 10px 0 0 10px;">
-                    <button class="btn btn-dark" type="button" onclick="sendMessageToAdmin()" style="border-radius: 0 10px 10px 0; background: var(--dark);" data-i18n="btn_send">Envoyer</button>
-                </div>
+               <div class="input-group">
+    <input type="text" id="user-msg-input" class="form-control mb-0" placeholder="Votre message..." style="border-radius: 10px 0 0 10px;">
+    <button class="btn btn-dark" type="button" onclick="sendMessageToAdmin()" style="border-radius: 0 10px 10px 0; background: var(--dark);" data-i18n="btn_send">Envoyer</button>
+</div>
+
+<div class="profile-card mt-4">
+    <h3 class="section-title"><i class="bi bi-heart-fill me-2"></i> Mes Coups de Cœur</h3>
+    <div id="favorites-list" class="row g-3">
+        </div>
+</div>
 
                 <div class="mt-5 pt-4 border-top" style="opacity: 0.5;">
                     <p class="small text-muted mb-1" style="font-size: 0.7rem;">Gestion du compte</p>
@@ -348,31 +354,38 @@
 
     // 2. Autenticação e Carregamento de Dados
     try {
-        const { data: { user } } = await _supabase.auth.getUser();
+        const { data: { user }, error: authError } = await _supabase.auth.getUser();
         
-        if (!user) { 
+        if (authError || !user) { 
+            console.log("Utilisateur non connecté ou session expirée");
             window.location.href = "login.html"; 
             return; 
         }
 
         // Executa os carregamentos em paralelo para maior velocidade
+        // loadFavorites() é essencial aqui para carregar a lista de desejos do cliente
         await Promise.all([
-            updateNavbar(user),
-            loadProfile(user),
-            loadOrders(user),
-            loadMessages()
+            updateNavbar(user).catch(e => console.log(e)),
+            loadProfile(user).catch(e => console.log(e)),
+            loadOrders(user).catch(e => console.log(e)),
+            loadMessages().catch(e => console.log(e)),
+            loadFavorites().catch(e => console.log(e)) // Se der erro aqui, a página abre mesmo assim
         ]);
 
         // Inicia o monitoramento de novas mensagens (opcional)
+        // O intervalo de 10 segundos permite ver respostas do admin em tempo real
         setInterval(loadMessages, 10000); 
 
     } catch (err) { 
-        console.error("Erreur d'initialisation:", err); 
+        console.error("Erreur critique d'initialisation:", err); 
     } finally { 
-        // Remove o loader com um leve delay para garantir uma transição suave
+        // Remove o loader com um leve delay para garantir uma transição visual suave
         setTimeout(() => { 
             const loader = document.getElementById('loader');
-            if (loader) loader.style.display = 'none'; 
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 300);
+            }
         }, 600); 
     }
 }
@@ -529,6 +542,67 @@
         document.getElementById('cancel-btn').style.display = 'block';
     }
 
+async function loadFavorites() {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: favs, error } = await _supabase
+        .from('favorites')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+    const container = document.getElementById('favorites-list');
+    if (!container) return;
+
+    // 1. Se houver erro ou a lista estiver vazia, mostra mensagem amigável
+    if (error || !favs || favs.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-4">
+                <p class="text-muted small">Aucun coup de cœur pour le moment.</p>
+                <a href="floristeria.html" class="btn btn-sm btn-outline-dark rounded-pill" style="font-size: 0.7rem;">Découvrir nos collections</a>
+            </div>`;
+        return;
+    }
+
+    // 2. Se houver favoritos, desenha os cards com o link dinâmico
+    container.innerHTML = favs.map(f => {
+        // LÓGICA DE REDIRECIONAMENTO POR CATEGORIA
+        let targetPage = 'floristeria.html'; // Padrão para flores
+
+        if (f.category === 'patisserie' || f.category === 'douceur') {
+            targetPage = 'boutique.html';
+        } else if (f.category === 'dejeuner') {
+            targetPage = 'dejeuner.html'; // Agora identifica corretamente os almoços
+        }
+
+        const productUrl = `${targetPage}?product=${f.product_id}`;
+
+        return `
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm text-center p-2 h-100" style="border-radius: 15px; background: #fffaf8;">
+                <a href="${productUrl}" style="text-decoration:none; color:inherit;">
+                    <div style="overflow: hidden; border-radius: 10px;">
+                        <img src="${f.image_url}" class="card-img-top rounded" 
+                             style="height:100px; width:100%; object-fit:cover; transition: 0.3s;" 
+                             onmouseover="this.style.transform='scale(1.1)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                    </div>
+                    <div class="card-body p-2">
+                        <p class="small fw-bold mb-1" style="font-size:0.75rem; min-height: 32px; display: flex; align-items: center; justify-content: center;">
+                            ${f.product_name}
+                        </p>
+                    </div>
+                </a>
+                <button class="btn btn-sm btn-outline-danger border-0 mt-1" onclick="toggleFavorite('${f.product_id}')">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+
     async function updateNavbar(user) {
         const { data: p } = await _supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
         document.getElementById('auth-area').innerHTML = `<div class="dropdown user-dropdown"><a class="btn-user dropdown-toggle" href="#" data-bs-toggle="dropdown"><i class="bi bi-person-circle user-icon"></i><span>${p?.full_name?.split(' ')[0] || 'Client'}</span></a><ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2"><li><button class="dropdown-item text-danger" onclick="logout()">Déconnexion</button></li></ul></div>`;
@@ -598,6 +672,110 @@ activityEvents.forEach(event => {
 
 // Inicia o cronômetro assim que a página carrega
 resetInactivityTimer();
+
+
+async function toggleFavorite(productId, name, img, cat) {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+        const { data: existing } = await _supabase
+            .from('favorites')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('product_id', productId)
+            .maybeSingle();
+
+        if (existing) {
+            // REMOVE
+            const { error } = await _supabase.from('favorites').delete().eq('id', existing.id);
+            if (error) throw error;
+        } else {
+            // ADD
+            const { error } = await _supabase.from('favorites').insert([{
+                user_id: user.id,
+                product_id: productId,
+                product_name: name || "Produit",
+                image_url: img || "",
+                category: cat || "fleur"
+            }]);
+            if (error) throw error;
+        }
+        
+        // Sincroniza a UI imediatamente após a operação no banco
+        await loadFavorites(); 
+
+    } catch (err) {
+        console.error("Erro favorito:", err.message);
+        alert("Une erreur est survenue lors de la mise à jour des favoris.");
+    }
+}
+
+// Essencial para evitar erros de "function undefined" se o modal for chamado aqui
+function updateFavoriteUI(productId, isAdded) {
+    // Nesta página, apenas recarregamos a lista se algo mudar
+    loadFavorites();
+}
+
+async function loadFavorites() {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) return;
+
+    const { data: favs, error } = await _supabase
+        .from('favorites')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+    const container = document.getElementById('favorites-list');
+    if (!container) return;
+
+    // 1. Se houver erro ou a lista estiver vazia
+    if (error || !favs || favs.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-4">
+                <p class="text-muted small">Aucun coup de cœur pour le moment.</p>
+                <a href="index.html" class="btn btn-sm btn-outline-dark rounded-pill" style="font-size: 0.7rem;">Découvrir nos produits</a>
+            </div>`;
+        return;
+    }
+
+    // 2. Desenha os cards com o destino correto para cada categoria
+    container.innerHTML = favs.map(f => {
+        // --- LÓGICA DE REDIRECIONAMENTO ---
+        let targetPage = 'floristeria.html'; // Padrão
+
+        if (f.category === 'patisserie' || f.category === 'douceur') {
+            targetPage = 'boutique.html';
+        } else if (f.category === 'dejeuner') {
+            targetPage = 'dejeuner.html'; // <--- AGORA MANDA PARA A PÁGINA CORRETA
+        }
+
+        const productUrl = `${targetPage}?product=${f.product_id}`;
+
+        return `
+        <div class="col-6 col-md-4">
+            <div class="card border-0 shadow-sm text-center p-2 h-100" style="border-radius: 15px; background: #fffaf8;">
+                <a href="${productUrl}" style="text-decoration:none; color:inherit;">
+                    <div style="overflow: hidden; border-radius: 10px;">
+                        <img src="${f.image_url}" class="card-img-top rounded" 
+                             style="height:100px; width:100%; object-fit:cover; transition: 0.3s;" 
+                             onmouseover="this.style.transform='scale(1.1)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                    </div>
+                    <div class="card-body p-2">
+                        <p class="small fw-bold mb-1" style="font-size:0.75rem; min-height: 32px; display: flex; align-items: center; justify-content: center;">
+                            ${f.product_name}
+                        </p>
+                    </div>
+                </a>
+                <button class="btn btn-sm btn-outline-danger border-0 mt-1" onclick="toggleFavorite('${f.product_id}')">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+}
 
 </script>
 </body>

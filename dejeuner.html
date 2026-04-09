@@ -185,8 +185,7 @@
         .product-card:hover { transform: translateY(-10px); }
         .product-img { width: 100%; height: 260px; object-fit: cover; }
         
-        .card-body-custom { padding: 25px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; }
-        .product-name { font-family: 'Cinzel', serif; font-size: 1.1rem; margin-bottom: 8px; font-weight: 700; min-height: 45px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; }
+      
         
         .price-tag { color: var(--accent); font-weight: bold; font-size: 1.3rem; margin-bottom: 5px; }
         .old-price { text-decoration: line-through; color: #999; font-size: 0.9rem; margin-right: 8px; }
@@ -226,25 +225,22 @@
     }
 
     /* 2. Ajusta a altura da imagem para não ficar gigante */
-    .product-img {
-        height: 160px !important; /* Altura ideal para 2 colunas */
-        object-fit: cover;
-    }
+    
 
     /* 3. Reduz o tamanho dos textos para caber no card pequeno */
-    .product-name {
-        font-size: 0.85rem !important;
-        min-height: 40px !important;
-        line-height: 1.2;
-    }
+    .product-name { 
+    font-family: 'Cinzel', serif !important; 
+    font-size: 1.1rem !important; 
+    font-weight: 700 !important; 
+    color: var(--primary);
+    margin-bottom: 5px !important;
+}
 
     .price-tag, .new-price {
         font-size: 1rem !important;
     }
 
-    .card-body-custom {
-        padding: 10px !important;
-    }
+   
 
     /* 4. Esconde a lista de componentes no celular para não alongar demais o card */
     .component-list {
@@ -528,15 +524,45 @@ body {
 
 /* --- MICRO-ANIMAÇÕES DOS CARDS --- */
 
-/* 1. Garante que a imagem não saia dos limites ao crescer */
+/* Isso aumenta a área da foto e remove o corte estranho */
 .img-zoom-container, .flower-img-link {
+    height: 350px !important; /* Aumentamos para a foto aparecer mais */
+    background-color: #fff;
     overflow: hidden;
-    border-radius: 15px 15px 0 0; /* Mantém os cantos arredondados no topo */
+    border-radius: 20px 20px 0 0; /* Arredonda só o topo */
 }
 
-/* 2. Efeito de Zoom na Imagem */
+/* Isso garante que a foto preencha todo o espaço sem distorcer */
 .product-img, .flower-img {
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; 
+    transition: transform 0.6s ease;
+}
+
+
+/* Isso remove o excesso de espaço vazio embaixo */
+.card-body-custom, .flower-body {
+    padding: 15px 20px 20px !important; /* Diminuímos o padding do topo */
+    flex-grow: 0 !important; /* Impede que o card fique esticando o branco */
+}
+
+
+/* Ajuste do Título para ficar mais próximo da foto */
+.product-name, .flower-card h3 {
+    margin-top: 5px !important;
+    margin-bottom: 5px !important;
+    min-height: auto !important; 
+}
+
+/* Estilo para os Momentos (Tags douradas) */
+.flower-moments, .moments-text {
+    font-size: 0.75rem !important;
+    color: #B8860B !important; /* Dourado */
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 5px;
 }
 
 .product-card:hover .product-img, 
@@ -625,6 +651,9 @@ body {
 .img-zoom-container {
     overflow: hidden;
     border-radius: 15px 15px 0 0;
+     height: 280px !important; /* Altura fixa para manter o grid alinhado */
+    width: 100%;
+    background: #f8f8f8;
 }
 
 /* Efeito de Zoom Suave na Imagem */
@@ -655,6 +684,87 @@ body {
     transform: translateY(-3px);
     filter: brightness(1.1);
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-fav {
+    border: none;
+    background: white;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: var(--rose);
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-fav.active {
+    background: #C98986 !important; /* Cor Rose */
+    color: white !important;
+}
+
+
+.product-card { 
+    background: white; 
+    border-radius: 15px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+    overflow: hidden; 
+    height: 100%; 
+    border: none; 
+    display: flex; 
+    flex-direction: column; 
+    transition: transform 0.4s ease, box-shadow 0.4s ease !important;
+
+
+.img-zoom-container { 
+    height: 220px; /* Altura fixa para manter o alinhamento */
+    background-color: #fff; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.product-img { 
+    width: 100% !important; 
+    height: 100% !important; 
+    object-fit: cover !important; 
+    cursor: pointer;
+    transition: transform 0.6s ease;
+}
+
+
+
+/* A foto agora preenche o espaço (Object-fit Cover é o segredo) */
+.product-img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; 
+    transition: transform 0.6s ease;
+}
+
+/* Ajuste do corpo do Card para não ter espaços vazios gigantes */
+.card-body-custom {
+ padding: 25px !important; 
+    flex-grow: 1; 
+    display: flex; 
+    gap: 8px;
+}    text-align: center;
+    background: white;
+}
+
+/* Corpo do Texto: Ajustado para aproximar o preço da foto */
+.card-body-custom { 
+   
+
+/* Estilo para os Momentos (Tags Douradas) */
+.moments-badge {
+    font-size: 0.7rem !important;
+    color: #B8860B !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
     </style>
@@ -826,86 +936,97 @@ let allDejeuners = []; // Variável global para armazenar os pratos
     const grid = document.getElementById('dejeuner-grid');
     if (!grid) return;
 
-    // 1. Busca os dados do Supabase
-    const { data: prods, error } = await _supabase.from('products')
-        .select('*')
-        .eq('category', 'dejeuner')
-        .neq('is_active', false)
-        .order('name');
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
 
-    if (error) {
-        console.error("Erro ao carregar almoços:", error.message);
-        grid.innerHTML = `<p class="text-center">Erreur de chargement des produits.</p>`;
+    // 1. Busca produtos e favoritos em paralelo
+    const [prodsRes, favsRes] = await Promise.all([
+        _supabase.from('products').select('*').eq('category', 'dejeuner').neq('is_active', false).order('name'),
+        user ? _supabase.from('favorites').select('product_id').eq('user_id', user.id) : Promise.resolve({ data: [] })
+    ]);
+
+    if (prodsRes.error) {
+        console.error("Erro ao carregar almoços:", prodsRes.error.message);
         return;
     }
 
+    const prods = prodsRes.data;
+    const userFavIds = favsRes.data ? favsRes.data.map(f => String(f.product_id)) : [];
+
     if (prods) {
         allDejeuners = prods; 
-
         const today = new Date().toISOString().split('T')[0];
-        const lang = localStorage.getItem('laprimavera_lang') || 'fr';
 
-        // Pequeno atraso de 300ms para o efeito de luxo do Shimmer ser percebido
         setTimeout(() => {
             grid.innerHTML = prods.map(p => {
                 const inStock = (p.stock || 0) > 0;
-                
-                // Tratamento da descrição como lista de componentes
-                const components = p.description ? p.description.split('\n').map(line => `<li><i class="bi bi-check2-circle"></i> ${line}</li>`).join('') : '';
-                
-                // Lógica de promoção
+                const isFavorited = userFavIds.includes(String(p.id));
                 const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
 
+                // --- TRATAMENTO PARA LISTA DE COMPONENTES (IGUAL AO ANTIGO) ---
+                const componentsList = p.description 
+                    ? p.description.split('\n').map(line => `<li><i class="bi bi-check2-circle" style="color:#B8860B; margin-right:8px;"></i>${line}</li>`).join('') 
+                    : "";
+                
+                // Texto dourado dos momentos (Tags)
+                const momentsText = p.moments 
+                    ? `<p class="moments-badge" style="font-size: 0.7rem; color: #B8860B; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px;">${p.moments}</p>` 
+                    : "";
+
                 let finalPrice = p.price;
-                let priceDisplay = `<div class="price-tag fw-bold">$${parseFloat(p.price).toFixed(2)}</div>`;
+                let priceDisplay = `<div class="price-tag fw-bold" style="color: #2C1810; font-size: 1.3rem;">$${parseFloat(p.price).toFixed(2)}</div>`;
 
                 if (isPromoValid) {
                     finalPrice = (p.price * (1 - p.promo_discount_percent / 100)).toFixed(2);
                     priceDisplay = `
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
                             <span class="old-price text-muted text-decoration-line-through small">$${parseFloat(p.price).toFixed(2)}</span>
-                            <span class="new-price text-danger fw-bold">$${finalPrice}</span>
+                            <span class="new-price text-danger fw-bold" style="font-size: 1.3rem;">$${finalPrice}</span>
                         </div>`;
                 }
 
-                let momentsDisplay = p.moments ? `<p style="font-size: 0.75rem; color: #B8860B; text-transform: uppercase; margin-bottom: 10px;"><strong>Idéal pour :</strong> ${p.moments}</p>` : "";
-
-                // Retorno do Card Real com container de Zoom
                 return `
                 <div class="col-md-6 col-xl-4 product-item" data-product-id="${p.id}">
-                    <div class="product-card shadow-sm h-100">
-                        <div class="img-zoom-container" onclick="openDejeunerDetail('${p.id}')">
-                            <img src="${p.image_url}" class="product-img" style="cursor:pointer; width:100%;" loading="lazy">
+                    <div class="product-card shadow-sm h-100" style="border-radius: 20px; overflow: hidden; background: #fff; border: none; display: flex; flex-direction: column;">
+                        <div class="img-zoom-container" onclick="openDejeunerDetail('${p.id}')" style="height: 280px; width: 100%; overflow: hidden; background: #f8f8f8;">
+                            <img src="${p.image_url}" class="product-img" style="width: 100%; height: 100%; object-fit: cover; cursor:pointer; transition: 0.6s;" loading="lazy">
                         </div>
+                        
                         <div class="card-body-custom p-4 d-flex flex-column h-100">
-                            <h3 class="product-name mb-2" style="cursor:pointer; font-family:'Cinzel'; font-size: 1.2rem;" onclick="openDejeunerDetail('${p.id}')">${p.name}</h3>
-                            <ul class="component-list list-unstyled small text-muted mb-3">${components}</ul>
+                            <h3 class="product-name mb-3 text-center" style="cursor:pointer; font-family:'Cinzel', serif; font-size: 1.15rem; font-weight: 700; color: #2C1810;" onclick="openDejeunerDetail('${p.id}')">
+                                ${p.name}
+                            </h3>
                             
-                            <div class="mt-auto">
-                                ${momentsDisplay} 
-                                <div class="mb-3">${priceDisplay}</div>
-                                
-                                <button class="btn btn-dark w-100 rounded-pill fw-bold py-2" 
-                                    onclick="quickAdd('${p.id}', \`${p.name}\`, ${finalPrice}, 'dejeuner', '${p.image_url}')" 
-                                    ${!inStock ? 'disabled' : ''}>
-                                    ${inStock ? (translations[lang]?.btn_cart || "AJOUTER") : "INDISPONIBLE"}
-                                </button>
+                            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: #555; flex-grow: 1; text-align: left;">
+                                ${componentsList}
+                            </ul>
+
+                            <div class="text-center">
+                                ${momentsText}
+                                <div class="mt-3 mb-3">${priceDisplay}</div>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-dark flex-grow-1 rounded-pill fw-bold py-2" 
+                                        onclick="quickAdd('${p.id}', \`${p.name.replace(/'/g, "\\'")}\`, ${finalPrice}, 'dejeuner', '${p.image_url}')" 
+                                        ${!inStock ? 'disabled' : ''}>
+                                        ${inStock ? "AJOUTER" : "INDISPONIBLE"}
+                                    </button>
+                                    <button class="btn-fav ${isFavorited ? 'active' : ''}" 
+                                        onclick="toggleFavorite('${p.id}', \`${p.name.replace(/'/g, "\\'")}\`, '${p.image_url}', 'dejeuner')" 
+                                        id="fav-${p.id}"
+                                        style="width: 42px; height: 42px; border-radius: 50%; border: 1px solid #eee; background: white; display: flex; align-items: center; justify-content: center; transition: 0.3s;">
+                                        <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}" id="icon-fav-${p.id}"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>`;
             }).join('');
 
-            // Inicializa efeito de zoom se a biblioteca Luminous estiver presente
-            if (window.Luminous) {
-                document.querySelectorAll('.zoom-trigger').forEach(el => new Luminous(el));
-            }
-
-            // Executa a verificação de Link Direto
             if (typeof checkUrlForProduct === 'function') {
                 checkUrlForProduct();
             }
-        }, 300); // 300ms de delay para o Skeleton Shimmer
+        }, 300);
     }
 }
 
@@ -1190,18 +1311,21 @@ function filterByMoment(moment, btn) {
 }
 
 
-// 2. Nova função openDejeunerDetail com setas
 async function openDejeunerDetail(id) {
-    const item = allDejeuners.find(p => p.id == id);
+    const item = allDejeuners.find(p => String(p.id) === String(id));
     if (!item) return;
 
+    const { data: authData } = await _supabase.auth.getUser();
+    const user = authData?.user;
+    let isFavorited = false;
+
+    if (user) {
+        const { data: fav } = await _supabase.from('favorites').select('id').eq('user_id', user.id).eq('product_id', String(id)).maybeSingle();
+        if (fav) isFavorited = true;
+    }
+
     const detailArea = document.getElementById('dejeuner-main-detail');
-    const modalElement = document.getElementById('dejeunerDetailModal');
-
-    // Limpa as setas de navegação anteriores
     document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
-
-    // --- NOVIDADE: GERA O LINK DIRETO PARA O PRODUTO ---
     const shareLink = `${window.location.origin}${window.location.pathname}?product=${item.id}`;
 
     detailArea.innerHTML = `
@@ -1209,25 +1333,27 @@ async function openDejeunerDetail(id) {
             <img src="${item.image_url}" class="img-fluid rounded-4 shadow">
         </div>
         <div class="col-md-6 d-flex flex-column justify-content-center">
-            <h3 style="font-family:'Cinzel'; color:var(--primary); font-weight:700; margin-bottom:5px;">${item.name}</h3>
-            <p style="color:var(--accent); font-weight:600; font-size:0.8rem; letter-spacing:1px; text-transform:uppercase;">Expérience Gastronomique</p>
-            
+            <h3 style="font-family:'Cinzel'; color:var(--primary); font-weight:700;">${item.name}</h3>
             <div class="d-flex align-items-center gap-3 my-2">
                 <h4 style="font-weight:700; font-size:1.8rem; margin:0;">$${parseFloat(item.price).toFixed(2)}</h4>
-                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')" title="Copier le lien">
+                <button class="btn btn-sm btn-outline-dark rounded-pill" onclick="copyToClipboard('${shareLink}')">
                     <i class="bi bi-share"></i>
                 </button>
             </div>
-
-            <p class="text-muted" style="font-size:0.9rem; line-height:1.6; margin-bottom:20px;">${item.description || ''}</p>
-            
-            <button class="btn btn-dark w-100 py-3 rounded-pill fw-bold" onclick="quickAdd('${item.id}', '${item.name.replace(/'/g, "\\'")}', ${item.price})">
-                AJOUTER AU PANIER
-            </button>
+            <p class="text-muted small">${item.description || ''}</p>
+            <div class="d-flex gap-2 mt-3">
+                <button class="btn btn-dark flex-grow-1 py-3 rounded-pill fw-bold" onclick="quickAdd('${item.id}', \`${item.name}\`, ${item.price}, 'dejeuner', '${item.image_url}')">
+                    AJOUTER AU PANIER
+                </button>
+                <button class="btn-fav ${isFavorited ? 'active' : ''}" style="width:55px; height:55px;" 
+                    onclick="toggleFavorite('${item.id}', \`${item.name}\`, '${item.image_url}', 'dejeuner')" id="fav-modal-${item.id}">
+                    <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}" id="icon-fav-modal-${item.id}" style="font-size:1.5rem;"></i>
+                </button>
+            </div>
         </div>
     `;
 
-    // Cria as setas de navegação (Mantendo sua lógica original)
+    // Navegação (setas)
     const arrowLeft = document.createElement('div');
     arrowLeft.className = 'modal-nav-btn prev-item';
     arrowLeft.innerHTML = '<i class="bi bi-chevron-left"></i>';
@@ -1244,12 +1370,7 @@ async function openDejeunerDetail(id) {
     loadDejeunerAddons(); 
     loadDejeunerRecommendations(item.id, item.moments);
 
-    const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
-    modal.show();
-
-    modalElement.addEventListener('hidden.bs.modal', () => {
-        document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
-    }, { once: true });
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('dejeunerDetailModal')).show();
 }
 
 async function loadDejeunerAddons() {
@@ -1504,6 +1625,41 @@ function copyToClipboard(text) {
         alert("Lien copié ! Vous pouvez maintenant l'envoyer.");
     });
 }
+
+
+async function toggleFavorite(productId, name, img, cat) {
+    const { data: { user } } = await _supabase.auth.getUser();
+    if (!user) { alert("Veuillez vous connecter."); return; }
+
+    const { data: existing } = await _supabase.from('favorites').select('id').eq('user_id', user.id).eq('product_id', String(productId)).maybeSingle();
+
+    if (existing) {
+        await _supabase.from('favorites').delete().eq('id', existing.id);
+        updateFavoriteUI(productId, false);
+    } else {
+        await _supabase.from('favorites').insert([{
+            user_id: user.id,
+            product_id: String(productId),
+            product_name: name,
+            image_url: img,
+            category: cat
+        }]);
+        updateFavoriteUI(productId, true);
+    }
+}
+
+function updateFavoriteUI(productId, isAdded) {
+    const ids = [`fav-${productId}`, `fav-modal-${productId}`];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            isAdded ? el.classList.add('active') : el.classList.remove('active');
+            const icon = el.querySelector('i');
+            if (icon) icon.className = isAdded ? 'bi bi-heart-fill' : 'bi bi-heart';
+        }
+    });
+}
+
 
 </script>
 

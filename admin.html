@@ -1138,23 +1138,37 @@ async function deleteProduct(table, id, name) {
     }
 
     function sortOrders(field) {
+    // 1. Inverte a direção se clicar no mesmo campo, senão começa com 'asc'
     currentSort.direction = (currentSort.field === field && currentSort.direction === 'asc') ? 'desc' : 'asc';
     currentSort.field = field;
     
     allOrders.sort((a, b) => {
-        let valA = a[field] ? a[field].toString().toLowerCase() : "";
-        let valB = b[field] ? b[field].toString().toLowerCase() : "";
+        let valA = a[field];
+        let valB = b[field];
 
+        // 2. Tratamento para Números (Total)
         if(field === 'total') { 
-            valA = parseFloat(a[field]); 
-            valB = parseFloat(b[field]); 
+            valA = parseFloat(valA) || 0; 
+            valB = parseFloat(valB) || 0; 
+        } 
+        // 3. Tratamento para Datas (Created_at)
+        else if (field === 'created_at') {
+            valA = new Date(valA);
+            valB = new Date(valB);
+        }
+        // 4. Tratamento para Texto (Status, Nome do Cliente)
+        else {
+            valA = valA ? valA.toString().toLowerCase() : "";
+            valB = valB ? valB.toString().toLowerCase() : "";
         }
 
-        if(valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
-        if(valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+        // 5. Lógica de comparação universal
+        if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+        if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
         return 0;
     });
-    filterOrdersUI();
+
+    filterOrdersUI(); // Atualiza a tela com a nova ordem
 }
 
     function renderOrdersList(orders) { 
