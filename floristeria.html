@@ -705,6 +705,27 @@ body { top: 0px !important; }
 
 .btn-fav.active { background-color: var(--rose) !important; color: white !important; }
 
+.color-dot {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.color-dot:hover { transform: scale(1.2); }
+.color-dot.active { border-color: var(--gold); transform: scale(1.2); }
+
+.color-dot.all { background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red); }
+.color-dot.red { background: #ff4d4d; }
+.color-dot.pink { background: #ffb6c1; }
+.color-dot.white { background: #ffffff; border: 1px solid #ddd; }
+.color-dot.yellow { background: #ffeb3b; }
+.color-dot.mixte { background: linear-gradient(45deg, #ff4d4d, #ffb6c1, #ffffff); }
+
+
+
     </style>
 </head>
 <body>
@@ -797,7 +818,21 @@ body { top: 0px !important; }
     </div>
 </div>
 
-    <div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid">
+    <div class="color-filter-container text-center mb-5 mt-4">
+    <h6 class="text-uppercase mb-3" style="letter-spacing: 2px; font-size: 0.8rem; font-family: 'Cinzel'; color: var(--sidebar-color);">
+        Filtrer par couleur
+    </h6>
+    <div class="d-flex justify-content-center gap-3">
+        <div class="color-dot all active" onclick="filterByColor('all')" title="Tous"></div>
+        <div class="color-dot red" onclick="filterByColor('Rouge')" title="Rouge"></div>
+        <div class="color-dot pink" onclick="filterByColor('Rose')" title="Rose"></div>
+        <div class="color-dot white" onclick="filterByColor('Blanc')" title="Blanc"></div>
+        <div class="color-dot yellow" onclick="filterByColor('Jaune')" title="Jaune"></div>
+        <div class="color-dot mixte" onclick="filterByColor('Mixte')" title="Mixte"></div>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-5" id="flower-grid">
     <div class="col skeleton-box">
         <div class="skeleton-card shimmer">
             <div class="skeleton-img"></div>
@@ -1009,9 +1044,15 @@ document.addEventListener('DOMContentLoaded', init);
     const { data: authData } = await _supabase.auth.getUser();
     const user = authData?.user;
 
-    // Busca produtos e favoritos ao mesmo tempo
+    // Busca produtos e favoritos ao mesmo tempo com a nova ordenação (Destaques primeiro)
     const [{ data: flowers, error: flowerErr }, { data: favs }] = await Promise.all([
-        _supabase.from('products').select('*').eq('category', 'fleur').neq('is_active', false).order('name'),
+        _supabase
+            .from('products')
+            .select('*')
+            .eq('category', 'fleur')
+            .neq('is_active', false)
+            .order('is_featured', { ascending: false }) // Estrelas do Admin aparecem primeiro
+            .order('name', { ascending: true }),
         user ? _supabase.from('favorites').select('product_id').eq('user_id', user.id) : Promise.resolve({ data: [] })
     ]);
 
@@ -1022,63 +1063,94 @@ document.addEventListener('DOMContentLoaded', init);
 
     if (flowers) {
         allFlowers = flowers; 
-        const today = new Date().toISOString().split('T')[0];
-        
-        // CORREÇÃO CRÍTICA: Convertemos todos os IDs para STRING para a comparação funcionar sempre
-        const userFavIds = favs ? favs.map(f => String(f.product_id)) : [];
+        // IDs para comparação de favoritos convertidos para String
+        window.userFavIds = favs ? favs.map(f => String(f.product_id)) : [];
 
+        // Pequeno delay para efeito visual de carregamento
         setTimeout(() => {
-            grid.innerHTML = flowers.map(f => {
-                const inStock = (f.stock > 0);
-                const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
-                
-                // CORREÇÃO CRÍTICA: Compara os IDs como String
-                const isFavorited = userFavIds.includes(String(f.id));
-
-                let finalPrice = f.price;
-                let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
-
-                if (isPromoValid) {
-                    finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
-                    priceDisplay = `<div><span class="old-price text-muted">$${parseFloat(f.price).toFixed(2)}</span><span class="flower-price text-danger">$${finalPrice}</span></div>`;
-                }
-
-                // BUSCA OS MOMENTOS (Tags como Romantisme, Plaisir d'offrir, etc)
-                let momentsDisplay = f.moments ? `<p class="flower-moments mb-2"><strong>Idéal pour :</strong> ${f.moments}</p>` : "";
-
-                return `
-                <div class="col product-item" data-product-id="${f.id}">
-                    <div class="flower-card h-100 shadow-sm">
-                        <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
-                            <img src="${f.image_url}" class="flower-img" alt="${f.name}" loading="lazy">
-                        </div>
-                        <div class="flower-body p-4 text-center d-flex flex-column">
-                            <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">${f.name}</h3>
-                            <div class="flower-text-wrapper mb-3">
-                                <p class="flower-description text-muted small">${f.description || ''}</p>
-                                ${momentsDisplay}
-                            </div>
-                            <div class="mt-auto">
-                                ${priceDisplay}
-                                <div class="d-flex gap-2 mt-3">
-                                    <button class="btn btn-dark flex-grow-1 rounded-pill fw-bold" 
-                                        onclick="quickAdd('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, ${finalPrice}, 'fleur', '${f.image_url}')" 
-                                        ${!inStock ? 'disabled' : ''}>
-                                        ${inStock ? "AJOUTER" : 'RUPTURE'}
-                                    </button>
-                                    <button class="btn-fav ${isFavorited ? 'active' : ''}" 
-                                        onclick="toggleFavorite('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, '${f.image_url}', 'fleur')" 
-                                        id="fav-${f.id}">
-                                        <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}" id="icon-fav-${f.id}"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
+            renderFlowers(allFlowers);
         }, 400);
     }
+}
+
+// FUNÇÃO SEPARADA PARA RENDERIZAR (Permite que o filtro de cores funcione)
+function renderFlowers(data) {
+    const grid = document.getElementById('flower-grid');
+    if (!grid) return;
+
+    if (data.length === 0) {
+        grid.innerHTML = `
+            <div class="col-12 text-center py-5">
+                <p class="text-muted" style="font-family:'Cinzel';">Aucun arrangement trouvé.</p>
+            </div>`;
+        return;
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const favIds = window.userFavIds || [];
+
+    grid.innerHTML = data.map(f => {
+        const inStock = (f.stock > 0);
+        const isPromoValid = f.promo_discount_percent > 0 && (!f.promo_expiry_date || f.promo_expiry_date >= today);
+        const isFavorited = favIds.includes(String(f.id));
+
+        // Lógica de Preço
+        let finalPrice = f.price;
+        let priceDisplay = `<span class="flower-price">$${parseFloat(f.price).toFixed(2)}</span>`;
+
+        if (isPromoValid) {
+            finalPrice = (f.price * (1 - f.promo_discount_percent / 100)).toFixed(2);
+            priceDisplay = `
+                <div>
+                    <span class="old-price text-muted">$${parseFloat(f.price).toFixed(2)}</span>
+                    <span class="flower-price text-danger">$${finalPrice}</span>
+                </div>`;
+        }
+
+        // Selo de Destaque (Vedette / Coup de Coeur)
+        const badgeFeatured = f.is_featured ? 
+            `<span class="badge position-absolute top-0 start-0 m-3 shadow-sm" 
+                   style="background: var(--gold); color: white; font-family: 'Cinzel'; font-size: 0.65rem; z-index: 10; letter-spacing: 1px;">
+                   COUP DE COEUR
+             </span>` : "";
+
+        // Exibição de Momentos (Tags)
+        let momentsDisplay = f.moments ? `<p class="flower-moments mb-2"><strong>Idéal pour :</strong> ${f.moments}</p>` : "";
+
+        return `
+        <div class="col product-item" data-product-id="${f.id}">
+            <div class="flower-card h-100 shadow-sm position-relative">
+                ${badgeFeatured}
+                <div class="flower-img-link" onclick="openFlowerDetail('${f.id}')">
+                    <img src="${f.image_url}" class="flower-img" alt="${f.name}" loading="lazy">
+                </div>
+                <div class="flower-body p-4 text-center d-flex flex-column">
+                    <h3 class="fw-bold mb-2" style="font-family:'Cinzel'; cursor:pointer" onclick="openFlowerDetail('${f.id}')">
+                        ${f.name}
+                    </h3>
+                    <div class="flower-text-wrapper mb-3">
+                        <p class="flower-description text-muted small">${f.description || ''}</p>
+                        ${momentsDisplay}
+                    </div>
+                    <div class="mt-auto">
+                        ${priceDisplay}
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-dark flex-grow-1 rounded-pill fw-bold" 
+                                onclick="quickAdd('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, ${finalPrice}, 'fleur', '${f.image_url}')" 
+                                ${!inStock ? 'disabled' : ''}>
+                                ${inStock ? "AJOUTER" : 'RUPTURE'}
+                            </button>
+                            <button class="btn-fav ${isFavorited ? 'active' : ''}" 
+                                onclick="toggleFavorite('${f.id}', \`${f.name.replace(/'/g, "\\'")}\`, '${f.image_url}', 'fleur')" 
+                                id="fav-${f.id}">
+                                <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}" id="icon-fav-${f.id}"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // FILTRO INTELIGENTE QUE MOSTRA O BANNER
@@ -1258,6 +1330,24 @@ async function openFlowerDetail(id) {
         document.querySelectorAll('.modal-nav-btn').forEach(btn => btn.remove());
     }, { once: true });
 }
+
+function filterByColor(color) {
+    // 1. Atualizar UI das bolinhas
+    document.querySelectorAll('.color-dot').forEach(dot => dot.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // 2. Filtrar os dados
+    const filtered = (color === 'all') 
+        ? allFlowers 
+        : allFlowers.filter(f => f.color === color);
+
+    // 3. Renderizar apenas os filtrados
+    renderFlowers(filtered); 
+}
+
+// DICA: Mova a parte do grid.innerHTML de dentro do loadFlowers 
+// para uma função separada chamada renderFlowers(data) para poder reutilizá-la aqui.
+
 
 // --- FUNÇÃO PARA CARREGAR RECOMENDAÇÕES POR MOMENTOS ---
 async function loadFlowerAIRecommendations(currentId, moments) {
