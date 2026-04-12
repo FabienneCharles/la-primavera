@@ -189,11 +189,17 @@
         <h2 class="mb-4">🛡️ Journal de Sécurité</h2>
         <div class="admin-card table-responsive">
             <table class="table align-middle">
-                <thead>
-                    <tr class="small text-muted text-uppercase">
-                        <th>Date/Heure</th><th>Action</th><th>IP</th><th>Localisation</th><th>Appareil</th>
-                    </tr>
-                </thead>
+               <thead>
+    <tr class="small text-muted text-uppercase">
+        <th>Date/Heure</th>
+        <th>Action & Email</th>
+        <th>IP</th>
+        <th>Localisation</th>
+        <th>Appareil</th>
+        <th>Status</th>
+        <th>Sécurité</th>
+    </tr>
+</thead>
                 <tbody id="lista-logs"></tbody>
             </table>
         </div>
@@ -711,17 +717,12 @@
     ADMIN_ID = session.user.id;
     const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', ADMIN_ID).single();
     if (!profile?.is_admin) { window.location.href = "index.html"; } 
-    else { 
+  else { 
         document.body.style.display = "block"; 
-        
-        // 1. Registra no banco e ESPERA (await)
-        await recordAccess('Sessão Ativa'); 
-        
-        // 2. Espera 1 segundo (timeout) para o banco processar e então mostra na tela
-        setTimeout(async () => {
-            await loadAccessLogs(); 
-        }, 1000);
-
+        // 1. Registra o login com e-mail
+        await recordAccess('Connexion'); 
+        // 2. Carrega a tabela atualizada
+        setTimeout(async () => { await loadAccessLogs(); }, 1000);
         init(); 
     }
 }
@@ -912,50 +913,85 @@ async function loadClients() {
         reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e);
     });
 
-
-
-async function recordAccess(action) {
-    if (!ADMIN_ID) return;
-    try {
-        const response = await fetch('https://ipapi.co/json/');
-        const geo = await response.json();
-        
-        const logData = {
-            admin_id: ADMIN_ID, // Corrigido de admin_ para admin_id
-            action: action,
-            ip_address: geo.ip, 
-            location: geo.city + ", " + geo.region + ", " + geo.country_name,
-            user_agent: navigator.userAgent
-        };
-
-        // O await aqui é obrigatório para o banco não receber NULL
-        await _supabase.from('admin_access_log').insert([logData]);
-    } catch (e) {
-        console.error("Erro na localização", e);
-        await _supabase.from('admin_access_log').insert([{ admin_id: ADMIN_ID, action: action }]);
-    }
-}
-
 async function loadAccessLogs() {
-    const { data } = await _supabase
-        .from('admin_access_log')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(15);
-
+    const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(15);
     const lista = document.getElementById('lista-logs');
     if (lista && data) {
         lista.innerHTML = data.map(log => `
             <tr>
                 <td class="small">${new Date(log.created_at).toLocaleString()}</td>
-                <td><span class="badge ${log.action.includes('Ativa') ? 'bg-success' : 'bg-secondary'}">${log.action}</span></td>
+                <td class="small">
+                    <span class="badge bg-danger mb-1"><i class="bi bi-shield-exclamation"></i> NOUVELLE CONNEXION</span><br>
+                    <small class="fw-bold">${log.action}</small>
+                </td>
                 <td class="small">${log.ip_address || '---'}</td>
                 <td class="small">${log.location || 'Localisation...'}</td>
-                <td class="small text-muted" style="font-size:0.6rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
+                <td class="small">${log.user_agent || 'Appareil'}</td>
+                <td><span class="badge bg-success" style="font-size:0.7rem;">Status: Actif</span></td>
+                <td>
+                    <button class="btn btn-sm btn-dark w-100 mb-1" style="font-size:0.6rem;" onclick="resetSecurityAction()">
+                        Réinitialiser & Déconnecter Tous
+                    </button>
+                </td>
             </tr>`).join('');
     }
 }
 
+// Função para o botão de ação
+function resetSecurityAction() {
+    if(confirm("ALERTE SÉCURITÉ: Voulez-vous réinitialiser le mot de passe et forcer la déconnexion de tous os aparelhos?")) {
+        alert("Lien de réinitialisation envoyé à votre e-mail. Déconnexion globale...");
+        handleLogout();
+    }
+}
+
+
+async function recordAccess(action) {
+    if (!ADMIN_ID) return;
+    try {
+        // Busca o e-mail do admin logado
+        const { data: { user } } = await _supabase.auth.getUser();
+        const userEmail = user?.email || "Admin";
+
+        const response = await fetch('https://ipapi.co/json/');
+        const geo = await response.json();
+        
+        // Lógica de Identificação de Aparelho Real
+        let ua = navigator.userAgent;
+        let deviceType = "💻 Ordinateur (PC/Mac)";
+        if (/tablet|ipad|playbook|silk/i.test(ua)) deviceType = "📟 Tablette";
+        else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua)) deviceType = "📱 Smartphone";
+
+        const logData = {
+            admin_id: ADMIN_ID,
+            action: `${action}: ${userEmail}`, // Exibe o e-mail no log
+            ip_address: geo.ip,
+            location: `${geo.city}, ${geo.region}, ${geo.country_name}`,
+            user_agent: deviceType // Salva o tipo amigável
+        };
+
+        await _supabase.from('admin_access_log').insert([logData]);
+    } catch (e) {
+        console.error("Erro Segurança:", e);
+    }
+}
+
+
+// Função para o botão de ação sugerido
+function resetSecurityAction() {
+    if(confirm("ALERTE: Voulez-vous réinitialiser votre mot de passe e déconnecter TOUS os aparelhos agora?")) {
+        alert("Lien de réinitialisation envoyé! Déconnexion en cours...");
+        handleLogout();
+    }
+}
+
+// Função de Ação para o Botão
+function resetSecurity() {
+    if(confirm("Voulez-vous vraiment réinitialiser le mot de passe et déconnecter tous os appareils?")) {
+        alert("Lien de réinitialisation envoyé. Déconnexion globale...");
+        handleLogout();
+    }
+}
     async function init() { 
     showLoading(true);
 
