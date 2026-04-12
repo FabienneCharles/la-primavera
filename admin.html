@@ -720,14 +720,13 @@
     ADMIN_ID = session.user.id;
     const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', ADMIN_ID).single();
     if (!profile?.is_admin) { window.location.href = "index.html"; } 
- else { 
+else { 
         document.body.style.display = "block"; 
-        // 1. Apenas registra o acesso
         await recordAccess('Connexion effectuée'); 
-        // 2. O init() já se encarregará de carregar o resto
+        setTimeout(async () => { await loadAccessLogs(); }, 1200);
         init(); 
     }
-
+}
     async function handleLogout() { await _supabase.auth.signOut(); window.location.href = "admin-login.html"; }
 
 
@@ -992,20 +991,20 @@ function resetSecurityAction() {
 }
 
 async function checkSecurityAlerts() {
-    // Busca acessos dos últimos 30 minutos (para indicar atividade recente real)
-    const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
-
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     const { data } = await _supabase
         .from('admin_access_log')
         .select('id')
-        .gt('created_at', thirtyMinsAgo.toISOString());
+        .gt('created_at', oneHourAgo.toISOString());
 
     const badge = document.getElementById('security-alert-badge');
     if (badge && data) {
-        // Se houver mais de um log (o seu e talvez outro), ele avisa
+        // Se houver mais de 1 log (o seu login + algum outro), ele alerta
         if (data.length > 1) {
-            badge.innerText = "!";
+            badge.innerText = data.length;
             badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
         }
     }
 }
@@ -1061,14 +1060,16 @@ async function checkSecurityAlerts() {
     } finally {
         // 4. Monitores em Tempo Real (Loop de Atualização a cada 10 segundos)
         // Isso mantém o badge de mensagens e a tabela de logs sempre atualizados
-       ssetInterval(() => {
-            if (typeof checkNewChatMessages === 'function') checkNewChatMessages();
-            if (typeof checkNewOrders === 'function') checkNewOrders();
-            if (typeof loadAccessLogs === 'function') loadAccessLogs(); 
-            checkSecurityAlerts(); // <-- ADICIONE ESTA LINHA AQUI PARA ATIVAR O ALERTA
-        }, 10000);
-        // Remove a tela de carregamento e exibe o Dashboard
-        showLoading(false);
+       // No final da função init(), mude para:
+    setInterval(() => {
+    if (typeof checkNewChatMessages === 'function') checkNewChatMessages();
+    if (typeof checkNewOrders === 'function') checkNewOrders();
+    if (typeof loadAccessLogs === 'function') loadAccessLogs(); 
+    checkSecurityAlerts(); 
+}, 10000);
+
+    checkSecurityAlerts(); // Chama uma vez ao carregar para mostrar o badge se houver algo
+    showLoading(false);
     }
 }
 
@@ -1755,9 +1756,12 @@ function copyNoteToClipboard() {
         const c=document.getElementById('admin-reply-input').value; if(c && selectedClientId){await _supabase.from('messages').insert([{sender_id:ADMIN_ID,recipient_id:selectedClientId,content:c}]); document.getElementById('admin-reply-input').value=''; selectClientChat(selectedClientId);}}
     function filterClients(){
         let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
+   
    function trocarPainel(p) {
+    // 1. Lista de todos os IDs de painéis
     const ids = ['flor', 'patis', 'moments', 'deje', 'clients', 'reviews', 'orders', 'slots', 'home', 'chat', 'security'];
     
+    // 2. Limpeza: Esconde todos os painéis e remove o destaque (active) de todos os botões
     ids.forEach(id => {
         const div = document.getElementById('painel-' + id);
         const btn = document.getElementById('btn-' + id);
@@ -1765,21 +1769,28 @@ function copyNoteToClipboard() {
         if (btn) btn.classList.remove('active');
     });
 
+    // 3. Ativação: Mostra o painel clicado e destaca o botão correspondente
     const alvo = document.getElementById('painel-' + p);
     const btnAlvo = document.getElementById('btn-' + p);
     
     if (alvo) alvo.style.display = 'block';
     if (btnAlvo) btnAlvo.classList.add('active');
 
-    if (p === 'reviews') loadAllReviews();
-    if (p === 'orders') loadOrders();
-    if (p === 'clients') loadClients();
+    // 4. Gatilhos Automáticos: Carrega os dados específicos ao abrir cada painel
+    if (p === 'reviews' && typeof loadAllReviews === 'function') loadAllReviews();
+    if (p === 'orders' && typeof loadOrders === 'function') loadOrders();
+    if (p === 'clients' && typeof loadClients === 'function') loadClients();
     
+    // 5. Painel de Segurança (Logs)
     if (p === 'security') {
-        loadAccessLogs();
-        // AÇÃO CRUCIAL: Esconde a bolinha vermelha quando você clica no botão
+        if (typeof loadAccessLogs === 'function') loadAccessLogs();
+        
+        // Zera o badge visualmente na hora do clique
         const badge = document.getElementById('security-alert-badge');
-        if (badge) badge.style.display = 'none';
+        if (badge) {
+            badge.style.display = 'none';
+            badge.innerText = ""; // Limpa o texto interno para garantir
+        }
     }
 }
 
