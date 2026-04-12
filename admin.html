@@ -713,12 +713,15 @@
     if (!profile?.is_admin) { window.location.href = "index.html"; } 
     else { 
         document.body.style.display = "block"; 
-        // Primeiro grava no banco
+        
+        // 1. Registra no banco e ESPERA (await)
         await recordAccess('Sessão Ativa'); 
-        // Pequena pausa para o banco processar (800ms) e então mostra na tela
+        
+        // 2. Espera 1 segundo (timeout) para o banco processar e então mostra na tela
         setTimeout(async () => {
             await loadAccessLogs(); 
-        }, 800);
+        }, 1000);
+
         init(); 
     }
 }
@@ -918,26 +921,23 @@ async function recordAccess(action) {
         const geo = await response.json();
         
         const logData = {
-            admin_id: ADMIN_ID, // Nome exato da coluna na Imagem 19
+            admin_id: ADMIN_ID, // Corrigido de admin_ para admin_id
             action: action,
-            ip_address: geo.ip, // Nome exato da coluna na Imagem 19
-            location: `${geo.city}, ${geo.region}, ${geo.country_name}`, // Nome exato da coluna na Imagem 19
-            user_agent: navigator.userAgent // Nome exato da coluna na Imagem 19
+            ip_address: geo.ip, 
+            location: geo.city + ", " + geo.region + ", " + geo.country_name,
+            user_agent: navigator.userAgent
         };
 
-        // O .select() força o banco a confirmar a gravação
-        const { error } = await _supabase.from('admin_access_log').insert([logData]).select();
-        if (error) console.error("Erro Supabase:", error.message);
-        
+        // O await aqui é obrigatório para o banco não receber NULL
+        await _supabase.from('admin_access_log').insert([logData]);
     } catch (e) {
-        console.error("Erro API Localização:", e);
-        // Grava o básico se a internet falhar
+        console.error("Erro na localização", e);
         await _supabase.from('admin_access_log').insert([{ admin_id: ADMIN_ID, action: action }]);
     }
 }
 
 async function loadAccessLogs() {
-    const { data, error } = await _supabase
+    const { data } = await _supabase
         .from('admin_access_log')
         .select('*')
         .order('created_at', { ascending: false })
