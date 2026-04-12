@@ -172,7 +172,10 @@
         <button class="nav-link-custom" id="btn-orders" onclick="trocarPainel('orders')"><i class="bi bi-receipt me-2"></i> Commandes</button>
         <button class="nav-link-custom" id="btn-home" onclick="trocarPainel('home')"><i class="bi bi-house-gear me-2"></i> Gérer Home</button>
         <button class="nav-link-custom" id="btn-chat" onclick="trocarPainel('chat')"><i class="bi bi-chat-dots me-2"></i> Messages</button>
-        <button class="nav-link-custom" id="btn-security" onclick="trocarPainel('security')"><i class="bi bi-shield-lock me-2"></i> Sécurité & Logs</button>
+        <button class="nav-link-custom" id="btn-security" onclick="trocarPainel('security')">
+    <i class="bi bi-shield-lock me-2"></i> Sécurité & Logs
+    <span id="security-alert-badge" class="badge rounded-pill bg-danger float-end" style="display: none; font-size: 0.6rem; margin-top: 2px;">!</span>
+</button>
     </div>
 
     <div class="logout-box" style="margin-top: 20px;">
@@ -720,7 +723,7 @@
  else { 
         document.body.style.display = "block"; 
         await recordAccess('Connexion effectuée'); 
-        setTimeout(async () => { await loadAccessLogs(); }, 1200); // 1.2s para garantir o registro
+        setTimeout(async () => { await loadAccessLogs(); }, 1200);
         init(); 
     }
 }
@@ -911,15 +914,26 @@ async function loadClients() {
         reader.onload = () => resolve(reader.result); reader.onerror = e => reject(e);
     });
 
+// 2. Leitura e Badge de Alerta
 async function loadAccessLogs() {
     const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(15);
     const lista = document.getElementById('lista-logs');
+    const badge = document.getElementById('security-alert-badge');
+
     if (lista && data) {
+        // Atualiza o badge se houver logs novos (últimas 24h)
+        const last24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const newLogs = data.filter(l => new Date(l.created_at) > last24h).length;
+        if(badge) {
+            badge.innerText = newLogs;
+            badge.style.display = newLogs > 1 ? 'block' : 'none';
+        }
+
         lista.innerHTML = data.map(log => `
             <tr>
                 <td class="small">${new Date(log.created_at).toLocaleString()}</td>
                 <td class="small">
-                    <span class="badge bg-danger mb-1"><i class="bi bi-shield-lock"></i> CONNEXION DÉTECTÉE</span><br>
+                    <span class="badge bg-danger mb-1"><i class="bi bi-shield-lock"></i> CONNEXION</span><br>
                     <small class="fw-bold">${log.action}</small>
                 </td>
                 <td class="small">${log.ip_address || '---'}</td>
@@ -927,39 +941,24 @@ async function loadAccessLogs() {
                 <td class="small">${log.user_agent || 'Appareil'}</td>
                 <td><span class="badge bg-success" style="font-size:0.7rem;">Status: Actif</span></td>
                 <td>
-                    <button class="btn btn-sm btn-dark w-100" style="font-size:0.5rem;" onclick="suggestSecurityAction()">
-                        Reset Password & Logout All
+                    <button class="btn btn-sm btn-dark w-100" style="font-size:0.5rem;" onclick="resetSecurityAction()">
+                        Reset Password & Logout
                     </button>
                 </td>
             </tr>`).join('');
     }
 }
 
-function suggestSecurityAction() {
-    if(confirm("SÉCURITÉ: Souhaitez-vous réinitialiser votre mot de passe et forcer la déconnexion de tous os aparelhos?")) {
-        alert("Lien de réinitialisation envoyé à votre e-mail. Fermeture de session...");
-        handleLogout();
-    }
-}
-
-
-// Função de Segurança para o Botão
+// Única função de segurança necessária
 function resetSecurityAction() {
-    if(confirm("ALERTE SÉCURITÉ: Voulez-vous réinitialiser le mot de passe e forcer la déconnexion de tous os aparelhos?")) {
-        alert("Lien de réinitialisation envoyé à votre e-mail. Déconnexion globale...");
-        handleLogout();
+    const confirmation = confirm("SÉCURITÉ: Souhaitez-vous réinitialiser votre mot de passe et forcer la déconnexion de tous les appareils ?");
+    if(confirmation) {
+        alert("Lien de réinitialisation envoyé à votre e-mail. Fermeture de session em cours...");
+        handleLogout(); 
     }
 }
 
-// Função de Alerta de Segurança
-function suggestReset() {
-    if(confirm("ALERTE: Souhaitez-vous réinitialiser votre mot de passe e forcer la déconnexion de tous os dispositivos?")) {
-        alert("Lien de réinitialisation envoyé à votre e-mail. Fermeture de session...");
-        handleLogout();
-    }
-}
-
-
+// 1. Gravação Inteligente (Detecta Aparelho e E-mail)
 async function recordAccess(action) {
     if (!ADMIN_ID) return;
     try {
@@ -984,7 +983,6 @@ async function recordAccess(action) {
     } catch (e) { console.error("Erro Segurança:", e); }
 }
 
-
 // Função para o botão de ação sugerido
 function resetSecurityAction() {
     if(confirm("ALERTE: Voulez-vous réinitialiser votre mot de passe e déconnecter TOUS os aparelhos agora?")) {
@@ -993,6 +991,27 @@ function resetSecurityAction() {
     }
 }
 
+async function checkSecurityAlerts() {
+    const yesterday = new Date();
+    yesterday.setHours(yesterday.getHours() - 24);
+
+    const { data } = await _supabase
+        .from('admin_access_log')
+        .select('id')
+        .gt('created_at', yesterday.toISOString());
+
+    const badge = document.getElementById('security-alert-badge');
+    if (badge && data) {
+        const count = data.length;
+        // Se houver qualquer log nas últimas 24h, a bolinha aparece
+        if (count > 0) {
+            badge.innerText = count;
+            badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
 
     async function init() { 
     showLoading(true);
@@ -1045,12 +1064,12 @@ function resetSecurityAction() {
     } finally {
         // 4. Monitores em Tempo Real (Loop de Atualização a cada 10 segundos)
         // Isso mantém o badge de mensagens e a tabela de logs sempre atualizados
-       setInterval(() => {
+       ssetInterval(() => {
             if (typeof checkNewChatMessages === 'function') checkNewChatMessages();
             if (typeof checkNewOrders === 'function') checkNewOrders();
-            if (typeof loadAccessLogs === 'function') loadAccessLogs(); // Isso atualiza o IP em tempo real
+            if (typeof loadAccessLogs === 'function') loadAccessLogs(); 
+            checkSecurityAlerts(); // <-- ADICIONE ESTA LINHA AQUI PARA ATIVAR O ALERTA
         }, 10000);
-        
         // Remove a tela de carregamento e exibe o Dashboard
         showLoading(false);
     }
@@ -1764,11 +1783,18 @@ function copyNoteToClipboard() {
     if (p === 'clients') loadClients();
     
     // NOVO: Carrega o histórico de acessos (IP, Localização, Login/Logout)
-    if (p === 'security') loadAccessLogs();
+    if (p === 'security') {
+        loadAccessLogs();
+        // Limpa o badge de alerta do menu lateral ao visualizar os logs
+        const badge = document.getElementById('security-alert-badge');
+        if (badge) badge.style.display = 'none';
+    }
 }
 
-
-let ordersEnabled = true; // Variável global para o estado das vendas
+// Variáveis globais de estado do sistema
+let ordersEnabled = true; 
+let globalShipping = 0;
+let globalTax = 0;
 
 async function loadGlobalSettings() {
     // Busca as configurações globais na tabela 'site_settings' do Supabase
