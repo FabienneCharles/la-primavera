@@ -719,19 +719,11 @@
     if (!profile?.is_admin) { 
         window.location.href = "index.html"; 
     } else { 
-        // 1. Libera a visualização do corpo da página
         document.body.style.display = "block"; 
-        
-        // 2. Registra o acesso (Busca IP e Localização Real via API)
-        // O 'await' aqui é obrigatório para não carregar a tabela vazia
+        // 1. Registra no banco
         await recordAccess('Sessão Ativa'); 
-        
-        // 3. Carrega os logs já incluindo a sessão que acabamos de criar
-        if (typeof loadAccessLogs === 'function') {
-            await loadAccessLogs(); 
-        }
-        
-        // 4. Inicia o restante dos módulos do Dashboard
+        // 2. Lê do banco para a tela
+        await loadAccessLogs(); 
         init(); 
     }
 }
@@ -927,7 +919,7 @@ async function loadClients() {
 
 
 async function loadAccessLogs() {
-    const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(20);
+    const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(15);
     const lista = document.getElementById('lista-logs');
     if (lista && data) {
         lista.innerHTML = data.map(log => `
@@ -939,7 +931,7 @@ async function loadAccessLogs() {
                 <td class="small text-muted" style="font-size:0.6rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
             </tr>`).join('');
     }
-} // <--- ESSA CHAVE FECHA A FUNÇÃO DE LEITURA
+}
 
 async function recordAccess(action) {
     if (!ADMIN_ID) return;
@@ -949,12 +941,14 @@ async function recordAccess(action) {
         const logData = {
             admin_id: ADMIN_ID,
             action: action,
-            ip_address: geo.ip,
-            location: `${geo.city}, ${geo.region}, ${geo.country_name}`,
+            ip_address: geo.ip, // Verifique se no Supabase o nome é ip_address
+            location: geo.city + ", " + geo.region + ", " + geo.country_name,
             user_agent: navigator.userAgent
         };
         await _supabase.from('admin_access_log').insert([logData]);
-    } catch (e) { console.error("Erro na localização", e); }
+    } catch (e) {
+        console.error("Erro na localização", e);
+    }
 }
 
 
