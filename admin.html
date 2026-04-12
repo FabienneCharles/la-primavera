@@ -64,11 +64,45 @@
 
 /* --- AJUSTES DE RESPONSIVIDADE --- */
 @media (max-width: 992px) {
-    .sidebar { width: 80px; padding: 15px 10px; position: fixed; } /* Mantenha fixed aqui */
-    .content { 
-        margin-left: 80px; 
-        width: calc(100% - 80px); 
+    .sidebar {
+  width: 280px;
+  min-width: 280px;
+}
+
+.content {
+  flex: 1;
+  margin-left: 0;
+  width: 100%;
+}
+}
+
+@media (max-width: 768px) {
+    .wrapper { flex-direction: column; }
+    .sidebar { 
+        position: relative;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    display: flex;
+    gap: 10px; 
+    padding: auto; 
+    border-right: none; 
+    border-bottom: 4px solid var(--accent);
+    overflow-x: auto; /* Permite rolar os botões se forem muitos */
     }
+
+    .nav-link-custom {
+    white-space: nowrap;
+    font-size: 0.7rem;
+    padding: 8px 10px;
+  }
+
+    .content { 
+        margin-left: 0; /* Remove o buraco da esquerda */
+        padding: 10px; 
+    }
+    .logout-box { display: none; } /* Limpa o topo no celular */
 }
 
 
@@ -86,8 +120,107 @@
     overflow-y: auto; /* ATENÇÃO: Isso permite rolar o menu se ele for grande */
 }
 
+.table {
+  min-width: 700px;
+}
+
+@media (max-width: 576px) {
+  .admin-header-bar {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+}
+
+.preview-container-media img {
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .admin-card {
+    padding: 15px;
+  }
+}
 
 
+@media (max-width: 768px) {
+  .btn {
+    width: 100%;
+  }
+}
+
+/* ===== SIDEBAR BASE ===== */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: #2C1810;
+  padding: 20px;
+  transition: transform 0.3s ease;
+  z-index: 1500;
+}
+
+/* ESCONDIDA */
+.sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* CONTEÚDO */
+.content {
+  margin-left: 260px;
+  padding: 30px;
+  transition: all 0.3s ease;
+}
+
+/* QUANDO SIDEBAR FECHA */
+.content.full {
+  margin-left: 0;
+}
+
+/* OVERLAY */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 1400;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .content {
+    margin-left: 0;
+    padding: 15px;
+  }
+
+}
+
+.nav-link-custom {
+  transition: all 0.2s ease;
+}
+
+.nav-link-custom:hover {
+  transform: translateX(5px);
+}
 
 </style>
 </head>
@@ -155,7 +288,7 @@
                 <div class="admin-card">
                     <form id="formFlower" class="row g-3">
                         <div class="col-md-4"><label class="fw-bold small">Nom</label><input type="text" id="f_name" class="form-control" required></div>
-                        <div class="col-md-3"><label class="fw-bold small">Moment</label><select id="f_moments_select" class="form-select" required></select></div>
+                        <div class="col-12 col-md-6 col-lg-4"><label class="fw-bold small">Moment</label><select id="f_moments_select" class="form-select" required></select></div>
                         <div class="col-md-2"><label class="fw-bold small">Prix ($)</label><input type="number" id="f_price" class="form-control" step="0.01" required></div>
                         <div class="col-md-3"><label class="fw-bold small">Stock</label><input type="number" id="f_stock" class="form-control" value="10"></div>
                         <div class="col-md-2"><label class="fw-bold small text-danger">Remise %</label><input type="number" id="f_init_disc" class="form-control" placeholder="0"></div>
@@ -228,6 +361,7 @@
     <div class="admin-card">
         <form id="formPatis" class="row g-3">
             <div class="col-md-4">
+
                 <label class="fw-bold small">Nom</label>
                 <input type="text" id="p_name" class="form-control" required>
             </div>
@@ -302,6 +436,7 @@
                                     <button class="btn btn-sm btn-dark w-100" onclick="saveIndividualAbout('about_philosophie')">Mettre à jour Philosophie</button>
                                 </div>
                                 <div class="col-md-4">
+
                                     <label class="small fw-bold">Nos Normes</label>
                                     <textarea id="desc-about_normes" class="form-control mb-2" rows="5"></textarea>
                                     <button class="btn btn-sm btn-dark w-100" onclick="saveIndividualAbout('about_normes')">Mettre à jour Normes</button>
@@ -344,7 +479,7 @@
                         <div class="col-12 border-bottom py-4">
                             <label class="fw-bold d-block mb-3" style="color:var(--accent); font-size:1.1rem;"><i class="bi bi-tag-fill"></i> Rabais Global sur Sous-Total</label>
                             <div class="row g-3">
-                                <div class="col-md-4">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <label class="small fw-bold">Type de Rabais</label>
                                     <select id="input-discount_type" class="form-select">
                                         <option value="none">Aucun</option>
@@ -380,32 +515,28 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Pâtisserie</label>
+<div class="col-12 col-md-6 col-lg-4">                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Pâtisserie</label>
                             <input type="text" id="title-card_patisserie" class="form-control form-control-sm mb-2" placeholder="Titre">
                             <textarea id="desc-card_patisserie" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
                             <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_patisserie', this)">
                             <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_patisserie')">Sauvegarder</button>
                             <div id="preview-card_patisserie" class="preview-container-media mt-2"></div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Déjeuners</label>
+<div class="col-12 col-md-6 col-lg-4">                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Déjeuners</label>
                             <input type="text" id="title-card_dejeuner" class="form-control form-control-sm mb-2" placeholder="Titre">
                             <textarea id="desc-card_dejeuner" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
                             <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_dejeuner', this)">
                             <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_dejeuner')">Sauvegarder</button>
                             <div id="preview-card_dejeuner" class="preview-container-media mt-2"></div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Floristerie</label>
+<div class="col-12 col-md-6 col-lg-4">                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Floristerie</label>
                             <input type="text" id="title-card_floristeria" class="form-control form-control-sm mb-2" placeholder="Titre">
                             <textarea id="desc-card_floristeria" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
                             <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_floristeria', this)">
                             <button class="btn btn-sm btn-dark w-100" onclick="saveHomeText('card_floristeria')">Sauvegarder</button>
                             <div id="preview-card_floristeria" class="preview-container-media mt-2"></div>
                         </div>
-                        <div class="col-md-4">
-                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Spaghetti</label>
+<div class="col-12 col-md-6 col-lg-4">                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Spaghetti</label>
                             <input type="text" id="title-card_spaghetti" class="form-control form-control-sm mb-2" placeholder="Titre">
                             <textarea id="desc-card_spaghetti" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
                             <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_spaghetti', this)">
@@ -413,8 +544,7 @@
                             <div id="preview-card_spaghetti" class="preview-container-media mt-2"></div>
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Detox</label>
+<div class="col-12 col-md-6 col-lg-4">                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Detox</label>
                             <input type="text" id="title-card_detox" class="form-control form-control-sm mb-2" placeholder="Titre">
                             <textarea id="desc-card_detox" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
                             <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_detox', this)">
@@ -422,8 +552,7 @@
                             <div id="preview-card_detox" class="preview-container-media mt-2"></div>
                         </div>
 
-                        <div class="col-md-4">
-                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Combo Detox</label>
+<div class="col-12 col-md-6 col-lg-4">                            <label class="fw-bold small text-uppercase" style="color:var(--accent)">Card Combo Detox</label>
                             <input type="text" id="title-card_combo" class="form-control form-control-sm mb-2" placeholder="Titre">
                             <textarea id="desc-card_combo" class="form-control form-control-sm mb-2" placeholder="Description"></textarea>
                             <input type="file" class="form-control form-control-sm mb-2" onchange="uploadHomeImage('card_combo', this)">
@@ -447,8 +576,8 @@
                 <div class="admin-card mb-4">
                     <form id="formSlot" class="row g-3">
                         <div class="col-md-2"><label class="small fw-bold">Ordre</label><input type="number" id="s_order" class="form-control" placeholder="1"></div>
-                        <div class="col-md-4"><label class="small fw-bold">Horaire</label><input type="text" id="s_label" class="form-control" placeholder="Ex: 08:00 - 09:00"></div>
-                        <div class="col-md-4"><label class="small fw-bold">Catégorie</label>
+                        <div class="col-12 col-md-6 col-lg-4"><label class="small fw-bold">Horaire</label><input type="text" id="s_label" class="form-control" placeholder="Ex: 08:00 - 09:00"></div>
+                        <div class="col-12 col-md-6 col-lg-4"><label class="small fw-bold">Catégorie</label>
                             <select id="s_cat" class="form-select">
                                 <option value="Petit-Déjeuner">Petit-Déjeuner</option>
                                 <option value="Matinée Classique">Matinée Classique</option>
@@ -512,8 +641,7 @@
                             <div class="col-md-8">
                                 <input type="text" id="orderSearchInput" class="form-control" placeholder="Chercher par nom de client..." onkeyup="filterOrdersUI()">
                             </div>
-                            <div class="col-md-4">
-                                <select id="orderStatusFilter" class="form-select" onchange="filterOrdersUI()">
+<div class="col-12 col-md-6 col-lg-4">                                <select id="orderStatusFilter" class="form-select" onchange="filterOrdersUI()">
                                     <option value="">Tous os status (Tudo)</option>
                                     <option value="En attente">⏳ En attente</option>
                                     <option value="Pago">💳 Pago</option>
@@ -558,8 +686,7 @@
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="admin-card p-0" style="max-height: 500px; overflow-y: auto;">
+<div class="col-12 col-md-6 col-lg-4">                            <div class="admin-card p-0" style="max-height: 500px; overflow-y: auto;">
                                 <div class="list-group list-group-flush" id="chat-users-list"></div>
                             </div>
                         </div>
