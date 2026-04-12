@@ -64,30 +64,11 @@
 
 /* --- AJUSTES DE RESPONSIVIDADE --- */
 @media (max-width: 992px) {
-    .sidebar { width: 80px; padding: 15px 10px; position: fixed; }
-    .sidebar h4, .sidebar-logo, .sidebar small, .nav-link-custom span { display: none; }
-    .content { margin-left: 80px; width: calc(100% - 80px); }
-}
-
-@media (max-width: 768px) {
-    .wrapper { flex-direction: column; }
-    .sidebar { 
-        position: relative; /* Solta da lateral */
-        width: 100%; 
-        height: auto; 
-        flex-direction: row; 
-        padding: 10px; 
-        border-right: none; 
-        border-bottom: 4px solid var(--accent);
-        overflow-x: auto; /* Permite rolar os botões se forem muitos */
-    }
-    
+    .sidebar { width: 80px; padding: 15px 10px; position: fixed; } /* Mantenha fixed aqui */
     .content { 
-        margin-left: 0; /* Remove o buraco da esquerda */
-        width: 100%; 
-        padding: 15px; 
+        margin-left: 80px; 
+        width: calc(100% - 80px); 
     }
-    .logout-box { display: none; } /* Limpa o topo no celular */
 }
 
 
