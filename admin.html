@@ -767,7 +767,7 @@
         }).join(''); 
     }
 
-    async function loadClients() {
+async function loadClients() {
         showLoading(true);
         const { data: clients, error } = await _supabase.from('profiles').select('*').order('full_name');
 
@@ -935,7 +935,6 @@ async function loadAccessLogs() {
 }
 
 
-
 async function recordAccess(action) {
     if (!ADMIN_ID) return;
     try {
@@ -953,9 +952,6 @@ async function recordAccess(action) {
         console.error("Erreur de localisation", e);
     }
 }
-
-
-
 
     async function init() { 
     showLoading(true);
@@ -1019,10 +1015,7 @@ async function recordAccess(action) {
     }
 }
 
-
-
-
-    async function autoCancelExpiredOrders() {
+ async function autoCancelExpiredOrders() {
         const oneHourAgo = new Date();
         oneHourAgo.setHours(oneHourAgo.getHours() - 1);
         
@@ -1035,9 +1028,10 @@ async function recordAccess(action) {
         if(error) console.error("Erro no auto-cancelamento:", error);
     }
 
-    function showLoading(show) { document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
+ function showLoading(show) { 
+        document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; }
 
-    async function loadHomeSettings() {
+ async function loadHomeSettings() {
         const { data } = await _supabase.from('site_settings').select('*');
         if (data) {
             data.forEach(s => {
@@ -1110,7 +1104,7 @@ async function recordAccess(action) {
         }
     }
 
-    async function saveGlobalTaxes() {
+async function saveGlobalTaxes() {
         showLoading(true);
         const ship = document.getElementById('input-global_shipping').value;
         const tax = document.getElementById('input-global_tax').value;
@@ -1170,10 +1164,6 @@ async function recordAccess(action) {
     }
 
 
-
-
-
-
     async function uploadHomeImage(id, input) {
         if (!input.files[0]) return;
         
@@ -1220,74 +1210,82 @@ async function recordAccess(action) {
         alert("Enregistré!"); showLoading(false);
     }
 
-    async function savePromoSidebar() {
-        const title = document.getElementById('promo-title').value;
-        const description = document.getElementById('promo-text').value;
-        const fileInput = document.getElementById('promo-file');
-        showLoading(true);
-        try {
-            let updateObj = { id: 'promo_sidebar', title: title, description: description };
-            if (fileInput.files[0]) {
-                if (fileInput.files[0].type.includes('video')) {
-                    updateObj.image_url = await toBase64(fileInput.files[0]);
-                } else {
-                    updateObj.image_url = await compressImage(fileInput.files[0]);
-                }
+   async function savePromoSidebar() {
+    const title = document.getElementById('promo-title').value;
+    const description = document.getElementById('promo-text').value;
+    const fileInput = document.getElementById('promo-file');
+    showLoading(true);
+    try {
+        let updateObj = { id: 'promo_sidebar', title: title, description: description };
+        if (fileInput.files[0]) {
+            // CORREÇÃO: Usar a função uploadToStorage que você já tem no admin 
+            // em vez de converter para Base64 (que é muito pesado para o banco)
+            const imgUrl = await uploadToStorage(fileInput.files[0]);
+            if (imgUrl) {
+                updateObj.image_url = imgUrl;
             }
-            const { error } = await _supabase.from('site_settings').upsert(updateObj);
-            if (error) throw error;
-            alert("Publicité mise à jour avec succès!");
-            loadHomeSettings();
-        } catch (err) {
-            alert("Erreur lors de l'enregistrement.");
-        } finally {
-            showLoading(false);
         }
+        const { error } = await _supabase.from('site_settings').upsert(updateObj);
+        if (error) throw error;
+        alert("Publicité mise à jour avec succès!");
+        // Garante que as fotos na tela mudem na hora
+        if (typeof loadHomeSettings === 'function') loadHomeSettings();
+    } catch (err) {
+        console.error(err);
+        alert("Erreur lors de l'enregistrement.");
+    } finally {
+        showLoading(false);
     }
+}
 
-    async function loadData() {
-        showLoading(true);
-    // 1. Busca contagem de visualizações
+async function loadData() {
+    showLoading(true);
+    try {
+        // 1. Busca contagem de visualizações
         const { data: views } = await _supabase.from('product_views').select('*');
         const viewMap = {};
         if (views) views.forEach(v => viewMap[v.product_id] = v.view_count);
 
-    // 2. Busca produtos por categoria
-        const { data: f } = await _supabase.from('products').select('*').eq('category', 'fleur').order('name');
-        const { data: d } = await _supabase.from('products').select('*').eq('category', 'dejeuner').order('name');
-        const { data: p } = await _supabase.from('patisserie').select('*').order('name');
-        
-    // 3. Renderiza nas tabelas correspondentes
-        if (document.getElementById('lista-flor')) {
-            document.getElementById('lista-flor').innerHTML = f?.map(i => renderRow(i, 'products', true, viewMap[i.id] || 0)).join('') || '';
+        // 2. Busca produtos por categoria
+        // Adicionamos Promise.all para carregar tudo ao mesmo tempo e ser mais rápido
+        const [fRes, dRes, pRes] = await Promise.all([
+            _supabase.from('products').select('*').eq('category', 'fleur').order('name'),
+            _supabase.from('products').select('*').eq('category', 'dejeuner').order('name'),
+            _supabase.from('patisserie').select('*').order('name')
+        ]);
+
+        // 3. Renderiza nas tabelas correspondentes (com check de existência do elemento)
+        const listFlor = document.getElementById('lista-flor');
+        const listDeje = document.getElementById('lista-deje');
+        const listPatis = document.getElementById('lista-patis');
+
+        if (listFlor) {
+            listFlor.innerHTML = fRes.data?.map(i => renderRow(i, 'products', true, viewMap[i.id] || 0)).join('') || '';
         }
-        if (document.getElementById('lista-deje')) {
-            document.getElementById('lista-deje').innerHTML = d?.map(i => renderRow(i, 'products', false, viewMap[i.id] || 0)).join('') || '';
+        if (listDeje) {
+            listDeje.innerHTML = dRes.data?.map(i => renderRow(i, 'products', false, viewMap[i.id] || 0)).join('') || '';
         }
-        if (document.getElementById('lista-patis')) {
-            document.getElementById('lista-patis').innerHTML = p?.map(i => renderRow(i, 'patisserie', false, viewMap[i.id] || 0)).join('') || '';
+        if (listPatis) {
+            listPatis.innerHTML = pRes.data?.map(i => renderRow(i, 'patisserie', false, viewMap[i.id] || 0)).join('') || '';
         }
+    } catch (e) {
+        console.error("Erro ao carregar dados:", e);
+    } finally {
         showLoading(false);
     }
+}
 
-
-
-
-    async function checkNewReviewsBadge() {
-        const { data } = await _supabase.from('product_reviews').select('id').eq('is_approved', false);
-        const badge = document.getElementById('review-badge-admin');
-        if (data?.length > 0 && badge) {
-            badge.innerText = data.length;
-            badge.style.display = 'block';
-        } else if (badge) { badge.style.display = 'none'; }
+async function checkNewReviewsBadge() {
+    const { data } = await _supabase.from('product_reviews').select('id').eq('is_approved', false);
+    const badge = document.getElementById('review-badge-admin');
+    if (badge) {
+        const count = data?.length || 0;
+        badge.innerText = count;
+        badge.style.display = count > 0 ? 'block' : 'none';
     }
+}
 
-
-
-
-
-
-    function renderRow(p, table, isFleur, viewCount = 0) {
+function renderRow(p, table, isFleur, viewCount = 0) {
     const today = new Date().toISOString().split('T')[0];
     const isPromoValid = p.promo_discount_percent > 0 && p.promo_expiry_date && p.promo_expiry_date >= today;
     
@@ -1295,7 +1293,6 @@ async function recordAccess(action) {
     const eyeIcon = isActive ? 'bi-eye-fill text-success' : 'bi-eye-slash text-danger';
     const rowOpacity = isActive ? '1' : '0.5'; 
 
-    // CORREÇÃO: Definindo a variável isFeatured
     const isFeatured = p.is_featured === true;
     const starIcon = isFeatured ? 'bi-star-fill text-warning' : 'bi-star text-muted';
 
@@ -1305,10 +1302,13 @@ async function recordAccess(action) {
         priceHTML = `<span class="text-danger"><b>$${final}</b></span> <br><small class="old-price-admin">$${parseFloat(p.price).toFixed(2)}</small>`;
     }
 
+    // Usamos encodeURIComponent para nomes com aspas não quebrarem o HTML
+    const safeName = p.name.replace(/"/g, '&quot;');
+
     return `
     <tr style="opacity: ${rowOpacity}; vertical-align: middle;">
-        <td><img src="${p.image_url}" class="img-mini" style="border: 1px solid #ddd;"></td>
-        <td><input type="text" class="form-control form-control-sm" value="${p.name.replace(/"/g, '&quot;')}" onchange="updatePromoField('${table}','${p.id}','name',this.value)"></td>
+        <td><img src="${p.image_url}" class="img-mini" style="border: 1px solid #ddd; border-radius: 8px;"></td>
+        <td><input type="text" class="form-control form-control-sm" value="${safeName}" onchange="updatePromoField('${table}','${p.id}','name',this.value)"></td>
         <td><input type="text" class="form-control form-control-sm" value="${p.moments || ''}" onchange="updatePromoField('${table}','${p.id}','moments',this.value)"></td>
         <td>
             <select class="form-select form-select-sm" onchange="updatePromoField('${table}','${p.id}','color',this.value)">
@@ -1327,15 +1327,15 @@ async function recordAccess(action) {
         <td><input type="number" class="table-input-small" step="0.01" value="${p.price}" onchange="updatePromoField('${table}','${p.id}','price',this.value)"> <br> ${priceHTML}</td>
         <td>
             <div class="d-flex gap-2">
-                <button onclick="toggleFeatured('${table}','${p.id}',${isFeatured})" class="btn btn-sm btn-light border"><i class="bi ${starIcon}"></i></button>
-                <button onclick="toggleStatus('${table}','${p.id}',${isActive})" class="btn btn-sm btn-light border"><i class="bi ${eyeIcon}"></i></button>
-                <button onclick="deleteProduct('${table}','${p.id}','${p.name.replace(/'/g, "\\'")}')" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                <button onclick="toggleFeatured('${table}','${p.id}',${isFeatured})" class="btn btn-sm btn-light border" title="Mettre en vedette"><i class="bi ${starIcon}"></i></button>
+                <button onclick="toggleStatus('${table}','${p.id}',${isActive})" class="btn btn-sm btn-light border" title="Visibilité"><i class="bi ${eyeIcon}"></i></button>
+                <button onclick="deleteProduct('${table}','${p.id}','${safeName}')" class="btn btn-sm btn-outline-danger" title="Supprimer"><i class="bi bi-trash"></i></button>
             </div>
         </td>
     </tr>`;
 }
 
-    async function deleteProduct(table, id, name) {
+async function deleteProduct(table, id, name) {
         if (confirm(`Voulez-vous vraiment SUPPRIMER o produto "${name}"?`)) {
             showLoading(true);
             const { error } = await _supabase.from(table).delete().eq('id', id);
@@ -1348,8 +1348,6 @@ async function recordAccess(action) {
         }
     }
 }
-
-
 
     // Atualiza campos individuais (como estoque e preço) direto na tabela
 async function updatePromoField(table, id, field, value) {
@@ -1584,9 +1582,12 @@ function copyNoteToClipboard() {
 
 
 
-    async function addMoment() { const n=document.getElementById('new_moment_name').value; if(n){await _supabase.from('moments').insert([{name:n}]); loadMoments();}}
-    async function deleteMoment(id){await _supabase.from('moments').delete().eq('id',id); loadMoments();}
-    async function loadSlots(){const {data:s}=await _supabase.from('delivery_slots').select('*'); document.getElementById('lista-slots').innerHTML=s?.map(x=>`<tr><td>${x.display_order}</td><td>${x.slot_label}</td><td>${x.slot_category}</td><td>${x.is_active?'On':'Off'}</td><td><button onclick="toggleSlot('${x.id}',${x.is_active})">Toggle</button></td></tr>`).join('');}
+    async function addMoment() { 
+        const n=document.getElementById('new_moment_name').value; if(n){await _supabase.from('moments').insert([{name:n}]); loadMoments();}}
+    async function deleteMoment(id){
+        await _supabase.from('moments').delete().eq('id',id); loadMoments();}
+    async function loadSlots(){
+        const {data:s}=await _supabase.from('delivery_slots').select('*'); document.getElementById('lista-slots').innerHTML=s?.map(x=>`<tr><td>${x.display_order}</td><td>${x.slot_label}</td><td>${x.slot_category}</td><td>${x.is_active?'On':'Off'}</td><td><button onclick="toggleSlot('${x.id}',${x.is_active})">Toggle</button></td></tr>`).join('');}
     async function toggleSlot(id,st){await _supabase.from('delivery_slots').update({is_active:!st}).eq('id',id); loadSlots();}
     
  // Carregar lista de clientes com status de anonimato e botões de ação
@@ -1674,7 +1675,8 @@ function copyNoteToClipboard() {
         if (typeof showLoading === 'function') showLoading(false);
     }
 
-    async function checkNewChatMessages(){const {data}=await _supabase.from('messages').select('id').eq('is_read',false); if(data?.length>0){document.getElementById('msg-badge-admin').innerText=data.length; document.getElementById('msg-badge-admin').style.display='block';}}
+    async function checkNewChatMessages(){
+        const {data}=await _supabase.from('messages').select('id').eq('is_read',false); if(data?.length>0){document.getElementById('msg-badge-admin').innerText=data.length; document.getElementById('msg-badge-admin').style.display='block';}}
     
     // FUNÇÃO PARA CONTAR NOVAS COMANDAS (PENDENTES)
     async function checkNewOrders(){
@@ -1692,8 +1694,10 @@ function copyNoteToClipboard() {
 
     async function loadChatList(){const {data:p}=await _supabase.from('profiles').select('id,full_name'); document.getElementById('chat-users-list').innerHTML=p.map(x=>`<div class="chat-list-item" onclick="selectClientChat('${x.id}')">${x.full_name||'Client'}</div>`).join('');}
     async function selectClientChat(id){selectedClientId=id; const {data:m}=await _supabase.from('messages').select('*').or(`sender_id.eq.${id},recipient_id.eq.${id}`).order('created_at'); document.getElementById('admin-chat-box').innerHTML=m.map(msg=>`<div style="text-align:${msg.sender_id===ADMIN_ID?'right':'left'}"><b>${msg.content}</b></div>`).join('');}
-    async function sendReply(){const c=document.getElementById('admin-reply-input').value; if(c && selectedClientId){await _supabase.from('messages').insert([{sender_id:ADMIN_ID,recipient_id:selectedClientId,content:c}]); document.getElementById('admin-reply-input').value=''; selectClientChat(selectedClientId);}}
-    function filterClients(){let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
+    async function sendReply(){
+        const c=document.getElementById('admin-reply-input').value; if(c && selectedClientId){await _supabase.from('messages').insert([{sender_id:ADMIN_ID,recipient_id:selectedClientId,content:c}]); document.getElementById('admin-reply-input').value=''; selectClientChat(selectedClientId);}}
+    function filterClients(){
+        let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
     function trocarPainel(p) {
     // 1. Lista de todos os IDs de painéis (Adicionado 'security')
     const ids = ['flor', 'patis', 'moments', 'deje', 'clients', 'reviews', 'orders', 'slots', 'home', 'chat', 'security'];
@@ -1775,7 +1779,8 @@ function validateCheckoutForm() {
 
 
 
-async function toggleStatus(t,id,st){await _supabase.from(t).update({is_active:!st}).eq('id',id); loadData();}
+async function toggleStatus(t,id,st){
+    await _supabase.from(t).update({is_active:!st}).eq('id',id); loadData();}
 
 // --- LÓGICA DE LOGOUT AUTOMÁTICO POR INATIVIDADE ---
    // --- LOGOUT POR INATIVIDADE ---
