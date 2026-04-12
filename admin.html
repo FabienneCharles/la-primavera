@@ -13,13 +13,12 @@
         :root { --sidebar-color: #2C1810; --accent: #B8860B; --gold: #D4AF37; --bg-light: #f4f1ee; }
         body { background-color: var(--bg-light); font-family: 'Poppins', sans-serif; margin: 0; display: none; }
         .wrapper { display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background: var(--sidebar-color); color: white; padding: 25px; position: fixed; height: 100%; border-right: 4px solid var(--accent); z-index: 1000; display: flex; flex-direction: column; }
         .sidebar-logo { width: 90px; height: 90px; border-radius: 50%; border: 2px solid var(--accent); display: block; margin: 0 auto 15px; object-fit: cover; }
         .sidebar h4 { font-family: 'Cinzel', serif; color: var(--gold); text-align: center; margin-bottom: 30px; font-size: 1rem; letter-spacing: 2px; }
         .nav-link-custom { display: block; width: 100%; padding: 12px; color: #d1c7c3; text-decoration: none; border: none; background: none; text-align: left; border-radius: 6px; margin-bottom: 5px; font-family: 'Cinzel', serif; font-size: 0.8rem; cursor: pointer; transition: 0.3s; position: relative; }
         .nav-link-custom.active { background: var(--accent); color: white; }
         .nav-link-custom:hover:not(.active) { background: rgba(255,255,255,0.1); color: white; }
-        .logout-box { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .logout-box { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); width: 100%;}
         .btn-logout { background: #dc3545; color: white !important; font-weight: bold; text-align: center; }
         .content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
         .admin-header-bar { background: white; padding: 15px 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-left: 8px solid var(--sidebar-color); margin-bottom: 35px; display: flex; justify-content: space-between; align-items: center; }
@@ -64,61 +63,11 @@
         }
 
 /* --- AJUSTES DE RESPONSIVIDADE --- */
-
 @media (max-width: 992px) {
-    .sidebar {
-        width: 80px; /* Reduz a largura no tablet */
-        padding: 15px 10px;
-    }
-    .sidebar h4, .sidebar-logo {
-        display: none; /* Esconde logo e nome em telas pequenas */
-    }
-    .nav-link-custom span, .nav-link-custom i {
-        font-size: 1.2rem;
-        text-align: center;
-    }
-    .content {
-        margin-left: 80px;
-        width: calc(100% - 80px);
-        padding: 20px;
-    }
-}
-
-@media (max-width: 768px) {
-    .wrapper {
-        flex-direction: column; /* Empilha no celular */
-    }
-    .sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        flex-direction: row;
-        overflow-x: auto;
-        padding: 10px;
-        border-right: none;
-        border-bottom: 4px solid var(--accent);
-    }
-    .sidebar h4, .sidebar-logo {
-        display: none;
-    }
-    .nav-link-custom {
-        margin-bottom: 0;
-        margin-right: 5px;
-        padding: 10px;
-        white-space: nowrap; /* Mantém os botões em linha rolável */
-    }
-    .content {
-        margin-left: 0;
-        width: 100%;
-        padding: 15px;
-    }
-    .admin-header-bar {
-        flex-direction: column;
-        text-align: center;
-        gap: 10px;
-    }
-    .stat-badge {
-        font-size: 1.2rem;
+    .sidebar { width: 80px; padding: 15px 10px; position: fixed; } /* Mantenha fixed aqui */
+    .content { 
+        margin-left: 80px; 
+        width: calc(100% - 80px); 
     }
 }
 
@@ -137,12 +86,7 @@
     overflow-y: auto; /* ATENÇÃO: Isso permite rolar o menu se ele for grande */
 }
 
-.logout-box { 
-    margin-top: auto; /* Empurra os botões para o fundo */
-    padding-top: 20px; 
-    border-top: 1px solid rgba(255,255,255,0.1); 
-    width: 100%;
-}
+
 
 
 </style>
@@ -708,8 +652,7 @@
             });
 
 
-            let ADMIN_ID = null; let salesChart = null; let selectedClientId = null; let allOrders = []; let currentSort = { field: 'created_at', direction: 'desc' }; let logsVistos = false; // Nova variável de controle
-            let ultimoLogVistoId = null;
+            let ADMIN_ID = null; let salesChart = null; let selectedClientId = null; let allOrders = []; let currentSort = { field: 'created_at', direction: 'desc' };
 
     let lastOrderCount = 0; // Guarda a quantidade de pedidos da última verificação
     const notificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3'); 
@@ -999,18 +942,13 @@ async function checkSecurityAlerts() {
         .gt('created_at', oneHourAgo.toISOString());
 
     const badge = document.getElementById('security-alert-badge');
-    
-    // Se o painel de segurança estiver aberto agora, não mostra badge
-    if (document.getElementById('painel-security').style.display === 'block') {
-        if (badge) badge.style.display = 'none';
-        return;
-    }
-
     if (badge && data) {
-        // Se houver mais de 1 log e você NÃO estiver na aba de segurança
+        // Se houver mais de 1 log (o seu login + algum outro), ele alerta
         if (data.length > 1) {
             badge.innerText = data.length;
             badge.style.display = 'block';
+        } else {
+            badge.style.display = 'none';
         }
     }
 }
@@ -1747,8 +1685,10 @@ function copyNoteToClipboard() {
         let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
    
    function trocarPainel(p) {
+    // 1. Lista de todos os IDs de painéis
     const ids = ['flor', 'patis', 'moments', 'deje', 'clients', 'reviews', 'orders', 'slots', 'home', 'chat', 'security'];
     
+    // 2. Limpeza: Esconde todos os painéis e remove o destaque (active) de todos os botões
     ids.forEach(id => {
         const div = document.getElementById('painel-' + id);
         const btn = document.getElementById('btn-' + id);
@@ -1756,31 +1696,27 @@ function copyNoteToClipboard() {
         if (btn) btn.classList.remove('active');
     });
 
+    // 3. Ativação: Mostra o painel clicado e destaca o botão correspondente
     const alvo = document.getElementById('painel-' + p);
     const btnAlvo = document.getElementById('btn-' + p);
     
     if (alvo) alvo.style.display = 'block';
     if (btnAlvo) btnAlvo.classList.add('active');
 
+    // 4. Gatilhos Automáticos: Carrega os dados específicos ao abrir cada painel
     if (p === 'reviews' && typeof loadAllReviews === 'function') loadAllReviews();
     if (p === 'orders' && typeof loadOrders === 'function') loadOrders();
     if (p === 'clients' && typeof loadClients === 'function') loadClients();
     
+    // 5. Painel de Segurança (Logs)
     if (p === 'security') {
         if (typeof loadAccessLogs === 'function') loadAccessLogs();
         
-        // Lógica para zerar o badge e marcar como lido
+        // Zera o badge visualmente na hora do clique
         const badge = document.getElementById('security-alert-badge');
         if (badge) {
             badge.style.display = 'none';
-            // Marcamos que a partir de agora, só queremos alertas de logs novos
-            // Pegamos o ID do primeiro log da tabela (que é o mais recente)
-            const primeiraLinha = document.querySelector('#lista-logs tr');
-            if (primeiraLinha) {
-                // Se você tiver uma forma de identificar o log, guardamos aqui
-                // Para simplificar: apenas resetamos a contagem visual
-                badge.innerText = "0"; 
-            }
+            badge.innerText = ""; // Limpa o texto interno para garantir
         }
     }
 }
