@@ -938,13 +938,10 @@ async function recordAccess(action) {
         };
         await _supabase.from('admin_access_log').insert([logData]);
     } catch (e) {
-        console.error("Erreur de localisation", e);
-        // Grava apenas o básico se a API de localização falhar
+        console.error("Erro na localização", e);
         await _supabase.from('admin_access_log').insert([{ admin_id: ADMIN_ID, action: action }]);
     }
 }
-
-
 
 async function loadAccessLogs() {
     const { data, error } = await _supabase
@@ -958,13 +955,11 @@ async function loadAccessLogs() {
         lista.innerHTML = data.map(log => `
             <tr>
                 <td class="small">${new Date(log.created_at).toLocaleString()}</td>
-                <td><span class="badge bg-success">${log.action}</span></td>
+                <td><span class="badge ${log.action.includes('Ativa') ? 'bg-success' : 'bg-secondary'}">${log.action}</span></td>
                 <td class="small">${log.ip_address || '---'}</td>
                 <td class="small">${log.location || 'Localisation...'}</td>
                 <td class="small text-muted" style="font-size:0.6rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
             </tr>`).join('');
-    } else if (lista) {
-        lista.innerHTML = '<tr><td colspan="5" class="text-center py-4">Chargement des données...</td></tr>';
     }
 }
 
