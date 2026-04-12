@@ -706,35 +706,19 @@
 // Esse link é um som de "Bell" (Sino) curto e elegante.
 
     async function checkAdmin() {
-    const { data: { session } } = await _supabase.auth.getSession();
-    
-    if (!session) { 
-        window.location.href = "admin-login.html"; 
-        return; 
-    }
-    
-    ADMIN_ID = session.user.id;
-    const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', ADMIN_ID).single();
-    
-    if (!profile?.is_admin) { 
-        window.location.href = "index.html"; 
-    } else { 
-        document.body.style.display = "block"; 
-        
-        // 1. Registra a sessão e ESPERA o banco confirmar
-        await recordAccess('Sessão Ativa'); 
-        
-        // 2. Aguarda meio segundo para o banco "respirar" e então carrega a lista
-        setTimeout(async () => {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (!session) { window.location.href = "admin-login.html"; return; }
+        ADMIN_ID = session.user.id;
+        const { data: profile } = await _supabase.from('profiles').select('is_admin').eq('id', ADMIN_ID).single();
+        if (!profile?.is_admin) { window.location.href = "index.html"; } 
+        else { 
+            document.body.style.display = "block"; 
+            // Registra a sessão e ESPERA o banco confirmar para depois carregar a tela
+            await recordAccess('Sessão Ativa'); 
             await loadAccessLogs(); 
-        }, 500);
-
-        init(); 
+            init(); 
+        }
     }
-}
-
-// Executa a verificação
-checkAdmin();
 
     async function handleLogout() { await _supabase.auth.signOut(); window.location.href = "admin-login.html"; }
 
@@ -929,27 +913,27 @@ async function recordAccess(action) {
     try {
         const response = await fetch('https://ipapi.co/json/');
         const geo = await response.json();
-        
         const logData = {
             admin_id: ADMIN_ID,
             action: action,
-            ip_address: geo.ip, // O banco espera 'ip_address'
-            location: geo.city + ", " + geo.region + ", " + geo.country_name, // O banco espera 'location'
-            user_agent: navigator.userAgent // O banco espera 'user_agent'
+            ip_address: geo.ip,
+            location: `${geo.city}, ${geo.region}, ${geo.country_name}`,
+            user_agent: navigator.userAgent
         };
-
         await _supabase.from('admin_access_log').insert([logData]);
     } catch (e) {
         console.error("Erro na localização", e);
-        // Grava o básico se a API de mapa falhar
         await _supabase.from('admin_access_log').insert([{ admin_id: ADMIN_ID, action: action }]);
     }
 }
 
-
-
 async function loadAccessLogs() {
-    const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(15);
+    const { data, error } = await _supabase
+        .from('admin_access_log')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(15);
+
     const lista = document.getElementById('lista-logs');
     if (lista && data) {
         lista.innerHTML = data.map(log => `
@@ -1015,10 +999,10 @@ async function loadAccessLogs() {
     } finally {
         // 4. Monitores em Tempo Real (Loop de Atualização a cada 10 segundos)
         // Isso mantém o badge de mensagens e a tabela de logs sempre atualizados
-        setInterval(() => {
+       setInterval(() => {
             if (typeof checkNewChatMessages === 'function') checkNewChatMessages();
             if (typeof checkNewOrders === 'function') checkNewOrders();
-            if (typeof loadAccessLogs === 'function') loadAccessLogs();
+            if (typeof loadAccessLogs === 'function') loadAccessLogs(); // Isso atualiza o IP em tempo real
         }, 10000);
         
         // Remove a tela de carregamento e exibe o Dashboard
