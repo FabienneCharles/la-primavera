@@ -713,9 +713,11 @@
     if (!profile?.is_admin) { window.location.href = "index.html"; } 
     else { 
         document.body.style.display = "block"; 
-        // Primeiro registra a Sessão Ativa
+        // 1. Grava o acesso e ESPERA terminar (await)
         await recordAccess('Sessão Ativa'); 
-        // Depois inicia o painel
+        // 2. Agora que gravou, busca do banco e mostra na tela
+        await loadAccessLogs(); 
+        // 3. Carrega o resto do painel
         init(); 
     }
 }
@@ -922,7 +924,8 @@ async function recordAccess(action) {
             location: `${geo.city}, ${geo.region}, ${geo.country_name}`,
             user_agent: navigator.userAgent
         };
-        await _supabase.from('admin_access_log').insert([logData]);
+        // O .select() aqui é importante para confirmar a gravação
+        await _supabase.from('admin_access_log').insert([logData]).select();
     } catch (e) {
         console.error("Erreur de localisation", e);
     }
@@ -930,17 +933,26 @@ async function recordAccess(action) {
 
 
 async function loadAccessLogs() {
-    const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(20);
+    const { data, error } = await _supabase
+        .from('admin_access_log')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
     const lista = document.getElementById('lista-logs');
     if (lista) {
-        lista.innerHTML = data?.map(log => `
-            <tr>
-                <td class="small">${new Date(log.created_at).toLocaleString()}</td>
-                <td><span class="badge ${log.action.includes('Ativa') ? 'bg-success' : 'bg-secondary'}">${log.action}</span></td>
-                <td class="small">${log.ip_address || '---'}</td>
-                <td class="small">${log.location || 'Localisation...'}</td>
-                <td class="small text-muted" style="font-size:0.6rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
-            </tr>`).join('') || '<tr><td colspan="5" class="text-center">Aucun log trouvé</td></tr>';
+        if (data && data.length > 0) {
+            lista.innerHTML = data.map(log => `
+                <tr>
+                    <td class="small">${new Date(log.created_at).toLocaleString()}</td>
+                    <td><span class="badge ${log.action.includes('Ativa') ? 'bg-success' : 'bg-secondary'}">${log.action}</span></td>
+                    <td class="small">${log.ip_address || '---'}</td>
+                    <td class="small">${log.location || 'Localisation...'}</td>
+                    <td class="small text-muted" style="font-size:0.6rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
+                </tr>`).join('');
+        } else {
+            lista.innerHTML = '<tr><td colspan="5" class="text-center py-4">Aucun log trouvé. Actualisez la page.</td></tr>';
+        }
     }
 }
 
