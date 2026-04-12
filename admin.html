@@ -197,7 +197,7 @@
                 <tbody id="lista-logs"></tbody>
             </table>
         </div>
-    </div> 
+    </div>
     <div id="painel-flor"> <h2 class="mb-4">🌸 Inventaire Floristerie</h2>
                 <div class="admin-card">
                     <form id="formFlower" class="row g-3">
@@ -906,7 +906,7 @@
 async function recordAccess(action) {
     if (!ADMIN_ID) return;
     try {
-        // Busca IP e Localização de forma externa
+        // Busca sua cidade e país em tempo real
         const response = await fetch('https://ipapi.co/json/');
         const geo = await response.json();
         
@@ -914,30 +914,36 @@ async function recordAccess(action) {
             admin_id: ADMIN_ID,
             action: action,
             ip_address: geo.ip,
-            location: `${geo.city}, ${geo.region}, ${geo.country_name}`,
+            location: `${geo.city}, ${geo.region}, ${geo.country_name}`, // Ex: Manhattan, NY, US
             user_agent: navigator.userAgent
         };
 
         await _supabase.from('admin_access_log').insert([logData]);
     } catch (e) {
-        // Caso a API de localização falhe, grava apenas o IP básico
-        console.error("Localização indisponível", e);
+        console.error("Erreur de localisation", e);
     }
 }
 
 
 async function loadAccessLogs() {
-    const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(20);
+    const { data, error } = await _supabase
+        .from('admin_access_log')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
     const lista = document.getElementById('lista-logs');
-    if (lista) {
-        lista.innerHTML = data?.map(log => `
+    if (lista && data) {
+        lista.innerHTML = data.map(log => `
             <tr>
                 <td class="small">${new Date(log.created_at).toLocaleString()}</td>
-                <td><span class="badge ${log.action === 'Login' ? 'bg-success' : 'bg-secondary'}">${log.action}</span></td>
+                <td><span class="badge ${log.action.includes('Session') ? 'bg-success' : 'bg-secondary'}">${log.action}</span></td>
                 <td class="small">${log.ip_address || '---'}</td>
                 <td class="small">${log.location || 'Localisation...'}</td>
-                <td class="small text-muted" style="font-size:0.6rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
-            </tr>`).join('') || '<tr><td colspan="5" class="text-center">Aucun log trouvé</td></tr>';
+                <td class="small text-muted" style="font-size:0.65rem;">${log.user_agent ? log.user_agent.substring(0,30) : '---'}...</td>
+            </tr>`).join('');
+    } else if (!data || data.length === 0) {
+        lista.innerHTML = '<tr><td colspan="5" class="text-center">Aucun log trouvé</td></tr>';
     }
 }
 
@@ -948,47 +954,59 @@ async function loadAccessLogs() {
     try {
         // 1. Registro de Acesso e Carregamento de Logs (Segurança Suprême)
         if (ADMIN_ID) {
-            // Primeiro grava o acesso (que busca seu IP/Cidade)
-            await recordAccess('Connexion Session'); 
-            // Depois carrega a lista para garantir que a tabela mostre os dados novos
+            // Registra a conexão com localização real através do recordAccess
+            // Usamos 'await' para garantir que ele grave antes de tentarmos ler a tabela
+            await recordAccess('Sessão Ativa'); 
+            
+            // Carrega os logs para que sua conexão apareça na primeira linha da tabela
             if (typeof loadAccessLogs === 'function') {
                 await loadAccessLogs(); 
             }
         }
 
-        // 2. Configurações de Interface (Datas)
+        // 2. Configurações de Interface (Prevenção de datas retroativas)
         const today = new Date().toISOString().split('T')[0];
-        document.querySelectorAll('.promo-date-input').forEach(el => el.setAttribute('min', today));
+        document.querySelectorAll('.promo-date-input').forEach(el => {
+            el.setAttribute('min', today);
+        });
 
-        // 3. Carregamento Paralelo (Motor do Painel)
-        // Verificamos se cada função existe antes de chamar para evitar o erro de "girar infinito"
+        // 3. Carregamento Paralelo (Motor Principal)
+        // Verificamos a existência de cada função para evitar o erro de "giro infinito" 
+        // caso algum módulo seja removido ou renomeado.
         const loadingTasks = [];
-        if (typeof loadHomeSettings === 'function') loadingTasks.push(loadHomeSettings());
-        if (typeof loadMoments === 'function') loadingTasks.push(loadMoments());
-        if (typeof loadData === 'function') loadingTasks.push(loadData());
-        if (typeof loadClients === 'function') loadingTasks.push(loadClients());
-        if (typeof loadOrders === 'function') loadingTasks.push(loadOrders());
-        if (typeof loadSlots === 'function') loadingTasks.push(loadSlots());
-        if (typeof loadAllReviews === 'function') loadingTasks.push(loadAllReviews());
-        if (typeof loadChatList === 'function') loadingTasks.push(loadChatList());
+        
+        const tasks = [
+            { fn: typeof loadHomeSettings === 'function' ? loadHomeSettings : null },
+            { fn: typeof loadMoments === 'function' ? loadMoments : null },
+            { fn: typeof loadData === 'function' ? loadData : null },
+            { fn: typeof loadClients === 'function' ? loadClients : null },
+            { fn: typeof loadOrders === 'function' ? loadOrders : null },
+            { fn: typeof loadSlots === 'function' ? loadSlots : null },
+            { fn: typeof loadAllReviews === 'function' ? loadAllReviews : null },
+            { fn: typeof loadChatList === 'function' ? loadChatList : null }
+        ];
 
+        tasks.forEach(task => {
+            if (task.fn) loadingTasks.push(task.fn());
+        });
+
+        // Executa todos os carregamentos ao mesmo tempo para máxima performance
         await Promise.all(loadingTasks);
 
     } catch (e) { 
-        console.error("Erreur lors do carregamento inicial:", e); 
+        console.error("Erreur lors du carregamento inicial:", e); 
+    } finally {
+        // 4. Monitores em Tempo Real (Loop de 10 segundos)
+        setInterval(() => {
+            if (typeof checkNewChatMessages === 'function') checkNewChatMessages();
+            if (typeof checkNewOrders === 'function') checkNewOrders();
+            if (typeof loadAccessLogs === 'function') loadAccessLogs();
+        }, 10000);
+        
+        // Finaliza o overlay de carregamento
+        showLoading(false);
     }
-
-    // 4. Monitores em Tempo Real (Atualização a cada 10 segundos)
-    setInterval(() => {
-        if (typeof checkNewChatMessages === 'function') checkNewChatMessages();
-        if (typeof checkNewOrders === 'function') checkNewOrders();
-        if (typeof loadAccessLogs === 'function') loadAccessLogs();
-        // checkNewReviewsBadge(); // Mantido comentado conforme solicitado
-    }, 10000);
-    
-    showLoading(false);
 }
-
 
 
 
