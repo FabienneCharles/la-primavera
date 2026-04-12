@@ -722,11 +722,11 @@
     if (!profile?.is_admin) { window.location.href = "index.html"; } 
  else { 
         document.body.style.display = "block"; 
+        // 1. Apenas registra o acesso
         await recordAccess('Connexion effectuée'); 
-        setTimeout(async () => { await loadAccessLogs(); }, 1200);
+        // 2. O init() já se encarregará de carregar o resto
         init(); 
     }
-}
 
     async function handleLogout() { await _supabase.auth.signOut(); window.location.href = "admin-login.html"; }
 
@@ -992,23 +992,20 @@ function resetSecurityAction() {
 }
 
 async function checkSecurityAlerts() {
-    const yesterday = new Date();
-    yesterday.setHours(yesterday.getHours() - 24);
+    // Busca acessos dos últimos 30 minutos (para indicar atividade recente real)
+    const thirtyMinsAgo = new Date(Date.now() - 30 * 60 * 1000);
 
     const { data } = await _supabase
         .from('admin_access_log')
         .select('id')
-        .gt('created_at', yesterday.toISOString());
+        .gt('created_at', thirtyMinsAgo.toISOString());
 
     const badge = document.getElementById('security-alert-badge');
     if (badge && data) {
-        const count = data.length;
-        // Se houver qualquer log nas últimas 24h, a bolinha aparece
-        if (count > 0) {
-            badge.innerText = count;
+        // Se houver mais de um log (o seu e talvez outro), ele avisa
+        if (data.length > 1) {
+            badge.innerText = "!";
             badge.style.display = 'block';
-        } else {
-            badge.style.display = 'none';
         }
     }
 }
@@ -1758,11 +1755,9 @@ function copyNoteToClipboard() {
         const c=document.getElementById('admin-reply-input').value; if(c && selectedClientId){await _supabase.from('messages').insert([{sender_id:ADMIN_ID,recipient_id:selectedClientId,content:c}]); document.getElementById('admin-reply-input').value=''; selectClientChat(selectedClientId);}}
     function filterClients(){
         let i=document.getElementById("searchClient").value.toLowerCase(); document.querySelectorAll("#lista-clients tr").forEach(r=>{r.style.display=r.innerText.toLowerCase().includes(i)?"":"none";});}
-    function trocarPainel(p) {
-    // 1. Lista de todos os IDs de painéis (Adicionado 'security')
+   function trocarPainel(p) {
     const ids = ['flor', 'patis', 'moments', 'deje', 'clients', 'reviews', 'orders', 'slots', 'home', 'chat', 'security'];
     
-    // 2. Limpeza: Esconde todos os painéis e remove o destaque (active) de todos os botões
     ids.forEach(id => {
         const div = document.getElementById('painel-' + id);
         const btn = document.getElementById('btn-' + id);
@@ -1770,31 +1765,23 @@ function copyNoteToClipboard() {
         if (btn) btn.classList.remove('active');
     });
 
-    // 3. Ativação: Mostra o painel que você clicou e destaca o botão correspondente
     const alvo = document.getElementById('painel-' + p);
     const btnAlvo = document.getElementById('btn-' + p);
     
     if (alvo) alvo.style.display = 'block';
     if (btnAlvo) btnAlvo.classList.add('active');
 
-    // 4. Gatilhos Automáticos: Carrega os dados específicos ao abrir cada painel
     if (p === 'reviews') loadAllReviews();
     if (p === 'orders') loadOrders();
     if (p === 'clients') loadClients();
     
-    // NOVO: Carrega o histórico de acessos (IP, Localização, Login/Logout)
     if (p === 'security') {
         loadAccessLogs();
-        // Limpa o badge de alerta do menu lateral ao visualizar os logs
+        // AÇÃO CRUCIAL: Esconde a bolinha vermelha quando você clica no botão
         const badge = document.getElementById('security-alert-badge');
         if (badge) badge.style.display = 'none';
     }
 }
-
-// Variáveis globais de estado do sistema
-let ordersEnabled = true; 
-let globalShipping = 0;
-let globalTax = 0;
 
 async function loadGlobalSettings() {
     // Busca as configurações globais na tabela 'site_settings' do Supabase
