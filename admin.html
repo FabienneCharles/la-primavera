@@ -412,27 +412,56 @@ body {
 
 /* 2. CELULAR (Telas Pequenas) */
 @media (max-width: 768px) {
-    .wrapper { flex-direction: column; }
-    .sidebar { 
-        position: relative !important; /* Faz o menu ir para o topo */
-        width: 100% !important; 
-        height: auto !important; 
-        flex-direction: row !important; 
-        padding: 10px !important; 
-        border-right: none !important; 
+    .wrapper { 
+        flex-direction: column; /* Empilha o menu em cima e conteúdo embaixo */
+    }
+
+    .sidebar {
+        position: relative !important; /* Larga a lateral e vira um bloco normal */
+        width: 100% !important;
+        height: auto !important;
+        min-height: 60px;
+        flex-direction: row !important; /* COLOCA OS BOTÕES LADO A LADO */
+        padding: 10px !important;
+        border-right: none !important;
         border-bottom: 4px solid var(--accent);
-        overflow-x: auto; 
+        overflow-x: auto; /* Se tiver muitos botões, você arrasta pro lado com o dedo */
+        overflow-y: hidden !important;
+        white-space: nowrap; /* Não deixa os botões quebrarem linha */
+        z-index: 1100;
     }
-    .content { 
-        margin-left: 0 !important; /* ELIMINA o buraco na esquerda */
-        width: 100% !important; 
-        padding: 15px !important; 
+
+    /* Ajuste dos botões para caberem na linha horizontal */
+    .nav-link-custom {
+        display: inline-flex !important; /* Transforma em blocos horizontais */
+        width: auto !important;
+        margin-right: 10px;
+        padding: 8px 15px !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap;
     }
-    .admin-card { padding: 15px !important; } /* Faz o formulário caber na tela */
-    .logout-box { display: none; }
+
+    .sidebar h4, .sidebar-logo, .sidebar .text-white-50 {
+        display: none !important; /* Esconde logo/título no celular para sobrar espaço pros botões */
+    }
+
+    .content {
+        margin-left: 0 !important; /* Elimina o espaço vazio da esquerda */
+        width: 100% !important;
+        padding: 15px !important;
+        padding-top: 20px !important;
+    }
+
+    .admin-header-bar {
+        display: none; /* Esconde a barra interna se estiver atrapalhando no celular */
+    }
 }
 
-.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-responsive {
+    overflow-x: auto !important;
+    display: block;
+    width: 100%;
+}
 
 </style>
 
