@@ -141,6 +141,7 @@ body {
     box-shadow: 0 10px 30px rgba(0,0,0,0.04); 
     margin-bottom: 30px; 
     border-top: 4px solid var(--accent); 
+    overflow-x: auto;
 }
 
 .img-mini { 
@@ -179,13 +180,16 @@ body {
 .chat-list-item { 
     cursor: pointer; 
     border-bottom: 1px solid #eee; 
-    padding: 12px; 
-    transition: 0.2s; 
+    padding: 15px; 
+    transition: 0.3s; 
+    border-bottom: 1px solid #eee;
+    background: white;
 }
 
 .chat-list-item.active { 
-    background: #e9ecef; 
-    border-left: 4px solid var(--accent); 
+    border-left: 5px solid var(--accent); !important;
+    background-color: #fdf5e6 !important; /* Cor de destaque (creme) */
+    font-weight: bold;
 }
 
 #admin-chat-box { 
@@ -461,6 +465,48 @@ body {
     overflow-x: auto !important;
     display: block;
     width: 100%;
+}
+
+
+/* Adicione no final do seu <style> */
+#lista-logs {
+    display: block;
+    max-height: 600px; /* Define uma altura máxima */
+    overflow-y: auto;  /* Cria rolagem interna */
+}
+
+
+
+/* Ajuste para fixar o cabeçalho e alinhar com os dados */
+#lista-logs {
+    display: table-row-group; /* Garante que o corpo da tabela se comporte como tabela */
+}
+
+/* Força a tabela de segurança a usar todo o espaço e alinhar as colunas */
+#painel-security table {
+    width: 100% !important;
+    table-layout: auto;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#painel-security th {
+    white-space: nowrap;
+    background-color: #f8f9fa;
+    padding: 15px 10px !important;
+    border-bottom: 2px solid var(--accent);
+    text-align: left;
+}
+
+
+
+#painel-security .admin-card {
+    overflow-x: auto; /* Permite rolar a tabela lateralmente se for grande */
+}
+
+
+#painel-security thead {
+    display: table-header-group; /* Força o cabeçalho a ficar no topo */
 }
 
 </style>
@@ -1228,8 +1274,8 @@ async function loadClients() {
 
 // 2. Leitura e Badge de Alerta
 async function loadAccessLogs() {
-	const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false }).limit(15);
-	const lista = document.getElementById('lista-logs');
+// Mude para isso:
+const { data } = await _supabase.from('admin_access_log').select('*').order('created_at', { ascending: false });	const lista = document.getElementById('lista-logs');
 	const badge = document.getElementById('security-alert-badge');
 
 	if (lista && data) {
@@ -2329,55 +2375,80 @@ async function loadChatList() {
 }
 
 async function selectClientChat(id, name, isBanned) {
-	selectedClientId = id;
+    selectedClientId = id;
 
-	// 1. Marca como lida qualquer mensagem onde você é o destinatário 
-	// OU mensagens internas (você para você mesmo)
-	await _supabase
-	.from('messages')
-	.update({ is_read: true })
-	.match({ sender_id: id, recipient_id: ADMIN_ID });
+    // --- NOVIDADE: DESTAQUE VISUAL NA LISTA ---
+    // Remove a classe 'active' de todos os itens da lista de chat
+    document.querySelectorAll('.chat-list-item').forEach(item => {
+        item.classList.remove('active');
+    });
 
-	// Forçamos uma segunda limpeza caso o ID seja o seu próprio (Admin)
-	if (id === ADMIN_ID) {
-		await _supabase
-		.from('messages')
-		.update({ is_read: true })
-		.eq('recipient_id', ADMIN_ID);
-	}
+    // Tenta encontrar o elemento clicado para adicionar o destaque
+    // Usamos o 'event' para capturar o item exato da lista
+    if (window.event && window.event.currentTarget) {
+        window.event.currentTarget.classList.add('active');
+    }
+    // ------------------------------------------
 
-	// 2. Atualiza a lista lateral e a bolinha do menu na hora
-	setTimeout(async () => {
-		await loadChatList();
-		await checkNewChatMessages();
-	}, 300);
+    // 1. Marca como lida qualquer mensagem onde você é o destinatário 
+    await _supabase
+    .from('messages')
+    .update({ is_read: true })
+    .match({ sender_id: id, recipient_id: ADMIN_ID });
 
-	// 3. Interface e Bloqueio de Banidos
-	const input = document.getElementById('admin-reply-input');
-	input.disabled = isBanned;
-	input.placeholder = isBanned ? "Utilisateur banni - Envoi désactivé" : "Répondre...";
-	document.getElementById('btn-delete-chat').style.display = 'block';
+    // Forçamos uma segunda limpeza caso o ID seja o seu próprio (Admin)
+    if (id === ADMIN_ID) {
+        await _supabase
+        .from('messages')
+        .update({ is_read: true })
+        .eq('recipient_id', ADMIN_ID);
+    }
 
-	// 4. Carregar histórico com duplo clique para apagar
-	const { data: m } = await _supabase
-	.from('messages')
-	.select('*')
-	.or(`sender_id.eq.${id},recipient_id.eq.${id}`)
-	.order('created_at', { ascending: true });
+    // 2. Atualiza a lista lateral (para sumir a bolinha de 'não lido')
+    setTimeout(async () => {
+        // Nota: loadChatList precisa ser executada, mas sem perder o nosso 'active'
+        await loadChatList();
+        await checkNewChatMessages();
+        
+        // Re-aplica o destaque após o reload da lista
+        const itens = document.querySelectorAll('.chat-list-item');
+        itens.forEach(item => {
+            if (item.getAttribute('onclick')?.includes(id)) {
+                item.classList.add('active');
+            }
+        });
+    }, 300);
 
-	const chatBox = document.getElementById('admin-chat-box');
-	if (chatBox) {
-		chatBox.innerHTML = m.map(msg => `
-			<div class="mb-2 ${msg.sender_id === ADMIN_ID ? 'text-end' : 'text-start'}">
-				<span class="d-inline-block p-2 rounded-3 ${msg.sender_id === ADMIN_ID ? 'bg-dark text-white' : 'bg-light border'}" 
-					  style="max-width: 80%; cursor: pointer;" 
-					  title="Double-clic pour supprimer"
-					  ondblclick="deleteSingleMessage('${msg.id}')">
-					${msg.content}
-				</span>
-		</div>`).join('');
-		chatBox.scrollTop = chatBox.scrollHeight;
-	}
+    // 3. Interface e Bloqueio de Banidos
+    const input = document.getElementById('admin-reply-input');
+    if (input) {
+        input.disabled = isBanned;
+        input.placeholder = isBanned ? "Utilisateur banni - Envoi désactivé" : "Répondre...";
+    }
+    
+    const btnDelete = document.getElementById('btn-delete-chat');
+    if (btnDelete) btnDelete.style.display = 'block';
+
+    // 4. Carregar histórico com duplo clique para apagar
+    const { data: m } = await _supabase
+    .from('messages')
+    .select('*')
+    .or(`sender_id.eq.${id},recipient_id.eq.${id}`)
+    .order('created_at', { ascending: true });
+
+    const chatBox = document.getElementById('admin-chat-box');
+    if (chatBox) {
+        chatBox.innerHTML = m?.map(msg => `
+            <div class="mb-2 ${msg.sender_id === ADMIN_ID ? 'text-end' : 'text-start'}">
+                <span class="d-inline-block p-2 rounded-3 ${msg.sender_id === ADMIN_ID ? 'bg-dark text-white' : 'bg-light border'}" 
+                      style="max-width: 80%; cursor: pointer;" 
+                      title="Double-clic pour supprimer"
+                      ondblclick="deleteSingleMessage('${msg.id}')">
+                    ${msg.content}
+                </span>
+            </div>`).join('') || 'Aucun message.';
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 }
 
 
