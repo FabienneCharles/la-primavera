@@ -412,32 +412,28 @@ body {
 
 /* 2. CELULAR (Telas Pequenas) */
 @media (max-width: 768px) {
-    .wrapper { 
-        flex-direction: column; 
-    }
-    .sidebar {
-        position: relative !important; /* SOLTA da lateral e vira cabeçalho */
-        width: 100% !important;
-        height: auto !important;
-        flex-direction: row !important;
-        padding: 10px !important;
-        border-right: none !important;
+    .wrapper { flex-direction: column; }
+    .sidebar { 
+        position: relative !important; /* Faz o menu ir para o topo */
+        width: 100% !important; 
+        height: auto !important; 
+        flex-direction: row !important; 
+        padding: 10px !important; 
+        border-right: none !important; 
         border-bottom: 4px solid var(--accent);
-        overflow-x: auto; /* Permite deslizar os ícones se não couberem */
-        display: flex !important;
+        overflow-x: auto; 
     }
-    .content {
-        margin-left: 0 !important; /* REMOVE o buraco vazio da esquerda */
-        width: 100% !important;
-        padding: 15px !important;
+    .content { 
+        margin-left: 0 !important; /* ELIMINA o buraco na esquerda */
+        width: 100% !important; 
+        padding: 15px !important; 
     }
-    .logout-box { 
-        display: none !important; 
-    }
-    .stat-badge {
-        font-size: 1.2rem;
-    }
+    .admin-card { padding: 15px !important; } /* Faz o formulário caber na tela */
+    .logout-box { display: none; }
 }
+
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
 </style>
 
 </head>
